@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres
+    container_name: postgres-db-cbn
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: CBN
+      POSTGRES_PASSWORD: passwordcbn
+      POSTGRES_DB: CBN
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-cbn
+    ports:
+      - "5050:80"
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: CBN@admin.com
+      PGADMIN_DEFAULT_PASSWORD: cbncbncbn
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
