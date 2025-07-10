@@ -27,6 +27,7 @@ class ItemsServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'Database/migrations'));
+        $this->mergeConfigFrom(__DIR__ . '/../config/permissions.php', 'items');
     }
 
     /**

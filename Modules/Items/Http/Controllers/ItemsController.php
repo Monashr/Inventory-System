@@ -40,6 +40,10 @@ class ItemsController extends Controller
 
     public function showEditForm(Item $item)
     {
+        if ($item->tenant_id !== tenant()->id) {
+            abort(403, 'Unauthorized access.');
+        }
+
         return Inertia::render("Items/ItemsEdit", [
             "item" => $item,
         ]);
@@ -61,7 +65,11 @@ class ItemsController extends Controller
     public function destroy($id)
     {
         $item = Item::findOrFail($id);
-
+        
+        if ($item->tenant_id !== tenant()->id) {
+            abort(403, 'Unauthorized access.');
+        }
+        
         $item->delete();
 
         return redirect()->route('items.index')->with('success', 'Item deleted successfully');

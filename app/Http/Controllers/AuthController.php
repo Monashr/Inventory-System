@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
-use Inertia\Response;
+use App\Models\Tenant;
+use App\Models\Role;
 
 class AuthController extends Controller
 {
@@ -42,16 +43,40 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
         ]);
 
-        $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
+        $tenant = Tenant::create([
+            'name' => "$request->name Tenant",
+            'domain' => "-",
+            'database' => "-",
         ]);
+
+        $tenant->domain = $tenant->id . '-default';
+        $tenant->database = $tenant->id . '-default';
+
+        $tenant->save();
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'tenant_id' => $tenant->id,
+        ]);
+
+        $userRole = Role::firstOrCreate([
+            'name' => 'user',
+            'tenant_id' => $tenant->id,
+        ]);
+
+        $user->assignRole($tenant->id, $userRole);
+
+        $user->tenants()->attach($tenant->id);
+
+        $permissions = config('items.permissions');
+        $userRole->giveTenantPermissionTo($tenant->id, ...$permissions);
 
         Auth::login($user);
 

@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->unsignedInteger('stock');
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

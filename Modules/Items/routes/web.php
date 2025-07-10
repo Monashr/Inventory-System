@@ -1,10 +1,9 @@
 <?php
 
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Modules\Items\Http\Controllers\ItemsController;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'tenant'])->group(function () {
     Route::get('/dashboard/items', [ItemsController::class, 'index'])->name('items.index');
 
     Route::get('/dashboard/items/add', [ItemsController::class, 'showAddForm'])->name('items.add');
@@ -14,5 +13,4 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/items/edit/{item}', [ItemsController::class, 'update'])->name('items.update');
 
     Route::delete('/dashboard/items/{id}', [ItemsController::class, 'destroy'])->name('items.destroy');
-
 });
