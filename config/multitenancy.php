@@ -10,7 +10,7 @@ use Spatie\Multitenancy\Actions\MakeQueueTenantAwareAction;
 use Spatie\Multitenancy\Actions\MakeTenantCurrentAction;
 use Spatie\Multitenancy\Actions\MigrateTenantAction;
 use Spatie\Multitenancy\Models\Tenant;
-use Spatie\Multitenancy\TenantFinder\DomainTenantFinder;
+use App\helper\SessionTenantFinder;
 
 return [
     /*
@@ -20,7 +20,7 @@ return [
      * This class should extend `Spatie\Multitenancy\TenantFinder\TenantFinder`
      *
      */
-    'tenant_finder' => DomainTenantFinder::class,
+    'tenant_finder' => SessionTenantFinder::class,
 
     /*
      * These fields are used by tenant:artisan command to match one or more tenant.

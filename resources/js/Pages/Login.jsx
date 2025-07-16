@@ -85,11 +85,11 @@ export default function Login({ errors }) {
                                     )}
                                 </div>
 
-                                <div className="w-full flex flex-col items-center">
+                                <div className="grid gap-2 w-full">
                                     <Button
                                         type="submit"
                                         disabled={processing}
-                                        className="w-full mt-4"
+                                        className="w-full mt-4 cursor-pointer"
                                     >
                                         {processing ? (
                                             <>

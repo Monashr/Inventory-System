@@ -10,6 +10,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
+Route::post('/switch/{tenantId}', [AuthController::class, 'switchTenant'])->middleware('auth');
+
 Route::middleware(['auth', 'tenant'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard.index');
+    Route::get('/dashboard/tenant', [DashboardController::class, 'showTenant'])->name('tenant.index');
+    Route::put('/dashboard/tenant', [DashboardController::class, 'updateTenant'])->name('tenant.update');
 });

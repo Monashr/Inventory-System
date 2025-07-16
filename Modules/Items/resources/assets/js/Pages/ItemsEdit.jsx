@@ -28,7 +28,6 @@ function ItemsEdit() {
 
     return (
         <div className="w-full">
-            <DynamicBreadcrumbs />
             <Card className="w-full mx-auto">
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between w-full">
@@ -101,7 +100,7 @@ function ItemsEdit() {
                         </div>
 
                         <Button
-                            className="w-full"
+                            className="w-full cursor-pointer"
                             type="submit"
                             disabled={processing}
                         >

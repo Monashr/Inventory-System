@@ -46,8 +46,8 @@ export default function DeleteAlertDialog({ itemId }) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} className="bg-red-600">
+          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} className="bg-red-600 cursor-pointer">
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

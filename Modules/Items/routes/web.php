@@ -13,4 +13,8 @@ Route::middleware(['auth', 'tenant'])->group(function () {
     Route::put('/dashboard/items/edit/{item}', [ItemsController::class, 'update'])->name('items.update');
 
     Route::delete('/dashboard/items/{id}', [ItemsController::class, 'destroy'])->name('items.destroy');
+
+    Route::get('/dashboard/items/{item}', [ItemsController::class, 'unit'])->name('unit.index');
+
+    Route::get('/dashboard/items/unit/{unit}', [ItemsController::class, 'unitDetails'])->name('unit.details');
 });

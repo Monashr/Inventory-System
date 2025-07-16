@@ -7,6 +7,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\HandleInertiaRequests;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
 use Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession;
+use App\Http\Middleware\CustomEnsureValidTenantSession;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ])
             ->group('tenant', [
                 NeedsTenant::class,
-                EnsureValidTenantSession::class,
+                CustomEnsureValidTenantSession::class,
             ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

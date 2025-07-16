@@ -1,4 +1,6 @@
 {
     "Items": true,
-    "Customers": true
+    "Profile": true,
+    "Employee": true,
+    "Loans": true
 }

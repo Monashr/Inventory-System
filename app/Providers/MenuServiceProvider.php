@@ -21,25 +21,34 @@ class MenuServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Inertia::share('moduleMenus', function () {
-            $user = auth()->user();
-            $menus = collect();
+        Inertia::share([
+            // Authenticated user's tenant info
+            'tenants' => fn() => auth()->check()
+                ? auth()->user()->tenants()->select('tenants.id', 'tenants.name')->get()
+                : [],
+            'currentTenantId' => fn() => session('active_tenant_id'),
 
-            foreach (Module::allEnabled() as $module) {
-                $path = $module->getPath() . '/config/menu.php';
+            // Dynamic module menus
+            'moduleMenus' => function () {
+                $user = auth()->user();
+                $menus = collect();
 
-                if (file_exists($path)) {
-                    $configMenus = require $path;
+                foreach (Module::allEnabled() as $module) {
+                    $path = $module->getPath() . '/config/menu.php';
 
-                    foreach ($configMenus as $menu) {
-                        if (!isset($menu['permission']) || ($user && $user->can($menu['permission']))) {
-                            $menus->push($menu);
-                        }   
+                    if (file_exists($path)) {
+                        $configMenus = require $path;
+
+                        foreach ($configMenus as $menu) {
+                            if (!isset($menu['permission']) || ($user && checkAuthority($menu['permission']))) {
+                                $menus->push($menu);
+                            }
+                        }
                     }
                 }
-            }
 
-            return $menus->values();
-        });
+                return $menus->values();
+            },
+        ]);
     }
 }

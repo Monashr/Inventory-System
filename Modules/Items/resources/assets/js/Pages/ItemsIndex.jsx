@@ -35,26 +35,11 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import DynamicBreadcrumbs from "@components/custom/DynamicBreadcrumbs";
-
-function handleDelete(id) {
-    router.delete(`/dashboard/items/${id}`, {
-        preserveScroll: true,
-        onSuccess: () => {
-            console.log("Deleted");
-        },
-        onError: (err) => {
-            console.error(err);
-        },
-    });
-}
-
 function ItemsIndex() {
     const { items } = usePage().props;
 
     return (
         <div>
-            <DynamicBreadcrumbs />
             <div className="space-y-6">
                 <div className="border shadow-sm rounded-lg">
                     <Table>
@@ -167,23 +152,22 @@ function ItemsIndex() {
                                 <TableHead className="text-left">
                                     Name
                                 </TableHead>
-                                <TableHead className="text-right">
-                                    Price
-                                </TableHead>
                                 <TableHead className="text-right pr-8">
-                                    Stock
+                                    Total Units
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {items?.data?.length > 0 ? (
                                 items.data.map((item) => (
-                                    
                                     <TableRow
                                         key={item.id}
                                         className="group relative hover:bg-muted/50 cursor-pointer"
-                                        onClick={() => router.visit(`/dashboard/items/edit/${item.id}`)}
-
+                                        onClick={() =>
+                                            router.visit(
+                                                `/dashboard/items/${item.id}`
+                                            )
+                                        }
                                     >
                                         <TableCell>
                                             <img
@@ -196,14 +180,14 @@ function ItemsIndex() {
                                         <TableCell className="font-medium">
                                             <span>{item.name}</span>
                                         </TableCell>
-                                        <TableCell className="text-right font-medium">
-                                            Rp{item.price}
-                                        </TableCell>
                                         <TableCell className="text-right font-medium pr-8">
                                             {item.stock}
                                             <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
                                                 <Link
                                                     href={`/dashboard/items/edit/${item.id}`}
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
                                                 >
                                                     <Button
                                                         size="sm"
@@ -213,9 +197,15 @@ function ItemsIndex() {
                                                         <SquarePen />
                                                     </Button>
                                                 </Link>
-                                                <DeleteAlertDialog
-                                                    itemId={item.id}
-                                                />
+                                                <div
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
+                                                >
+                                                    <DeleteAlertDialog
+                                                        itemId={item.id}
+                                                    />
+                                                </div>
                                             </div>
                                         </TableCell>
                                     </TableRow>
