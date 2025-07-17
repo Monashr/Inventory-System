@@ -28,7 +28,7 @@ function ItemsEdit() {
     return (
         <div className="w-full">
             <Card className="w-full mx-auto">
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pb-12">
                     <CardTitle className="flex items-center justify-between w-full px-8 py-10">
                         <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
                             <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />

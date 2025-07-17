@@ -174,14 +174,8 @@ function ItemsIndex() {
                                 </TableHead>
                             </TableRow>
                             <TableRow className="bg-slate-200 hover:bg-slate-200">
-                                <TableHead className="text-left pl-6">
-                                    Image
-                                </TableHead>
-                                <TableHead className="text-left">
+                                <TableHead className="text-left px-9">
                                     Name
-                                </TableHead>
-                                <TableHead className="text-right pr-8">
-                                    Total Units
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -197,19 +191,8 @@ function ItemsIndex() {
                                             )
                                         }
                                     >
-                                        <TableCell>
-                                            <img
-                                                alt={item.name}
-                                                width={40}
-                                                height={40}
-                                                className="rounded-md object-cover pl-4"
-                                            />
-                                        </TableCell>
-                                        <TableCell className="font-medium">
-                                            <span>{item.name}</span>
-                                        </TableCell>
-                                        <TableCell className="text-right font-medium pr-8">
-                                            {item.stock}
+                                        <TableCell className="text-lft font-medium px-9">
+                                            {item.name}
                                             <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
                                                 {permissions.includes(
                                                     "edit items"

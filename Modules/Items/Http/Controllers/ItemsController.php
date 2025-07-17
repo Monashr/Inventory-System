@@ -132,12 +132,15 @@ class ItemsController extends Controller
 
         $units = Unit::paginate($perPage);
 
+        $totalAvailableUnits = Unit::where('available', true)->count();
+
         $item = Item::find($item);
 
         return Inertia::render('Items/UnitIndex', [
             'units' => $units,
             'item' => $item,
             'permissions' => auth()->user()->getTenantPermission(),
+            'totalAvailableUnits' => $totalAvailableUnits,
         ]);
     }
 

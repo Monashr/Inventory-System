@@ -36,6 +36,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 
+import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
+
 import AddEmployeeForm from "./EmployeesAdd";
 
 function EmployeesIndex() {
@@ -49,7 +51,7 @@ function EmployeesIndex() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead colSpan={4}>
+                                <TableHead colSpan={7}>
                                     <div className="flex items-center justify-between px-4 py-6">
                                         <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
                                             <UserRound className="w-8 h-8 md:w-10 md:h-10 mr-2" />
@@ -64,9 +66,13 @@ function EmployeesIndex() {
                                                                 href={
                                                                     employees.prev_page_url
                                                                 }
-                                                                onClick={(e) => {
+                                                                onClick={(
+                                                                    e
+                                                                ) => {
                                                                     e.preventDefault();
-                                                                    router.visit(employees.prev_page_url);
+                                                                    router.visit(
+                                                                        employees.prev_page_url
+                                                                    );
                                                                 }}
                                                             />
                                                         </PaginationItem>
@@ -77,9 +83,13 @@ function EmployeesIndex() {
                                                                 href={
                                                                     employees.next_page_url
                                                                 }
-                                                                onClick={(e) => {
+                                                                onClick={(
+                                                                    e
+                                                                ) => {
                                                                     e.preventDefault();
-                                                                    router.visit(employees.next_page_url);
+                                                                    router.visit(
+                                                                        employees.next_page_url
+                                                                    );
                                                                 }}
                                                             />
                                                         </PaginationItem>
@@ -87,10 +97,13 @@ function EmployeesIndex() {
                                                 </PaginationContent>
                                             </Pagination>
                                             <Button variant="outline">
-                                                {employees.from}-{employees.to} of {employees.total}
+                                                {employees.from}-{employees.to}{" "}
+                                                of {employees.total}
                                             </Button>
                                             <Select
-                                                defaultValue={String(employees.per_page)}
+                                                defaultValue={String(
+                                                    employees.per_page
+                                                )}
                                                 onValueChange={(value) => {
                                                     router.get(
                                                         "/dashboard/employees",
@@ -103,15 +116,29 @@ function EmployeesIndex() {
                                                     <SelectValue placeholder="Per Page" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="10">10</SelectItem>
-                                                    <SelectItem value="25">25</SelectItem>
-                                                    <SelectItem value="50">50</SelectItem>
+                                                    <SelectItem value="10">
+                                                        10
+                                                    </SelectItem>
+                                                    <SelectItem value="25">
+                                                        25
+                                                    </SelectItem>
+                                                    <SelectItem value="50">
+                                                        50
+                                                    </SelectItem>
                                                 </SelectContent>
                                             </Select>
 
-                                            {permissions.includes("edit employees") && (
-                                                <Dialog open={open} onOpenChange={setOpen}>
-                                                    <DialogTrigger className="cursor-pointer" asChild>
+                                            {permissions.includes(
+                                                "edit employees"
+                                            ) && (
+                                                <Dialog
+                                                    open={open}
+                                                    onOpenChange={setOpen}
+                                                >
+                                                    <DialogTrigger
+                                                        className="cursor-pointer"
+                                                        asChild
+                                                    >
                                                         <Button>
                                                             <Plus className="mr-2 h-4 w-4" />
                                                             Add Employee
@@ -119,9 +146,15 @@ function EmployeesIndex() {
                                                     </DialogTrigger>
                                                     <DialogContent className="sm:max-w-md">
                                                         <DialogHeader>
-                                                            <DialogTitle>Add New Employee</DialogTitle>
+                                                            <DialogTitle>
+                                                                Add New Employee
+                                                            </DialogTitle>
                                                         </DialogHeader>
-                                                        <AddEmployeeForm onClose={() => setOpen(false)} />
+                                                        <AddEmployeeForm
+                                                            onClose={() =>
+                                                                setOpen(false)
+                                                            }
+                                                        />
                                                     </DialogContent>
                                                 </Dialog>
                                             )}
@@ -130,10 +163,24 @@ function EmployeesIndex() {
                                 </TableHead>
                             </TableRow>
                             <TableRow className="bg-slate-200">
-                                <TableHead className="text-left pl-6">Name</TableHead>
-                                <TableHead className="text-left">Name</TableHead>
-                                <TableHead className="text-right">Email</TableHead>
-                                <TableHead className="text-right pr-6">Joined At</TableHead>
+                                <TableHead className="text-left pl-6">
+                                    Name
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    Email
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    Bio
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    Phone
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    Address
+                                </TableHead>
+                                <TableHead className="text-right pr-6">
+                                    Joined At
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -143,34 +190,57 @@ function EmployeesIndex() {
                                         key={employee.id}
                                         className="group relative hover:bg-muted/50 cursor-pointer"
                                         onClick={() =>
-                                            router.visit(`/dashboard/employees/permission/${employee.id}`)
+                                            router.visit(
+                                                `/dashboard/employees/permission/${employee.id}`
+                                            )
                                         }
                                     >
-                                        <TableCell>
-                                            <img
-                                                alt={employee.name}
-                                                width={40}
-                                                height={40}
-                                                className="rounded-md object-cover pl-4"
-                                            />
-                                        </TableCell>
-                                        <TableCell className="font-medium">
+                                        <TableCell className="pl-6 font-medium flex items-center gap-2">
+                                            <Avatar>
+                                                <AvatarImage
+                                                    src={`/storage/${employee.picture}`}
+                                                />
+                                                <AvatarFallback>
+                                                    {employee.name}
+                                                </AvatarFallback>
+                                            </Avatar>
                                             <span>
                                                 {employee.name}
-                                                {authUser?.id === employee.id && " (you)"}
+                                                {authUser?.id === employee.id &&
+                                                    " (you)"}
                                             </span>
                                         </TableCell>
                                         <TableCell className="text-right font-medium">
-                                            {employee.email}
+                                            {employee.email ?? "-"}
+                                        </TableCell>
+                                        <TableCell className="text-right font-medium">
+                                            {employee.bio ?? "-"}
+                                        </TableCell>
+                                        <TableCell className="text-right font-medium">
+                                            {employee.phone ?? "-"}
+                                        </TableCell>
+                                        <TableCell className="text-right font-medium">
+                                            {employee.address ?? "-"}
                                         </TableCell>
                                         <TableCell className="text-right font-medium pr-6">
-                                            {employee.created_at}
+                                            {new Date(
+                                                employee.created_at
+                                            ).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
                                         </TableCell>
                                     </TableRow>
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center py-6">
+                                    <TableCell
+                                        colSpan={4}
+                                        className="text-center py-6"
+                                    >
                                         No items found.
                                     </TableCell>
                                 </TableRow>

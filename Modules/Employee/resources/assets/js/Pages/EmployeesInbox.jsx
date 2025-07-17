@@ -19,10 +19,19 @@ import {
     PaginationNext,
 } from "@components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@components/ui/select";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@components/ui/select";
+import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
 
 function EmployeesInbox() {
     const { inboxes } = usePage().props;
+
+    console.log(inboxes);
 
     return (
         <div className="w-full">
@@ -35,7 +44,7 @@ function EmployeesInbox() {
                                     <div className="flex items-center justify-between px-4 py-6">
                                         <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
                                             <Mail className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                                            inboxes
+                                            Inboxes
                                         </h1>
                                         <div className="flex gap-2">
                                             <Pagination className="justify-end items-center">
@@ -78,8 +87,8 @@ function EmployeesInbox() {
                                                 </PaginationContent>
                                             </Pagination>
                                             <Button variant="outline">
-                                                {inboxes.from}-{inboxes.to}{" "}
-                                                of {inboxes.total}
+                                                {inboxes.from}-{inboxes.to} of{" "}
+                                                {inboxes.total}
                                             </Button>
                                             <Select
                                                 defaultValue={String(
@@ -123,7 +132,6 @@ function EmployeesInbox() {
                                                     data-modal-trigger="inbox"
                                                     className="cursor-pointer"
                                                 >
-                                                    
                                                     Back
                                                 </Button>
                                             </Link>
@@ -137,21 +145,39 @@ function EmployeesInbox() {
                                 <TableHead className="text-right">
                                     Sent At
                                 </TableHead>
-                                <TableHead className="pr-8 text-right">Action</TableHead>
+                                <TableHead className="pr-8 text-right">
+                                    Action
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {inboxes.data.length > 0 ? (
                                 inboxes.data.map((inbox) => (
                                     <TableRow key={inbox.id}>
-                                        <TableCell className="pl-6">
+                                        <TableCell className="pl-6 flex items-center gap-2">
+                                            <Avatar>
+                                                <AvatarImage
+                                                    src={`/storage/${inbox.sender.picture}`}
+                                                />
+                                                <AvatarFallback>
+                                                    {inbox.sender.name}
+                                                </AvatarFallback>
+                                            </Avatar>
                                             {inbox.sender.name}
                                         </TableCell>
                                         <TableCell>
                                             {inbox.tenant.name}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            {inbox.created_at}
+                                            {new Date(
+                                                inbox.created_at
+                                            ).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
                                         </TableCell>
                                         <TableCell className="text-right space-x-2 pr-8">
                                             <Button
@@ -161,7 +187,7 @@ function EmployeesInbox() {
                                                         `/dashboard/employees/inbox/accept/${inbox.id}`
                                                     )
                                                 }
-                                                className="bg-green-600 text-white hover:bg-green-700"
+                                                className="bg-green-600 text-white hover:bg-green-700 cursor-pointer"
                                             >
                                                 Accept
                                             </Button>
@@ -173,7 +199,7 @@ function EmployeesInbox() {
                                                         `/dashboard/employees/inbox/decline/${inbox.id}`
                                                     )
                                                 }
-                                                className="hover:bg-red-100 hover:text-red-500"
+                                                className="hover:bg-red-100 hover:text-red-500 cursor-pointer"
                                             >
                                                 Decline
                                             </Button>

@@ -44,7 +44,7 @@ import { Label } from "@components/ui/label";
 import { Card } from "@components/ui/card";
 
 function UnitsIndex() {
-    const { item, units, permissions } = usePage().props;
+    const { item, units, permissions, totalAvailableUnits } = usePage().props;
 
     console.log(units);
 
@@ -61,8 +61,12 @@ function UnitsIndex() {
                             </h1>
                             <div className="flex gap-4">
                                 <Button variant="outline">
-                                    <Label htmlFor="stock">Stock</Label>
+                                    <Label htmlFor="stock">Total Stock</Label>
                                     {units.total}
+                                </Button>
+                                <Button variant="outline">
+                                    <Label htmlFor="stock">Available Unit</Label>
+                                    {totalAvailableUnits}
                                 </Button>
                                 {permissions.includes("edit items") ? (
                                     <Link
@@ -202,9 +206,6 @@ function UnitsIndex() {
                             </TableRow>
                             <TableRow className="bg-slate-200 hover:bg-slate-200">
                                 <TableHead className="text-left pl-8">
-                                    Image
-                                </TableHead>
-                                <TableHead className="text-left">
                                     Unit Id
                                 </TableHead>
                                 <TableHead className="text-left">
@@ -227,15 +228,13 @@ function UnitsIndex() {
                                             )
                                         }
                                     >
-                                        <TableCell className="pl-9">
+                                        <TableCell className="pl-9 flex items-center gap-4">
                                             <Avatar>
                                                 <AvatarImage src={unit.name} />
                                                 <AvatarFallback>
                                                     {unit.name}
                                                 </AvatarFallback>
                                             </Avatar>
-                                        </TableCell>
-                                        <TableCell className="font-medium">
                                             <span>{unit.unit_code}</span>
                                         </TableCell>
                                         <TableCell className="font-medium">
@@ -253,7 +252,15 @@ function UnitsIndex() {
                                         </TableCell>
 
                                         <TableCell className="text-right font-medium pr-8">
-                                            {unit.created_at}
+                                            {new Date(
+                                                unit.created_at
+                                            ).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
                                             <div className="absolute bg-white right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
                                                 {permissions.includes(
                                                     "edit items"
