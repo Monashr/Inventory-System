@@ -1,4 +1,3 @@
-// Inside EmployeesIndex.jsx
 import React from "react";
 import { usePage, router } from "@inertiajs/react";
 import { UserRound, Plus } from "lucide-react";

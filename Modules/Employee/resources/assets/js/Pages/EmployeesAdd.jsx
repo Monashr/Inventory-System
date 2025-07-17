@@ -1,4 +1,3 @@
-// components/employees/AddEmployeeForm.jsx
 import React from "react";
 import { useForm } from "@inertiajs/react";
 import { Input } from "@/components/ui/input";

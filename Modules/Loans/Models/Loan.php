@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\Items\Models\Unit;
 // use Modules\Items\Database\Factories\LoanFactory;
 
-class loan extends Model
+class Loan extends Model
 {
     use HasFactory;
 

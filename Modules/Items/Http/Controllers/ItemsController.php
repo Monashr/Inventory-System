@@ -14,40 +14,58 @@ class ItemsController extends Controller
 {
     public function index(Request $request)
     {
+
+        $permission = config('items.permissions')['permissions']['view'];
+
+        if (!checkAuthority($permission)) {
+            return redirect()->route('dashboard.index');
+        }
+
         $perPage = $request->input('per_page', 10);
 
         $items = Item::paginate($perPage);
 
         return Inertia::render('Items/ItemsIndex', [
-            'items' => $items
+            'items' => $items,
+            'permissions' => auth()->user()->getTenantPermission(),
         ]);
     }
 
     public function showAddForm()
     {
+        $permission = config('items.permissions')['permissions']['edit'];
+
+        if (!checkAuthority($permission)) {
+            return redirect()->route('dashboard.index');
+        }
+
         return Inertia::render("Items/ItemsAdd");
     }
 
     public function store(Request $request)
     {
+        $permission = config('items.permissions')['permissions']['edit'];
+
+        if (!checkAuthority($permission)) {
+            return redirect()->route('dashboard.index');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'unit' => 'integer|min:0',
         ]);
 
-        // Create item
         $item = Item::create([
             'name' => $validated['name'],
         ]);
 
-        // Generate units
         $now = Carbon::now()->timestamp;
         $slug = Str::slug($item->name);
 
         for ($i = 1; $i <= $validated['unit']; $i++) {
             Unit::create([
                 'item_id' => $item->id,
-                'unit_code' => "{$slug}-{$now}-{$i}",  // Example: chair-1720998491-1
+                'unit_code' => "{$slug}-{$now}-{$i}",
                 'available' => true,
             ]);
         }
@@ -57,6 +75,12 @@ class ItemsController extends Controller
 
     public function showEditForm(Item $item)
     {
+        $permission = config('items.permissions')['permissions']['edit'];
+
+        if (!checkAuthority($permission)) {
+            return redirect()->route('dashboard.index');
+        }
+
         if ($item->tenant_id !== tenant()->id) {
             abort(403, 'Unauthorized access.');
         }
@@ -68,10 +92,14 @@ class ItemsController extends Controller
 
     public function update(Request $request, Item $item)
     {
+        $permission = config('items.permissions')['permissions']['edit'];
+
+        if (!checkAuthority($permission)) {
+            return redirect()->route('dashboard.index');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'stock' => 'required|integer|min:0',
-            'price' => 'required|numeric|min:0',
         ]);
 
         $item->update($validated);
@@ -94,6 +122,12 @@ class ItemsController extends Controller
 
     public function unit(Request $request, $item)
     {
+        $permission = config('items.permissions')['permissions']['view'];
+
+        if (!checkAuthority($permission)) {
+            return redirect()->route('dashboard.index');
+        }
+
         $perPage = $request->input('per_page', 10);
 
         $units = Unit::paginate($perPage);
@@ -103,7 +137,13 @@ class ItemsController extends Controller
         return Inertia::render('Items/UnitIndex', [
             'units' => $units,
             'item' => $item,
+            'permissions' => auth()->user()->getTenantPermission(),
         ]);
+    }
+
+    public function getUnit($item) {
+        $units = Unit::where('item_id', $item)->where('available', true)->get(['id', 'unit_code']);
+        return response()->json($units);
     }
 
 }

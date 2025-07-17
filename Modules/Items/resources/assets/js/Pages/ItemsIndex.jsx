@@ -1,14 +1,13 @@
 import React from "react";
-
-import Dashboard from "@components/layout/Dashboard";
-
 import { usePage, router, Link } from "@inertiajs/react";
 
 import { Package, Plus, SquarePen } from "lucide-react";
 
 import { Button } from "@components/ui/button";
-
 import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
+import { Card, CardContent } from "@components/ui/card";
+import Dashboard from "@components/layout/Dashboard";
+import ItemsAddForm from "./ItemsAdd";
 
 import {
     Table,
@@ -35,20 +34,29 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+
 function ItemsIndex() {
-    const { items } = usePage().props;
+    const { items, permissions } = usePage().props;
+    const [open, setOpen] = React.useState(false);
 
     return (
         <div>
-            <div className="space-y-6">
-                <div className="border shadow-sm rounded-lg">
+            <Card className="w-full mx-auto">
+                <CardContent className="space-y-4">
                     <Table>
                         <TableHeader>
                             <TableRow>
                                 <TableHead colSpan={4}>
                                     <div className="flex items-center justify-between px-4 py-6">
                                         <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                                            <Package className="mr-2" />
+                                            <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
                                             Items
                                         </h1>
                                         <div className="flex gap-2">
@@ -131,22 +139,42 @@ function ItemsIndex() {
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
-
-                                            <Link href="/dashboard/items/add">
-                                                <Button
-                                                    data-modal-trigger="add-product"
-                                                    className=" cursor-pointer"
+                                            {permissions.includes(
+                                                "edit items"
+                                            ) ? (
+                                                <Dialog
+                                                    open={open}
+                                                    onOpenChange={setOpen}
                                                 >
-                                                    <Plus />
-                                                    Add Item
-                                                </Button>
-                                            </Link>
+                                                    <DialogTrigger
+                                                        className="cursor-pointer"
+                                                        asChild
+                                                    >
+                                                        <Button>
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            Add Items
+                                                        </Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="sm:max-w-md">
+                                                        <DialogHeader>
+                                                            <DialogTitle>
+                                                                Add New Items
+                                                            </DialogTitle>
+                                                        </DialogHeader>
+                                                        <ItemsAddForm
+                                                            onClose={() =>
+                                                                setOpen(false)
+                                                            }
+                                                        />
+                                                    </DialogContent>
+                                                </Dialog>
+                                            ) : null}
                                         </div>
                                     </div>
                                 </TableHead>
                             </TableRow>
                             <TableRow className="bg-slate-200 hover:bg-slate-200">
-                                <TableHead className="text-left pl-8">
+                                <TableHead className="text-left pl-6">
                                     Image
                                 </TableHead>
                                 <TableHead className="text-left">
@@ -165,7 +193,7 @@ function ItemsIndex() {
                                         className="group relative hover:bg-muted/50 cursor-pointer"
                                         onClick={() =>
                                             router.visit(
-                                                `/dashboard/items/${item.id}`
+                                                `/dashboard/items/${item.id}/unit`
                                             )
                                         }
                                     >
@@ -174,7 +202,7 @@ function ItemsIndex() {
                                                 alt={item.name}
                                                 width={40}
                                                 height={40}
-                                                className="rounded-md object-cover pl-6"
+                                                className="rounded-md object-cover pl-4"
                                             />
                                         </TableCell>
                                         <TableCell className="font-medium">
@@ -183,29 +211,37 @@ function ItemsIndex() {
                                         <TableCell className="text-right font-medium pr-8">
                                             {item.stock}
                                             <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
-                                                <Link
-                                                    href={`/dashboard/items/edit/${item.id}`}
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                >
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="cursor-pointer"
+                                                {permissions.includes(
+                                                    "edit items"
+                                                ) ? (
+                                                    <Link
+                                                        href={`/dashboard/items/edit/${item.id}`}
+                                                        onClick={(e) =>
+                                                            e.stopPropagation()
+                                                        }
                                                     >
-                                                        <SquarePen />
-                                                    </Button>
-                                                </Link>
-                                                <div
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                >
-                                                    <DeleteAlertDialog
-                                                        itemId={item.id}
-                                                    />
-                                                </div>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="cursor-pointer"
+                                                        >
+                                                            <SquarePen />
+                                                        </Button>
+                                                    </Link>
+                                                ) : null}
+                                                {permissions.includes(
+                                                    "delete items"
+                                                ) ? (
+                                                    <div
+                                                        onClick={(e) =>
+                                                            e.stopPropagation()
+                                                        }
+                                                    >
+                                                        <DeleteAlertDialog
+                                                            itemId={item.id}
+                                                        />
+                                                    </div>
+                                                ) : null}
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -222,8 +258,8 @@ function ItemsIndex() {
                             )}
                         </TableBody>
                     </Table>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }

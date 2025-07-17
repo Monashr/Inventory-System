@@ -92,12 +92,10 @@ class EmployeeController extends Controller
         $user = auth()->user();
         $tenantId = $inbox->tenant_id;
 
-        // Attach user to tenant if not already
         if (!$user->tenants()->where('tenant_id', $tenantId)->exists()) {
             $user->tenants()->attach($tenantId);
         }
 
-        // Delete inbox entry after accepting
         $inbox->delete();
 
         return redirect()->back()->with('success', 'You have joined the tenant successfully.');
@@ -111,7 +109,6 @@ class EmployeeController extends Controller
             abort(403);
         }
 
-        // Simply delete the invitation
         $inbox->delete();
 
         return redirect()->back()->with('info', 'Invitation declined.');
@@ -125,13 +122,15 @@ class EmployeeController extends Controller
             return redirect()->route('employees.index');
         }
 
+        if (auth()->user()->id == $id) {
+            return redirect()->route('employees.index');
+        }
+
         $tenantId = session('active_tenant_id');
         $user = User::with('roles')->findOrFail($id);
 
-        // Get all role IDs for the user
         $roleIds = $user->roles->pluck('id');
 
-        // Paginate permissions for the user's roles in this tenant
         $rolePermissions = DB::table('role_has_permissions')
             ->join('permissions', 'role_has_permissions.permission_id', '=', 'permissions.id')
             ->whereIn('role_has_permissions.role_id', $roleIds)
@@ -139,7 +138,7 @@ class EmployeeController extends Controller
             ->select('permissions.name')
             ->distinct()
             ->orderBy('permissions.name')
-            ->paginate(10); // 👈 Adjust page size as needed
+            ->paginate(10);
 
         return Inertia::render("Employee/EmployeesPermission", [
             'user' => [
@@ -148,7 +147,7 @@ class EmployeeController extends Controller
                 'email' => $user->email,
             ],
             'permissions' => auth()->user()->getTenantPermission(),
-            'rolePermissions' => $rolePermissions, // now paginated
+            'rolePermissions' => $rolePermissions,
         ]);
     }
 
@@ -160,6 +159,9 @@ class EmployeeController extends Controller
             return redirect()->route('employees.index');
         }
 
+        if (auth()->user()->id == $id) {
+            return redirect()->route('employees.index');
+        }
 
         $tenantId = session('active_tenant_id');
 
@@ -198,6 +200,9 @@ class EmployeeController extends Controller
             return redirect()->route('employees.index');
         }
 
+        if (auth()->user()->id == $id) {
+            return redirect()->route('employees.index');
+        }
 
         $request->validate([
             'assignedPermissions' => 'array',
@@ -207,13 +212,11 @@ class EmployeeController extends Controller
         $tenantId = session('active_tenant_id');
         $roleId = $id;
 
-        // Remove existing permissions for this role and tenant
         DB::table('role_has_permissions')
             ->where('role_id', $roleId)
             ->where('tenant_id', $tenantId)
             ->delete();
 
-        // Insert new permissions
         $newPermissions = collect($request->assignedPermissions)->map(function ($permissionId) use ($roleId, $tenantId) {
             return [
                 'permission_id' => $permissionId,

@@ -24,9 +24,10 @@ class MenuServiceProvider extends ServiceProvider
         Inertia::share([
             // Authenticated user's tenant info
             'tenants' => fn() => auth()->check()
-                ? auth()->user()->tenants()->select('tenants.id', 'tenants.name')->get()
+                ? auth()->user()->tenants()->select('tenants.id', 'tenants.name', 'tenants.pictures')->get()
                 : [],
             'currentTenantId' => fn() => session('active_tenant_id'),
+            'user' => fn() => auth()->user(),
 
             // Dynamic module menus
             'moduleMenus' => function () {

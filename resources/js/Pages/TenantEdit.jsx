@@ -8,19 +8,22 @@ import Dashboard from "@components/layout/Dashboard";
 import Draggable from "react-draggable";
 
 function ProfileEdit() {
-    const { user, errors } = usePage().props;
+    const { tenant, errors } = usePage().props;
 
     const [previewUrl, setPreviewUrl] = useState(
-        user.picture ? `/storage/${user.picture}` : null
+        tenant.picture ? `/storage/${tenant.picture}` : null
     );
     const [position, setPosition] = useState({ x: 0, y: 0 });
 
     const { data, setData, processing } = useForm({
-        name: user.name || "",
-        email: user.email || "",
-        bio: user.bio || "",
-        address: user.address || "",
-        phone: user.phone || "",
+        name: tenant.name || "",
+        email: tenant.email || "",
+        phone: tenant.phone || "",
+        description: tenant.description || "",
+        address: tenant.address || "",
+        industry: tenant.industry || "",
+        website: tenant.website || "",
+        bio: tenant.bio || "",
         picture: null,
     });
 
@@ -43,15 +46,18 @@ function ProfileEdit() {
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("email", data.email);
-        formData.append("bio", data.bio);
-        formData.append("address", data.address);
         formData.append("phone", data.phone);
+        formData.append("website", data.website);
+        formData.append("description", data.description);
+        formData.append("address", data.address);
+        formData.append("industry", data.industry);
+        formData.append("bio", data.bio);
         if (data.picture) {
             formData.append("picture", data.picture);
         }
-        formData.append("_method", "PATCH");
+        
 
-        router.post("/dashboard/profile", formData, {
+        router.post("/dashboard/tenant", formData, {
             preserveScroll: true,
         });
     };
@@ -61,7 +67,7 @@ function ProfileEdit() {
             <div className="max-w-2xl w-full">
                 <Card>
                     <CardContent className="space-y-6 px-8 py-6">
-                        <h2 className="text-xl font-bold">Edit Profile</h2>
+                        <h2 className="text-xl font-bold">Edit Organization</h2>
 
                         {previewUrl && (
                             <div className="relative w-[500px] h-[500px] overflow-hidden border rounded mx-auto">
@@ -97,9 +103,7 @@ function ProfileEdit() {
                                     onChange={handleImageChange}
                                 />
                                 {errors.picture && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {errors.picture}
-                                    </p>
+                                    <p className="text-sm text-red-500 mt-1">{errors.picture}</p>
                                 )}
                             </div>
 
@@ -109,14 +113,10 @@ function ProfileEdit() {
                                     id="name"
                                     type="text"
                                     value={data.name}
-                                    onChange={(e) =>
-                                        setData("name", e.target.value)
-                                    }
+                                    onChange={(e) => setData("name", e.target.value)}
                                 />
                                 {errors.name && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {errors.name}
-                                    </p>
+                                    <p className="text-sm text-red-500 mt-1">{errors.name}</p>
                                 )}
                             </div>
 
@@ -126,14 +126,10 @@ function ProfileEdit() {
                                     id="email"
                                     type="email"
                                     value={data.email}
-                                    onChange={(e) =>
-                                        setData("email", e.target.value)
-                                    }
+                                    onChange={(e) => setData("email", e.target.value)}
                                 />
                                 {errors.email && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {errors.email}
-                                    </p>
+                                    <p className="text-sm text-red-500 mt-1">{errors.email}</p>
                                 )}
                             </div>
 
@@ -143,14 +139,10 @@ function ProfileEdit() {
                                     id="phone"
                                     type="text"
                                     value={data.phone}
-                                    onChange={(e) =>
-                                        setData("phone", e.target.value)
-                                    }
+                                    onChange={(e) => setData("phone", e.target.value)}
                                 />
                                 {errors.phone && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {errors.phone}
-                                    </p>
+                                    <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
                                 )}
                             </div>
 
@@ -160,50 +152,60 @@ function ProfileEdit() {
                                     id="address"
                                     type="text"
                                     value={data.address}
-                                    onChange={(e) =>
-                                        setData("address", e.target.value)
-                                    }
+                                    onChange={(e) => setData("address", e.target.value)}
                                 />
                                 {errors.address && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {errors.address}
-                                    </p>
+                                    <p className="text-sm text-red-500 mt-1">{errors.address}</p>
                                 )}
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="bio">Bio</Label>
-                                <textarea
-                                    id="bio"
-                                    rows={4}
-                                    className="border p-2 rounded w-full"
-                                    value={data.bio}
-                                    onChange={(e) =>
-                                        setData("bio", e.target.value)
-                                    }
+                                <Label htmlFor="industry">Industry</Label>
+                                <Input
+                                    id="industry"
+                                    type="text"
+                                    value={data.industry}
+                                    onChange={(e) => setData("industry", e.target.value)}
                                 />
-                                {errors.bio && (
-                                    <p className="text-sm text-red-500 mt-1">
-                                        {errors.bio}
-                                    </p>
+                                {errors.industry && (
+                                    <p className="text-sm text-red-500 mt-1">{errors.industry}</p>
+                                )}
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="website">Website</Label>
+                                <Input
+                                    id="website"
+                                    type="url"
+                                    value={data.website}
+                                    onChange={(e) => setData("website", e.target.value)}
+                                />
+                                {errors.website && (
+                                    <p className="text-sm text-red-500 mt-1">{errors.website}</p>
+                                )}
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="description">Description</Label>
+                                <textarea
+                                    id="description"
+                                    rows={3}
+                                    className="border p-2 rounded w-full"
+                                    value={data.description}
+                                    onChange={(e) => setData("description", e.target.value)}
+                                />
+                                {errors.description && (
+                                    <p className="text-sm text-red-500 mt-1">{errors.description}</p>
                                 )}
                             </div>
 
                             <div className="flex justify-end gap-2">
-                                <Link href="/dashboard/profile">
-                                    <Button
-                                        className="cursor-pointer"
-                                        type="button"
-                                        variant="outline"
-                                    >
+                                <Link href="/dashboard/tenant">
+                                    <Button className="cursor-pointer" type="button" variant="outline">
                                         Cancel
                                     </Button>
                                 </Link>
-                                <Button
-                                    className="cursor-pointer"
-                                    type="submit"
-                                    disabled={processing}
-                                >
+                                <Button className="cursor-pointer" type="submit" disabled={processing}>
                                     Save Changes
                                 </Button>
                             </div>

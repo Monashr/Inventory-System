@@ -11,6 +11,13 @@ class Tenant extends Base
         'name',
         'domain',
         'database',
+        'email',
+        'phone',
+        'address',
+        'industry',
+        'website',
+        'description',
+        'pictures',
     ];
 
     public function users()

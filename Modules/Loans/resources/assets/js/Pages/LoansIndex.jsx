@@ -1,8 +1,8 @@
 import React from "react";
-import { Head, usePage, router } from "@inertiajs/react";
+import { Head, usePage, router, Link } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
-import { PackageOpen } from "lucide-react";
+import { PackageOpen, Plus } from "lucide-react";
 
 import { Button } from "@components/ui/button";
 
@@ -91,8 +91,8 @@ function LoansIndex() {
                                                 </PaginationContent>
                                             </Pagination>
                                             <Button variant="outline">
-                                                {loans.from}-{loans.to}{" "}
-                                                of {loans.total}
+                                                {loans.from}-{loans.to} of{" "}
+                                                {loans.total}
                                             </Button>
                                             <Select
                                                 defaultValue={String(
@@ -122,36 +122,16 @@ function LoansIndex() {
                                                 </SelectContent>
                                             </Select>
 
-                                            {/* {permissions.includes(
+                                            {permissions.includes(
                                                 "edit loans"
                                             ) && (
-                                                <Dialog
-                                                    open={open}
-                                                    onOpenChange={setOpen}
-                                                >
-                                                    <DialogTrigger
-                                                        className="cursor-pointer"
-                                                        asChild
-                                                    >
-                                                        <Button>
-                                                            <Plus className="mr-2 h-4 w-4" />
-                                                            Add Employee
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="sm:max-w-md">
-                                                        <DialogHeader>
-                                                            <DialogTitle>
-                                                                Add New Employee
-                                                            </DialogTitle>
-                                                        </DialogHeader>
-                                                        <AddEmployeeForm
-                                                            onClose={() =>
-                                                                setOpen(false)
-                                                            }
-                                                        />
-                                                    </DialogContent>
-                                                </Dialog>
-                                            )} */}
+                                                <Link href="/dashboard/loans/add">
+                                                    <Button className="cursor-pointer">
+                                                        <Plus className="mr-2 h-4 w-4" />
+                                                        Add Loans
+                                                    </Button>
+                                                </Link>
+                                            )}
                                         </div>
                                     </div>
                                 </TableHead>
@@ -161,41 +141,31 @@ function LoansIndex() {
                                     Name
                                 </TableHead>
                                 <TableHead className="text-left">
-                                    Name
-                                </TableHead>
-                                <TableHead className="text-right">
-                                    Email
+                                    description
                                 </TableHead>
                                 <TableHead className="text-right pr-6">
-                                    Joined At
+                                    Created At
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {loans?.data?.length > 0 ? (
-                                loans.data.map((loans) => (
+                                loans.data.map((loan) => (
                                     <TableRow
-                                        key={loans.id}
+                                        key={loan.id}
                                         className="group relative hover:bg-muted/50 cursor-pointer"
                                         onClick={() =>
                                             router.visit(
-                                                `/dashboard/loans/permission/${item.id}`
+                                                `/dashboard/loans/${loan.id}`
                                             )
                                         }
                                     >
-                                        <TableCell>
-                                            <img
-                                                alt={loans.name}
-                                                width={40}
-                                                height={40}
-                                                className="rounded-md object-cover pl-4"
-                                            />
-                                        </TableCell>
-                                        <TableCell className="text-right font-medium">
-                                            {loans.email}
+                                        <TableCell className="pl-6">{loan.name}</TableCell>
+                                        <TableCell className="text-left font-medium">
+                                            {loan.description}
                                         </TableCell>
                                         <TableCell className="text-right font-medium pr-6">
-                                            {loans.created_at}
+                                            {loan.created_at}
                                         </TableCell>
                                     </TableRow>
                                 ))

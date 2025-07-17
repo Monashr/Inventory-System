@@ -7,23 +7,20 @@ import {
     SelectValue,
 } from "@components/ui/select";
 
+import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
+
 import { router } from "@inertiajs/react";
 
-export default function TenantSwitcher({
-    tenants,
-    currentTenantId,
-}) {
+export default function TenantSwitcher({ tenants, currentTenantId }) {
     function handleChange(tenantId) {
         router.post(`/switch/${tenantId}`, {
             preserveScroll: true,
-            onSuccess: () => {
-                
-            },
-            onError: (err) => {
-                
-            },
+            onSuccess: () => {},
+            onError: (err) => {},
         });
     }
+
+    console.log(tenants);
 
     return (
         <Select
@@ -35,7 +32,15 @@ export default function TenantSwitcher({
             </SelectTrigger>
             <SelectContent>
                 {tenants.map((tenant) => (
-                    <SelectItem className="cursor-pointer" key={tenant.id} value={String(tenant.id)}>
+                    <SelectItem
+                        className="cursor-pointer"
+                        key={tenant.id}
+                        value={String(tenant.id)}
+                    >
+                        <Avatar className="rounded-lg h-6 w-6">
+                            <AvatarImage src={`/storage/${tenant.pictures}`} />
+                            <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
                         {tenant.name}
                     </SelectItem>
                 ))}

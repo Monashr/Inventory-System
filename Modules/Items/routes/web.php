@@ -3,18 +3,20 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Items\Http\Controllers\ItemsController;
 
-Route::middleware(['auth', 'tenant'])->group(function () {
-    Route::get('/dashboard/items', [ItemsController::class, 'index'])->name('items.index');
+Route::middleware(['auth', 'tenant'])->prefix('dashboard/items')->name('items.')->group(function () {
 
-    Route::get('/dashboard/items/add', [ItemsController::class, 'showAddForm'])->name('items.add');
-    Route::post('/dashboard/items/add', [ItemsController::class, 'store'])->name('items.store');
+    Route::get('/', [ItemsController::class, 'index'])->name('index');
 
-    Route::get('/dashboard/items/edit/{item}', [ItemsController::class, 'showEditForm'])->name('items.edit');
-    Route::put('/dashboard/items/edit/{item}', [ItemsController::class, 'update'])->name('items.update');
+    Route::get('/add', [ItemsController::class, 'showAddForm'])->name('add');
+    Route::post('/add', [ItemsController::class, 'store'])->name('store');
 
-    Route::delete('/dashboard/items/{id}', [ItemsController::class, 'destroy'])->name('items.destroy');
+    Route::get('/edit/{item}', [ItemsController::class, 'showEditForm'])->name('edit');
+    Route::put('/edit/{item}', [ItemsController::class, 'update'])->name('update');
 
-    Route::get('/dashboard/items/{item}', [ItemsController::class, 'unit'])->name('unit.index');
+    Route::delete('/{id}', [ItemsController::class, 'destroy'])->name('destroy');
 
-    Route::get('/dashboard/items/unit/{unit}', [ItemsController::class, 'unitDetails'])->name('unit.details');
+    Route::get('/{item}/unit', [ItemsController::class, 'unit'])->name('unit.index');
+    Route::get('/api/{item}/unit', [ItemsController::class, 'getUnit'])->name('unit.api');
+    Route::get('/{unit}/unit/details', [ItemsController::class, 'unitDetails'])->name('unit.details');
+
 });

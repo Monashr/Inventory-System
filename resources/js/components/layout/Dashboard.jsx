@@ -2,6 +2,8 @@ import React from "react";
 
 import { usePage, Link, router } from "@inertiajs/react";
 
+import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
+
 import {
     PackageIcon,
     HomeIcon,
@@ -43,15 +45,6 @@ import {
 
 import { Separator } from "@components/ui/separator";
 
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-
 import TenantSwitcher from "@components/custom/TenantSwitcher";
 
 const iconMap = {
@@ -64,11 +57,13 @@ const iconMap = {
 import DynamicBreadcrumbs from "@components/custom/DynamicBreadcrumbs";
 
 export default function Dashboard({ children }) {
-    const { moduleMenus, tenants, currentTenantId } = usePage().props;
+    const { moduleMenus, tenants, currentTenantId, user } = usePage().props;
 
     const { url, component } = usePage();
     const currentPath = url;
     const isHomeActive = currentPath === "/dashboard";
+
+    console.log(tenants);
 
     return (
         <SidebarProvider>
@@ -154,14 +149,17 @@ export default function Dashboard({ children }) {
                 </SidebarContent>
                 <SidebarFooter>
                     <Popover className="w-full">
-                        <PopoverTrigger className="w-full bg-secondary" asChild>
-                            <div>
-                                <Button
-                                    variant="outline"
-                                    className="cursor-pointer w-full"
-                                >
-                                    U
-                                </Button>
+                        <PopoverTrigger
+                            className="w-full bg-secondary h-12"
+                            asChild
+                        >
+                            <div className="flex justify-start items-center gap-2 p-2 border bg-white rounded-2xl shadow-sm hover:bg-accent cursor-pointer">
+                                <Avatar className="rounded-lg">
+                                    <AvatarImage src={`/storage/${user.picture}`} />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                </Avatar>
+                                <h1 className="font-medium">{user.name}</h1>
+
                             </div>
                         </PopoverTrigger>
                         <PopoverContent align="end" className="p-2">

@@ -1,14 +1,13 @@
 import React from "react";
 import { Link, useForm, usePage } from "@inertiajs/react";
-import { ChevronRight, Package } from "lucide-react";
-import Dashboard from "@components/layout/Dashboard";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronRight, Package } from "lucide-react";
+
+import Dashboard from "@components/layout/Dashboard";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-
-import DynamicBreadcrumbs from "@components/custom/DynamicBreadcrumbs";
 
 function ItemsEdit() {
     const { item } = usePage().props;
@@ -29,22 +28,20 @@ function ItemsEdit() {
     return (
         <div className="w-full">
             <Card className="w-full mx-auto">
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between w-full">
+                <CardContent className="space-y-4">
+                    <CardTitle className="flex items-center justify-between w-full px-8 py-10">
                         <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                            <Package className="mr-2" />
+                            <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
                             Edit Items
                         </h1>
-                        <Link href="/dashboard/items">
+                        <Link href={`/dashboard/items/${item.id}/unit`}>
                             <Button className="cursor-pointer">
                                 Back
                                 <ChevronRight />
                             </Button>
                         </Link>
                     </CardTitle>
-                </CardHeader>
-                <form onSubmit={handleSubmit}>
-                    <CardContent className="space-y-4">
+                    <form onSubmit={handleSubmit} className="px-8 space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Item Name</Label>
                             <Input
@@ -62,41 +59,7 @@ function ItemsEdit() {
                             )}
                         </div>
                         <div className="flex gap-4">
-                            <div className="flex-1 space-y-2">
-                                <Label htmlFor="stock">Stock</Label>
-                                <Input
-                                    id="stock"
-                                    type="number"
-                                    value={data.stock}
-                                    onChange={(e) =>
-                                        setData("stock", e.target.value)
-                                    }
-                                    placeholder="Enter stock quantity"
-                                />
-                                {errors.stock && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.stock}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="flex-1 space-y-2">
-                                <Label htmlFor="price">Price</Label>
-                                <Input
-                                    id="price"
-                                    type="number"
-                                    step="0.01"
-                                    value={data.price}
-                                    onChange={(e) =>
-                                        setData("price", e.target.value)
-                                    }
-                                    placeholder="Enter item price"
-                                />
-                                {errors.price && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.price}
-                                    </p>
-                                )}
-                            </div>
+                            Blank
                         </div>
 
                         <Button
@@ -106,8 +69,8 @@ function ItemsEdit() {
                         >
                             Update Item
                         </Button>
-                    </CardContent>
-                </form>
+                    </form>
+                </CardContent>
             </Card>
         </div>
     );

@@ -34,11 +34,9 @@ export default function AssignPermissions() {
     };
 
     const groupKeywords = {
-        "User Management": ["user", "users"],
-        "Employee Management": ["employee", "employees"],
-        "Roles & Permissions": ["role", "permission"],
-        Reports: ["report", "reports"],
-        Settings: ["setting", "configuration"],
+        "Items and Units Management": ["item", "items"],
+        "Employees Management": ["employee", "employees"],
+        "Loans Management": ["loan", "loans"],
     };
 
     const groupedPermissions = {};

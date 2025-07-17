@@ -1,6 +1,6 @@
 import React from "react";
 import { router, Link, usePage } from "@inertiajs/react";
-import { Package, SquarePen, Trash2, Plus } from "lucide-react";
+import { Mail, SquarePen, Trash2, Plus } from "lucide-react";
 import Dashboard from "@components/layout/Dashboard";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import {
@@ -34,7 +34,7 @@ function EmployeesInbox() {
                                 <TableHead colSpan={4}>
                                     <div className="flex items-center justify-between px-4 py-6">
                                         <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                                            <Package className="mr-2" />
+                                            <Mail className="w-8 h-8 md:w-10 md:h-10 mr-2" />
                                             inboxes
                                         </h1>
                                         <div className="flex gap-2">
@@ -132,18 +132,19 @@ function EmployeesInbox() {
                                 </TableHead>
                             </TableRow>
                             <TableRow className="bg-slate-200">
-                                <TableHead>Sender</TableHead>
+                                <TableHead className="pl-6">Sender</TableHead>
                                 <TableHead>Tenant</TableHead>
                                 <TableHead className="text-right">
                                     Sent At
                                 </TableHead>
+                                <TableHead className="pr-8 text-right">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {inboxes.data.length > 0 ? (
                                 inboxes.data.map((inbox) => (
                                     <TableRow key={inbox.id}>
-                                        <TableCell>
+                                        <TableCell className="pl-6">
                                             {inbox.sender.name}
                                         </TableCell>
                                         <TableCell>
@@ -152,12 +153,12 @@ function EmployeesInbox() {
                                         <TableCell className="text-right">
                                             {inbox.created_at}
                                         </TableCell>
-                                        <TableCell className="text-right space-x-2">
+                                        <TableCell className="text-right space-x-2 pr-8">
                                             <Button
                                                 size="sm"
                                                 onClick={() =>
                                                     router.post(
-                                                        `/dashboard/employee/inbox/accept/${inbox.id}`
+                                                        `/dashboard/employees/inbox/accept/${inbox.id}`
                                                     )
                                                 }
                                                 className="bg-green-600 text-white hover:bg-green-700"
@@ -169,7 +170,7 @@ function EmployeesInbox() {
                                                 variant="outline"
                                                 onClick={() =>
                                                     router.delete(
-                                                        `/dashboard/employee/inbox/decline/${inbox.id}`
+                                                        `/dashboard/employees/inbox/decline/${inbox.id}`
                                                     )
                                                 }
                                                 className="hover:bg-red-100 hover:text-red-500"

@@ -1,14 +1,19 @@
 import React from "react";
-
-import Dashboard from "@components/layout/Dashboard";
-
 import { usePage, router, Link } from "@inertiajs/react";
 
-import { Package, Plus, SquarePen } from "lucide-react";
+import {
+    Package,
+    Plus,
+    SquarePen,
+    Boxes,
+    ChevronRight,
+    Pencil,
+} from "lucide-react";
 
+import Dashboard from "@components/layout/Dashboard";
 import { Button } from "@components/ui/button";
-
 import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
 
 import {
     Table,
@@ -36,35 +41,61 @@ import {
 } from "@/components/ui/select";
 
 import { Label } from "@components/ui/label";
+import { Card } from "@components/ui/card";
 
 function UnitsIndex() {
-    const { item, units } = usePage().props;
+    const { item, units, permissions } = usePage().props;
 
     console.log(units);
 
     return (
         <div>
             <div className="space-y-6">
-                <div className="border shadow-sm rounded-lg">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Item Name</Label>
-                            {item.name}
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="flex-1 space-y-2">
-                                <Label htmlFor="stock">Stock</Label>
-                            {item.stock}
+                <div className="grid grid-cols-1 gap-4 border shadow-sm rounded-lg px-8 py-6">
+                    <Card>
+                        <div className="flex justify-between w-full px-6 py-4">
+                            <h1 className="font-semibold text-2xl flex items-center">
+                                <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
+
+                                {item.name}
+                            </h1>
+                            <div className="flex gap-4">
+                                <Button variant="outline">
+                                    <Label htmlFor="stock">Stock</Label>
+                                    {units.total}
+                                </Button>
+                                {permissions.includes("edit items") ? (
+                                    <Link
+                                        href={`/dashboard/items/edit/${item.id}`}
+                                    >
+                                        <Button
+                                            data-modal-trigger="add-product"
+                                            className=" cursor-pointer"
+                                        >
+                                            <Pencil />
+                                            Edit Item
+                                        </Button>
+                                    </Link>
+                                ) : null}
+                                <Link href="/dashboard/items">
+                                    <Button
+                                        data-modal-trigger="add-product"
+                                        className=" cursor-pointer"
+                                    >
+                                        Back
+                                        <ChevronRight />
+                                    </Button>
+                                </Link>
                             </div>
                         </div>
-                    </div>
-                    <Table>
+                    </Card>
+                    <Table className="border">
                         <TableHeader>
                             <TableRow>
                                 <TableHead colSpan={4}>
                                     <div className="flex items-center justify-between px-4 py-6">
                                         <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                                            <Package className="mr-2" />
+                                            <Boxes className="mr-2" />
                                             Units
                                         </h1>
                                         <div className="flex gap-2">
@@ -117,9 +148,13 @@ function UnitsIndex() {
                                                 )}
                                                 onValueChange={(value) => {
                                                     router.get(
-                                                        "/dashboard/items/units",
-                                                        { per_page: value },
-                                                        { preserveScroll: true }
+                                                        `/dashboard/items/${item.id}/unit`,
+                                                        {
+                                                            per_page: value,
+                                                        },
+                                                        {
+                                                            preserveScroll: true,
+                                                        }
                                                     );
                                                 }}
                                             >
@@ -148,15 +183,19 @@ function UnitsIndex() {
                                                 </SelectContent>
                                             </Select>
 
-                                            <Link href="/dashboard/items/add">
-                                                <Button
-                                                    data-modal-trigger="add-product"
-                                                    className=" cursor-pointer"
-                                                >
-                                                    <Plus />
-                                                    Add Item
-                                                </Button>
-                                            </Link>
+                                            {permissions.includes(
+                                                "edit items"
+                                            ) ? (
+                                                <Link href="/dashboard/items/add">
+                                                    <Button
+                                                        data-modal-trigger="add-product"
+                                                        className=" cursor-pointer"
+                                                    >
+                                                        <Plus />
+                                                        Add Unit
+                                                    </Button>
+                                                </Link>
+                                            ) : null}
                                         </div>
                                     </div>
                                 </TableHead>
@@ -172,7 +211,7 @@ function UnitsIndex() {
                                     Avaibility
                                 </TableHead>
                                 <TableHead className="text-right pr-8">
-                                    Total Units
+                                    Created At
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -188,13 +227,13 @@ function UnitsIndex() {
                                             )
                                         }
                                     >
-                                        <TableCell>
-                                            <img
-                                                alt={unit.name}
-                                                width={40}
-                                                height={40}
-                                                className="rounded-md object-cover pl-6"
-                                            />
+                                        <TableCell className="pl-9">
+                                            <Avatar>
+                                                <AvatarImage src={unit.name} />
+                                                <AvatarFallback>
+                                                    {unit.name}
+                                                </AvatarFallback>
+                                            </Avatar>
                                         </TableCell>
                                         <TableCell className="font-medium">
                                             <span>{unit.unit_code}</span>
@@ -214,31 +253,39 @@ function UnitsIndex() {
                                         </TableCell>
 
                                         <TableCell className="text-right font-medium pr-8">
-                                            {unit.stock}
-                                            <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
-                                                <Link
-                                                    href={`/dashboard/items/edit/${unit.id}`}
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                >
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="cursor-pointer"
+                                            {unit.created_at}
+                                            <div className="absolute bg-white right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
+                                                {permissions.includes(
+                                                    "edit items"
+                                                ) ? (
+                                                    <Link
+                                                        href={`/dashboard/items/edit/${unit.id}`}
+                                                        onClick={(e) =>
+                                                            e.stopPropagation()
+                                                        }
                                                     >
-                                                        <SquarePen />
-                                                    </Button>
-                                                </Link>
-                                                <div
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                >
-                                                    <DeleteAlertDialog
-                                                        itemId={unit.id}
-                                                    />
-                                                </div>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="cursor-pointer"
+                                                        >
+                                                            <SquarePen />
+                                                        </Button>
+                                                    </Link>
+                                                ) : null}
+                                                {permissions.includes(
+                                                    "delete items"
+                                                ) ? (
+                                                    <div
+                                                        onClick={(e) =>
+                                                            e.stopPropagation()
+                                                        }
+                                                    >
+                                                        <DeleteAlertDialog
+                                                            itemId={unit.id}
+                                                        />
+                                                    </div>
+                                                ) : null}
                                             </div>
                                         </TableCell>
                                     </TableRow>

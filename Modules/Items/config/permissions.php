@@ -2,8 +2,8 @@
 
 return [
     'permissions' => [
-        'view items',
-        'edit items',
-        'delete items',
+        'view' => 'view items',
+        'edit' => 'edit items',
+        'delete' => 'delete items',
     ],
 ];

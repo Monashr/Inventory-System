@@ -1,20 +1,12 @@
 import React from "react";
+import { useForm } from "@inertiajs/react";
 
-import { Link } from "@inertiajs/react";
-
-import { ChevronRight } from "lucide-react";
-
-import Dashboard from "@components/layout/Dashboard";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useForm } from "@inertiajs/react";
 
-import DynamicBreadcrumbs from "@components/custom/DynamicBreadcrumbs";
-
-function ItemsAdd() {
+export default function ItemsAddForm({ onClose }) {
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         unit: "",
@@ -23,6 +15,9 @@ function ItemsAdd() {
     const handleSubmit = (e) => {
         e.preventDefault();
         post("/dashboard/items/add", {
+            onSuccess: () => {
+                onClose?.();
+            },
             onError: () => {},
         });
     };
@@ -30,20 +25,6 @@ function ItemsAdd() {
     return (
         <div className="w-full">
             <Card className="w-full mx-auto">
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between w-full">
-                        Add New Item
-                        <Link href="/dashboard/items">
-                            <Button
-                                data-modal-trigger="add-product"
-                                className=" cursor-pointer"
-                            >
-                                Back
-                                <ChevronRight />
-                            </Button>
-                        </Link>
-                    </CardTitle>
-                </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
@@ -93,7 +74,3 @@ function ItemsAdd() {
         </div>
     );
 }
-
-ItemsAdd.layout = (page) => <Dashboard>{page}</Dashboard>;
-
-export default ItemsAdd;
