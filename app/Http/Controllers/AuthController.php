@@ -66,7 +66,7 @@ class AuthController extends Controller
         ]);
 
         $tenant = Tenant::create([
-            'name' => "$request->name Tenant",
+            'name' => "$request->name Personal Page",
             'domain' => "-",
             'database' => "-",
         ]);
@@ -102,7 +102,6 @@ class AuthController extends Controller
                 $userRole->giveTenantPermissionTo($tenant->id, ...$permissions);
             }
         }
-
 
         Auth::login($user);
 

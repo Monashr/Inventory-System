@@ -67,13 +67,19 @@ class User extends Authenticatable
             ->pluck('p.name')
             ->toArray();
 
-            return $assignedPermissions;
+        return $assignedPermissions;
     }
 
     public function tenants()
     {
         return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id')->withTimestamps();
     }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
+
 
     public function assignRole($tenantId, ...$roles)
     {

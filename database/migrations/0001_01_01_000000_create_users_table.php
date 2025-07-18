@@ -10,12 +10,21 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::create('positions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            $table->foreignId('position_id')->constrained('positions');
 
             $table->string('picture')->nullable();
             $table->text('bio')->nullable();
@@ -24,6 +33,7 @@ return new class extends Migration {
 
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -47,6 +57,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists('positions');
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

@@ -10,14 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('loan_unit', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('loan_id')->constrained()->onDelete('cascade');
-            $table->foreignId('unit_id')->constrained()->onDelete('cascade');
-            $table->timestamp('due_date')->nullable();
-            $table->timestamp('date_of_return')->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('loan_unit', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('loan_id')->constrained()->onDelete('cascade');
+        //     $table->foreignId('unit_id')->constrained()->onDelete('cascade');
+        //     $table->timestamp('due_date')->nullable();
+        //     $table->timestamp('date_of_return')->nullable();
+        //     $table->timestamps();
+        // });
     }
 
     /**

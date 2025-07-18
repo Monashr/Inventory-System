@@ -14,10 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
 
-            $table->foreignId('sender_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('receiver_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('sender_id')->constrained('users')->nullOnDelete();
+            $table->foreignId('receiver_id')->constrained('users')->nullOnDelete();
 
-            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tenant_id')->constrained()->nullOnDelete();
             $table->timestamps();
         });
 

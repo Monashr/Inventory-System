@@ -1,0 +1,46 @@
+<?php
+
+namespace Modules\Asset\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Loans\Models\Loan;
+// use Modules\Items\Database\Factories\UnitFactory;
+
+class Asset extends Model
+{
+    use HasFactory;
+    protected $fillable = ['asset_type_id', 'brand', 'serial_code', 'specification', 'purchase_date', 'purchase_price', 'initial_condition', 'condition', 'avaibility', 'created_by', 'updated_by', 'deleted_by'];
+
+    public function assetType(): BelongsTo
+    {
+        return $this->belongsTo(AssetType::class);
+    }
+
+    public function loans(): BelongsToMany
+    {
+        return $this->belongsToMany(Loan::class)
+            ->withPivot('hand_over_date', 'hand_over_actual_date', 'return_condition', 'hand_over_condition', 'description', 'created_by', 'updated_by', 'deleted_by', 'delete_at')
+            ->withTimestamps();
+    }
+
+    protected static function booted()
+    {
+        // insert tenant when creating
+        static::creating(function ($asset) {
+            if (!$asset->tenant_id && tenant()) {
+                $asset->tenant_id = tenant()->id;
+            }
+        });
+
+        // adding scope to tenant when query
+        static::addGlobalScope('tenant', function (Builder $builder) {
+            if (tenant()) {
+                $builder->where('tenant_id', tenant()->id);
+            }
+        });
+    }
+}

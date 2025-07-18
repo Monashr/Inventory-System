@@ -2,15 +2,15 @@
 
 namespace Database\Seeders;
 
+use App\Models\Position;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use App\Models\Role;
+use Modules\Asset\Database\Seeders\AssetDatabaseSeeder;
 use Modules\Employee\Database\Seeders\EmployeeDatabaseSeeder;
 use Modules\Loans\Database\Seeders\LoansDatabaseSeeder;
 use Spatie\Permission\Models\Permission;
-
-use Modules\Items\Database\Seeders\ItemsDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,6 +24,11 @@ class DatabaseSeeder extends Seeder
             'name' => "Admin",
             'domain' => "Admin",
             'database' => "Admin",
+        ]);
+
+        $position = Position::create([
+            'name' => "Admin",
+            'tenant_id' => $tenant->id
         ]);
 
         $permissions = [
@@ -49,17 +54,18 @@ class DatabaseSeeder extends Seeder
         $adminRole->giveTenantPermissionTo($tenant->id, ['edit users']);
         $adminRole->giveTenantPermissionTo($tenant->id, ['delete users']);
 
-        $dummyUser = User::firstOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => 'aku@aku.aku'],
             [
                 'name' => 'aku',
                 'password' => bcrypt('akuaku'),
+                'position' => $position->id,
             ]
         );
 
-        $dummyUser->assignRole($tenant->id, $adminRole);
+        $admin->assignRole($tenant->id, $adminRole);
 
-        $this->call([ItemsDatabaseSeeder::class]);
+        $this->call([AssetDatabaseSeeder::class]);
         $this->call([EmployeeDatabaseSeeder::class]);
         $this->call([LoansDatabaseSeeder::class]);
     }

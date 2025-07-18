@@ -10,20 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('tenant_user', function (Blueprint $table) {
-            $table->id();
-
+        Schema::table('positions', function (Blueprint $table) {
             $table->foreignId('tenant_id')
                 ->constrained()
-                ->nullOnDelete();
-
-            $table->foreignId('user_id')
-                ->constrained()
-                ->nullOnDelete();
-
-            $table->timestamps();
-
-            $table->unique(['tenant_id', 'user_id']);
+                ->onDelete('cascade');
         });
     }
 
@@ -32,6 +22,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('tenant_user');
+        Schema::table('positions', function (Blueprint $table) {
+            $table->dropColumn('tenant_id');
+        });
     }
 };

@@ -1,6 +1,6 @@
 {
-    "Items": true,
     "Profile": true,
     "Employee": true,
-    "Loans": true
+    "Loans": true,
+    "Asset": true
 }
