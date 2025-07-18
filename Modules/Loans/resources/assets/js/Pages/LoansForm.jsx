@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, router } from "@inertiajs/react";
 
 import { Button } from "@/components/ui/button";
@@ -15,90 +15,180 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X } from "lucide-react";
 import Calendar08 from "@components/calendar-08";
 
-export default function LoansForm({ items }) {
-    const [unitEntries, setUnitEntries] = useState([]);
-
+export default function LoansForm({ assetTypes, users, loan }) {
     const { data, setData, processing } = useForm({
-        name: "",
-        description: "",
-        units: [],
+        loaner: loan?.user ? String(loan.user.id) : "",
+        description: loan?.description || "",
     });
 
-    const handleAddUnitEntry = () => {
-        setUnitEntries((prev) => [
+    const [assetEntries, setAssetEntries] = useState(
+        loan?.assets?.map((entry) => ({
+            asset_type_id: String(entry.asset_type_id),
+            asset_id: String(entry.id),
+            loaned_date: entry.pivot.loaned_date
+                ? new Date(entry.pivot.loaned_date)
+                : "",
+            assets: [],
+        })) || []
+    );
+
+    useEffect(() => {
+        async function preloadAssets() {
+            if (!loan?.assets) return;
+
+            const entriesWithAssets = await Promise.all(
+                loan.assets.map(async (entry) => {
+                    const response = await fetch(
+                        `/dashboard/assets/api/${entry.asset_type_id}/assets`
+                    );
+                    const assets = await response.json();
+
+                    const matchedAsset = assets.find((a) => a.id === entry.id);
+
+                    if (!matchedAsset) {
+                        assets.push({
+                            id: entry.id,
+                            serial_code: entry.serial_code,
+                        });
+                    }
+
+                    return {
+                        asset_type_id: String(entry.asset_type_id),
+                        asset_id: String(entry.id),
+                        loaned_date: entry.pivot.loaned_date
+                            ? new Date(entry.pivot.loaned_date)
+                            : "",
+                        assets,
+                    };
+                })
+            );
+
+            setAssetEntries(entriesWithAssets);
+        }
+
+        preloadAssets();
+    }, []);
+
+    const handleAddAssetEntry = () => {
+        setAssetEntries((prev) => [
             ...prev,
             {
-                item_id: "",
-                unit_id: "",
-                return_date: "",
-                due_date: "",
-                units: [],
+                asset_type_id: "",
+                asset_id: "",
+                loaned_date: "",
+                assets: [],
             },
         ]);
     };
 
-    const handleRemoveUnitEntry = (index) => {
-        setUnitEntries((prev) => prev.filter((_, i) => i !== index));
+    const handleRemoveAssetEntry = (index) => {
+        setAssetEntries((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const fetchUnits = async (itemId, index) => {
+    const fetchAssets = async (assetTypeId, index) => {
         try {
-            const response = await fetch(`/dashboard/items/api/${itemId}/unit`);
-            const units = await response.json();
+            const response = await fetch(
+                `/dashboard/assets/api/${assetTypeId}/assets`
+            );
+            const assets = await response.json();
 
-            setUnitEntries((prev) =>
+            setAssetEntries((prev) =>
                 prev.map((entry, i) =>
-                    i === index ? { ...entry, units, unit_id: "" } : entry
+                    i === index ? { ...entry, assets, asset_id: "" } : entry
                 )
             );
         } catch (error) {
-            console.error("Failed to fetch units:", error);
+            console.error("Failed to fetch assets:", error);
         }
     };
 
-    const handleItemChange = async (index, itemId) => {
-        setUnitEntries((prev) =>
+    const handleAssetTypeChange = async (index, assetTypeId) => {
+        setAssetEntries((prev) =>
             prev.map((entry, i) =>
-                i === index ? { ...entry, item_id: itemId } : entry
+                i === index ? { ...entry, asset_type_id: assetTypeId } : entry
             )
         );
-        await fetchUnits(itemId, index);
+        await fetchAssets(assetTypeId, index);
     };
 
     const handleFieldChange = (index, field, value) => {
-        setUnitEntries((prev) =>
+        setAssetEntries((prev) =>
             prev.map((entry, i) =>
                 i === index ? { ...entry, [field]: value } : entry
             )
         );
     };
 
+    const getSelectedAssetIds = (excludeIndex) => {
+        return assetEntries
+            .filter((_, idx) => idx !== excludeIndex)
+            .map((entry) => entry.asset_id)
+            .filter((id) => id);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        router.post(
-            "/dashboard/loans",
-            {
-                name: data.name,
-                description: data.description,
-                units: unitEntries,
-            },
-            { preserveScroll: true }
-        );
+        const payloadAssets = assetEntries.map((entry) => ({
+            asset_type_id: entry.asset_type_id,
+            asset_id: entry.asset_id,
+            loaned_date: entry.loaned_date
+                ? entry.loaned_date.toISOString().split("T")[0]
+                : null,
+        }));
+
+        const url = loan ? `/dashboard/loans/${loan.id}` : `/dashboard/loans`;
+
+        if (loan) {
+            router.put(
+                url,
+                {
+                    loaner: data.loaner,
+                    description: data.description,
+                    assets: payloadAssets,
+                },
+                { preserveScroll: true }
+            );
+        } else {
+            router.post(
+                url,
+                {
+                    loaner: data.loaner,
+                    description: data.description,
+                    assets: payloadAssets,
+                },
+                { preserveScroll: true }
+            );
+        }
     };
+
+    if (assetTypes.length == 0) {
+        return <div>No asset types available.</div>;
+    }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 p-6">
             <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="name">Loan Name</Label>
-                    <Input
-                        id="name"
-                        type="text"
-                        value={data.name}
-                        onChange={(e) => setData("name", e.target.value)}
-                        required
-                    />
+                    <Label htmlFor="loaner">Loaner</Label>
+                    <Select
+                        value={data.loaner}
+                        onValueChange={(val) => setData("loaner", val)}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select user" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {users.map((user) => (
+                                <SelectItem
+                                    key={user.id}
+                                    value={String(user.id)}
+                                >
+                                    {user.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="space-y-2">
@@ -115,17 +205,17 @@ export default function LoansForm({ items }) {
             <Card className="bg-slate-100 shadow-md">
                 <CardContent>
                     <div className="space-y-4">
-                        <h2 className="text-xl font-semibold">Loaned Units</h2>
+                        <h2 className="text-xl font-semibold">Loaned Assets</h2>
 
-                        {unitEntries.length === 0 && (
-                            <p className="text-muted-foreground text-sm">
-                                No units added yet. Click &quot;Add Unit&quot;
+                        {assetEntries.length === 0 && (
+                            <p className="text-sm text-muted-foreground">
+                                No assets added yet. Click &quot;Add Asset&quot;
                                 to begin.
                             </p>
                         )}
 
                         <div className="space-y-6">
-                            {unitEntries.map((entry, index) => (
+                            {assetEntries.map((entry, index) => (
                                 <Card key={index} className="relative">
                                     <Button
                                         type="button"
@@ -133,108 +223,113 @@ export default function LoansForm({ items }) {
                                         variant="ghost"
                                         className="absolute top-3 right-3 text-muted-foreground hover:text-destructive"
                                         onClick={() =>
-                                            handleRemoveUnitEntry(index)
+                                            handleRemoveAssetEntry(index)
                                         }
                                     >
                                         <X className="w-4 h-4" />
                                     </Button>
 
                                     <CardHeader>
-                                        <CardTitle>Unit #{index + 1}</CardTitle>
+                                        <CardTitle>Asset {index + 1}</CardTitle>
                                     </CardHeader>
 
-                                    <CardContent className="flex justify-between">
-                                        <div className="space-y-6 flex-1">
-                                            <div className="space-y-2">
-                                                <Label>Item</Label>
-                                                <Select
-                                                    value={entry.item_id}
-                                                    onValueChange={(val) =>
-                                                        handleItemChange(
-                                                            index,
-                                                            val
-                                                        )
-                                                    }
-                                                >
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select item" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {items.map((item) => (
-                                                            <SelectItem
-                                                                key={item.id}
-                                                                value={String(
-                                                                    item.id
-                                                                )}
-                                                            >
-                                                                {item.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <Label>Unit</Label>
-                                                <Select
-                                                    value={entry.unit_id}
-                                                    onValueChange={(val) =>
-                                                        handleFieldChange(
-                                                            index,
-                                                            "unit_id",
-                                                            val
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        !entry.units.length
-                                                    }
-                                                >
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select unit" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {entry.units.map(
-                                                            (unit) => (
-                                                                <SelectItem
-                                                                    key={
-                                                                        unit.id
-                                                                    }
-                                                                    value={String(
-                                                                        unit.id
-                                                                    )}
-                                                                >
-                                                                    {
-                                                                        unit.unit_code
-                                                                    }
-                                                                </SelectItem>
-                                                            )
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-2 flex justify-around items-center flex-1">
-                                            {/* <Label>Due Date</Label>
-                                            <Input
-                                                type="date"
-                                                value={entry.due_date}
-                                                onChange={(e) =>
-                                                    handleFieldChange(
+                                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>Asset Type</Label>
+                                            <Select
+                                                value={entry.asset_type_id}
+                                                onValueChange={(val) =>
+                                                    handleAssetTypeChange(
                                                         index,
-                                                        "due_date",
-                                                        e.target.value
+                                                        val
                                                     )
                                                 }
-                                            /> */}
-                                            <div className="space-y-2">
-                                                <Label>From</Label>
-                                                <Calendar08 />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>To</Label>
-                                                <Calendar08 />
-                                            </div>
+                                            >
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select asset type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {assetTypes.map(
+                                                        (assetType) => (
+                                                            <SelectItem
+                                                                key={
+                                                                    assetType.id
+                                                                }
+                                                                value={String(
+                                                                    assetType.id
+                                                                )}
+                                                            >
+                                                                {assetType.name}
+                                                            </SelectItem>
+                                                        )
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label>Asset</Label>
+                                            <Select
+                                                value={entry.asset_id}
+                                                onValueChange={(val) =>
+                                                    handleFieldChange(
+                                                        index,
+                                                        "asset_id",
+                                                        val
+                                                    )
+                                                }
+                                                disabled={!entry.assets.length}
+                                            >
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select asset" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {entry.assets
+                                                        .filter((asset) => {
+                                                            const selectedIds =
+                                                                getSelectedAssetIds(
+                                                                    index
+                                                                );
+                                                            return (
+                                                                !selectedIds.includes(
+                                                                    String(
+                                                                        asset.id
+                                                                    )
+                                                                ) ||
+                                                                String(
+                                                                    asset.id
+                                                                ) ===
+                                                                    entry.asset_id
+                                                            );
+                                                        })
+                                                        .map((asset) => (
+                                                            <SelectItem
+                                                                key={asset.id}
+                                                                value={String(
+                                                                    asset.id
+                                                                )}
+                                                            >
+                                                                {
+                                                                    asset.serial_code
+                                                                }
+                                                            </SelectItem>
+                                                        ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label>Loaned Date</Label>
+                                            <Calendar08
+                                                value={entry.loaned_date}
+                                                onChange={(val) =>
+                                                    handleFieldChange(
+                                                        index,
+                                                        "loaned_date",
+                                                        val
+                                                    )
+                                                }
+                                            />
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -243,11 +338,11 @@ export default function LoansForm({ items }) {
 
                         <Button
                             type="button"
-                            onClick={handleAddUnitEntry}
+                            onClick={handleAddAssetEntry}
                             variant="outline"
                             className="w-full md:w-auto"
                         >
-                            + Add Unit
+                            + Add Asset
                         </Button>
                     </div>
                 </CardContent>

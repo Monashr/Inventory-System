@@ -22,6 +22,6 @@ Route::middleware(['auth', 'tenant'])->prefix('dashboard/assets')->name('assets.
     Route::get('/edit/assets/{asset}', [AssetController::class, 'showAssetEdit'])->name('asset.edit');
     Route::put('/edit/assets/{asset}', [AssetController::class, 'AssetUpdate'])->name('asset.update');
 
-    Route::get('/api/{assetType}/unit', [AssetController::class, 'getAsset'])->name('asset.api');
+    Route::get('/api/{assetType}/assets', [AssetController::class, 'getAssets'])->name('asset.api');
     Route::get('/{asset}/details', [AssetController::class, 'showAssetDetails'])->name('asset.details');
 });

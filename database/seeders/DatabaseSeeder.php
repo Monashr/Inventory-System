@@ -59,9 +59,10 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'aku',
                 'password' => bcrypt('akuaku'),
-                'position' => $position->id,
             ]
         );
+
+        $admin->positions()->attach($position->id);
 
         $admin->assignRole($tenant->id, $adminRole);
 

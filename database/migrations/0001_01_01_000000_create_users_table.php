@@ -24,8 +24,6 @@ return new class extends Migration {
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
-            $table->foreignId('position_id')->constrained('positions');
-
             $table->string('picture')->nullable();
             $table->text('bio')->nullable();
             $table->string('phone')->nullable();

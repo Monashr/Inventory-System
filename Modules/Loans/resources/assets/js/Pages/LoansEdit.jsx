@@ -8,8 +8,8 @@ import { Separator } from "@components/ui/separator";
 
 import { PackageOpen } from "lucide-react";
 
-function LoansAdd() {
-    const { assetTypes, users } = usePage().props;
+function LoansEdit() {
+    const { assetTypes, users, loan } = usePage().props;
 
     return (
         <div>
@@ -18,17 +18,17 @@ function LoansAdd() {
                     <div className="px-6 py-6">
                         <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
                             <PackageOpen className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                            Add Loans
+                            Edit Loans
                         </h1>
                     </div>
                     <Separator />
-                    <LoansForm assetTypes={assetTypes} users={users} />
+                    <LoansForm assetTypes={assetTypes} users={users} loan={loan} />
                 </CardContent>
             </Card>
         </div>
     );
 }
 
-LoansAdd.layout = (page) => <Dashboard>{page}</Dashboard>;
+LoansEdit.layout = (page) => <Dashboard>{page}</Dashboard>;
 
-export default LoansAdd;
+export default LoansEdit;

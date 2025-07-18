@@ -63,8 +63,6 @@ export default function Dashboard({ children }) {
     const currentPath = url;
     const isHomeActive = currentPath === "/dashboard";
 
-    console.log(tenants);
-
     return (
         <SidebarProvider>
             <Sidebar variant="inset">

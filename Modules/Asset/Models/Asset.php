@@ -23,7 +23,7 @@ class Asset extends Model
     public function loans(): BelongsToMany
     {
         return $this->belongsToMany(Loan::class)
-            ->withPivot('hand_over_date', 'hand_over_actual_date', 'return_condition', 'hand_over_condition', 'description', 'created_by', 'updated_by', 'deleted_by', 'delete_at')
+            ->withPivot('return_date', 'return_condition', 'loaned_condition', 'created_by', 'updated_by', 'deleted_by', 'deleted_at')
             ->withTimestamps();
     }
 

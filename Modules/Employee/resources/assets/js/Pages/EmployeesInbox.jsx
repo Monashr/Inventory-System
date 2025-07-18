@@ -31,8 +31,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
 function EmployeesInbox() {
     const { inboxes } = usePage().props;
 
-    console.log(inboxes);
-
     return (
         <div className="w-full">
             <Card className="w-full mx-auto">

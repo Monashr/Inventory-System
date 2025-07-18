@@ -47,20 +47,18 @@ function AssetsIndex() {
     const { assetType, assets, permissions, totalAvailableAssets, totalLoanedAssets, totalDefectAssets } =
         usePage().props;
 
-    console.log(assets);
-
     return (
         <div>
             <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-4 border shadow-sm rounded-lg px-8 py-6">
                     <Card>
-                        <div className="flex justify-between w-full px-6 py-4">
+                        <div className="flex justify-between flex-wrap gap-4 w-full px-6 py-4">
                             <h1 className="font-semibold text-2xl flex items-center">
                                 <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
 
                                 {assetType.name}
                             </h1>
-                            <div className="flex gap-4">
+                            <div className="flex gap-2 flex-wrap">
                                 <Button variant="outline">
                                     <Label htmlFor="stock">
                                         Total Assets

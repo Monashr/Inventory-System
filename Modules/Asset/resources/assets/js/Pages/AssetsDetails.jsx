@@ -46,15 +46,15 @@ function AssetDetail() {
     return (
         <div className="space-y-6">
             <Card className="p-6 px-8 space-y-6">
-                <div className="flex items-center gap-6 justify-between p-4 bg-muted/40 rounded-lg shadow-sm border">
-                    <div className="flex items-center gap-6">
+                <div className="flex items-center justify-end sm:justify-between flex-wrap gap-6 p-4 bg-muted/40 rounded-lg shadow-sm border">
+                    <div className="flex items-center justify-center gap-6 flex-wrap">
                         <Avatar className="w-24 h-24">
                             <AvatarFallback className="text-4xl font-semibold">
                                 {asset.asset_type?.name?.charAt(0) || "A"}
                             </AvatarFallback>
                         </Avatar>
                         <div>
-                            <h2 className="text-3xl font-extrabold text-primary">
+                            <h2 className="text-xl lg:text-3xl font-extrabold text-primary">
                                 {asset.serial_code}
                             </h2>
                             <p className="text-xl text-muted-foreground">

@@ -167,6 +167,9 @@ function EmployeesIndex() {
                                     Name
                                 </TableHead>
                                 <TableHead className="text-right">
+                                    Position
+                                </TableHead>
+                                <TableHead className="text-right">
                                     Email
                                 </TableHead>
                                 <TableHead className="text-right">
@@ -209,6 +212,9 @@ function EmployeesIndex() {
                                                 {authUser?.id === employee.id &&
                                                     " (you)"}
                                             </span>
+                                        </TableCell>
+                                        <TableCell className="text-right font-medium">
+                                            {employee.positions[0]?.name ?? "-"}
                                         </TableCell>
                                         <TableCell className="text-right font-medium">
                                             {employee.email ?? "-"}

@@ -19,8 +19,6 @@ import {
 function AssetCreate() {
     const { assetTypes } = usePage().props;
 
-    console.log(assetTypes);
-
     const { data, setData, post, processing, errors, reset } = useForm({
         asset_type_id: "",
         brand: "",

@@ -20,8 +20,6 @@ export default function TenantSwitcher({ tenants, currentTenantId }) {
         });
     }
 
-    console.log(tenants);
-
     return (
         <Select
             defaultValue={String(currentTenantId)}

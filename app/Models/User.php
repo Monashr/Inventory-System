@@ -20,6 +20,7 @@ class User extends Authenticatable
         'phone',
         'bio',
         'address',
+        'position_id',
     ];
 
     protected $hidden = [
@@ -35,14 +36,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function usersFromSameTenant($perPage = 10)
+    public function usersFromSameTenant($perPage = null)
     {
         $tenantId = session('active_tenant_id');
 
-        return self::whereHas('tenants', function ($query) use ($tenantId) {
-            $query->where('tenant_id', $tenantId);
-        })->paginate($perPage);
+        $query = self::with('positions')
+            ->whereHas('tenants', function ($query) use ($tenantId) {
+                $query->where('tenant_id', $tenantId);
+            });
+
+        return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
 
     public function getTenantPermission()
     {
@@ -75,11 +80,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id')->withTimestamps();
     }
 
-    public function position()
+    public function positions()
     {
-        return $this->belongsTo(Position::class);
+        return $this->belongsToMany(Position::class)
+            ->withTimestamps()
+            ->where('positions.tenant_id', session('active_tenant_id'));
     }
-
 
     public function assignRole($tenantId, ...$roles)
     {

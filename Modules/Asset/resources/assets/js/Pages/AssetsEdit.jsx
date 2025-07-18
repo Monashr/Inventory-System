@@ -18,8 +18,6 @@ import { ArrowLeft, Save } from "lucide-react";
 function AssetsEdit() {
     const { asset, assetTypes } = usePage().props;
 
-    console.log(asset);
-
     const { data, setData, put, errors } = useForm({
         asset_type_id: String(asset.asset_type_id),
         serial_code: asset.serial_code || "",

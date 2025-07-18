@@ -1,19 +1,18 @@
-import * as React from "react"
+import * as React from "react";
 
-import { Calendar } from "@components/ui/calendar"
+import { Calendar } from "@components/ui/calendar";
 
-export default function Calendar08() {
-  const [date, setDate] = React.useState(new Date(2025, 5, 12))
-
-  return (
-    <Calendar
-      mode="single"
-      defaultMonth={date}
-      selected={date}
-      onSelect={setDate}
-      disabled={{
-        before: new Date(2025, 5, 12),
-      }}
-      className="rounded-lg border shadow-sm" />
-  );
+export default function Calendar08({ value, onChange }) {
+    return (
+        <Calendar
+            mode="single"
+            defaultMonth={value || new Date()}
+            selected={value}
+            onSelect={onChange}
+            disabled={{
+                before: new Date(),
+            }}
+            className="rounded-lg border shadow-sm"
+        />
+    );
 }

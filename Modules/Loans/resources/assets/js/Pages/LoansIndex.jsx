@@ -38,6 +38,20 @@ import { Card, CardContent } from "@components/ui/card";
 function LoansIndex() {
     const { loans, permissions } = usePage().props;
 
+    const formatDateNoHour = (dateString) => {
+        if (!dateString) return "-";
+        try {
+            return new Date(dateString).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            });
+        } catch (error) {
+            console.error("Error formatting date:", error);
+            return "-";
+        }
+    };
+
     return (
         <div>
             <Card className="w-full mx-auto">
@@ -138,7 +152,10 @@ function LoansIndex() {
                             </TableRow>
                             <TableRow className="bg-slate-200">
                                 <TableHead className="text-left pl-6">
-                                    Name
+                                    Loaner
+                                </TableHead>
+                                <TableHead className="text-left pl-6">
+                                    Status
                                 </TableHead>
                                 <TableHead className="text-left">
                                     description
@@ -160,12 +177,34 @@ function LoansIndex() {
                                             )
                                         }
                                     >
-                                        <TableCell className="pl-6">{loan.name}</TableCell>
+                                        <TableCell className="pl-6">
+                                            {loan.user.name}
+                                        </TableCell>
+                                        <TableCell className="text-left font-medium">
+                                            <span
+                                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                                    loan.status === "accepted"
+                                                        ? "bg-green-100 text-green-800"
+                                                        : loan.status ===
+                                                          "pending"
+                                                        ? "bg-yellow-100 text-yellow-800"
+                                                        : loan.status ===
+                                                          "cancelled"
+                                                        ? "bg-slate-100 text-slate-800"
+                                                        : "bg-red-100 text-red-800"
+                                                }`}
+                                            >
+                                                {loan.status
+                                                    .charAt(0)
+                                                    .toUpperCase() +
+                                                    loan.status.slice(1)}
+                                            </span>
+                                        </TableCell>
                                         <TableCell className="text-left font-medium">
                                             {loan.description}
                                         </TableCell>
                                         <TableCell className="text-right font-medium pr-6">
-                                            {loan.created_at}
+                                            {formatDateNoHour(loan.created_at)}
                                         </TableCell>
                                     </TableRow>
                                 ))

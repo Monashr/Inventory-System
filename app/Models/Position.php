@@ -16,8 +16,9 @@ class Position extends Model
 
     public function users()
     {
-        return $this->hasMany(User::class, 'position_id');
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
+
 
     public function tenant()
     {

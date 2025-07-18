@@ -12,10 +12,12 @@ return new class extends Migration {
     {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->text('description');
-            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->nullOnDelete();
+            $table->foreignId('tenant_id')->constrained()->nullOnDelete();
+            $table->enum('status', ['accepted', 'pending', 'rejected', 'canceled'])->default('pending')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -24,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('loans');
     }
 };

@@ -22,7 +22,6 @@ export default function DeleteAlertDialog({ itemId }) {
       preserveScroll: true,
       onSuccess: () => {
         setOpen(false);
-        console.log("Deleted");
       },
       onError: (err) => {
         console.error(err);

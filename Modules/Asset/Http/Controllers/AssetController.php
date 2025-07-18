@@ -165,7 +165,7 @@ class AssetController extends Controller
 
     public function showAssetDetails($asset)
     {
-        $asset = Asset::with('assetType')->findOrFail($asset);
+        $asset = Asset::with('assetType', 'loans')->findOrFail($asset);
 
         return Inertia::render('Asset/AssetsDetails', [
             'asset' => $asset,
@@ -258,7 +258,7 @@ class AssetController extends Controller
     }
 
 
-    public function getUnit($assetType)
+    public function getAssets($assetType)
     {
         $assets = Asset::where('asset_type_id', $assetType)->where('avaibility', 'available')->get(['id', 'serial_code']);
         return response()->json($assets);

@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Modules\Items\Models\Unit;
+use Modules\Asset\Models\Asset;
+use App\Models\User;
 // use Modules\Items\Database\Factories\LoanFactory;
 
 class Loan extends Model
@@ -17,13 +18,19 @@ class Loan extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['user_id', 'name', 'description'];
 
-    public function unit(): BelongsToMany
+    public function assets(): BelongsToMany
     {
-        return $this->belongsToMany(Unit::class)
-            ->withPivot('date_of_return', 'due_date')
+        return $this->belongsToMany(Asset::class)
+            ->withPivot('loaned_date', 'return_date', 'loaned_condition', 'return_condition')
+            ->with('assetType')
             ->withTimestamps();
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     protected static function booted()
