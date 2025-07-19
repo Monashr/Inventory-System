@@ -62,6 +62,11 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $admin->update([
+            'created_by' => $admin->id,
+            'updated_by' => $admin->id,
+        ]);
+
         $admin->positions()->attach($position->id);
 
         $admin->assignRole($tenant->id, $adminRole);

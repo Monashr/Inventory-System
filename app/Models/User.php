@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\PermissionRegistrar;
 
 class User extends Authenticatable
 {
@@ -36,6 +37,18 @@ class User extends Authenticatable
         ];
     }
 
+    public function tenants()
+    {
+        return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id')->withTimestamps();
+    }
+
+    public function positions()
+    {
+        return $this->belongsToMany(Position::class)
+            ->withTimestamps()
+            ->where('positions.tenant_id', session('active_tenant_id'));
+    }
+
     public function usersFromSameTenant($perPage = null)
     {
         $tenantId = session('active_tenant_id');
@@ -51,7 +64,6 @@ class User extends Authenticatable
 
     public function getTenantPermission()
     {
-
         $user = auth()->user();
 
         $tenantId = session('active_tenant_id');
@@ -75,32 +87,20 @@ class User extends Authenticatable
         return $assignedPermissions;
     }
 
-    public function tenants()
-    {
-        return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id')->withTimestamps();
-    }
-
-    public function positions()
-    {
-        return $this->belongsToMany(Position::class)
-            ->withTimestamps()
-            ->where('positions.tenant_id', session('active_tenant_id'));
-    }
-
     public function assignRole($tenantId, ...$roles)
     {
         $roles = collect($roles)->flatten()->map(function ($role) {
             if (is_string($role)) {
-                return app(\Spatie\Permission\PermissionRegistrar::class)
-                    ->getRoleClass()
-                    ->where('name', $role)
+                return app(PermissionRegistrar::class)
+                    ->getRoleClass()::where('name', $role)
                     ->firstOrFail();
+
             }
             return $role;
         });
 
         foreach ($roles as $role) {
-            $exists = \DB::table('model_has_roles')
+            $exists = DB::table('model_has_roles')
                 ->where('role_id', $role->id)
                 ->where('model_type', get_class($this))
                 ->where('model_id', $this->id)
@@ -108,7 +108,7 @@ class User extends Authenticatable
                 ->exists();
 
             if (!$exists) {
-                \DB::table('model_has_roles')->insert([
+                DB::table('model_has_roles')->insert([
                     'role_id' => $role->id,
                     'model_type' => get_class($this),
                     'model_id' => $this->id,

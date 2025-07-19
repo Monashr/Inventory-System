@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Services\TenantService;
 use App\Models\Position;
 use App\Models\User;
+use App\Http\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,38 +18,37 @@ use Nwidart\Modules\Facades\Module;
 
 class AuthController extends Controller
 {
+
+    protected $authService;
+    protected $tenantService;
+
+    public function __construct(AuthService $authService, TenantService $tenantService)
+    {
+        $this->authService = $authService;
+        $this->tenantService = $tenantService;
+    }
+
     public function showLoginForm()
     {
-        if (auth()->check()) {
-            return redirect()->intended('/dashboard');
-        }
+        $this->authService->redirectToDashboardIfAlreadyAuthenticated();
 
         return Inertia::render('Login');
     }
 
     public function showRegisterForm()
     {
-        if (auth()->check()) {
-            return redirect()->intended('/dashboard');
-        }
+        $this->authService->redirectToDashboardIfAlreadyAuthenticated();
 
         return Inertia::render('Register');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        if (auth()->check()) {
-            return redirect()->intended('/dashboard');
-        }
+        $this->authService->redirectToDashboardIfAlreadyAuthenticated();
 
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->validated();
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
+        if ($this->authService->login($credentials, $request)) {
             return redirect()->intended('/dashboard');
         }
 
@@ -54,74 +57,20 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        if (auth()->check()) {
-            return redirect()->intended('/dashboard');
-        }
+        $this->authService->redirectToDashboardIfAlreadyAuthenticated();
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-        ]);
+        $user = $this->authService->register($request);
 
-        $tenant = Tenant::create([
-            'name' => "$request->name Personal Page",
-            'domain' => "-",
-            'database' => "-",
-        ]);
-
-        $tenant->domain = $tenant->id . '-default';
-        $tenant->database = $tenant->id . '-default';
-
-        $tenant->save();
-
-        $position = Position::create([
-            'name' => 'owner',
-            'tenant_id' => $tenant->id,
-        ]);
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
-        $user->positions()->attach($position);
-
-        $userRole = Role::firstOrCreate([
-            'name' => 'user',
-            'tenant_id' => $tenant->id,
-        ]);
-
-        $user->assignRole($tenant->id, $userRole);
-
-        $user->tenants()->attach($tenant->id);
-
-        $modules = Module::allEnabled();
-
-        foreach ($modules as $module) {
-            $moduleName = $module->getLowerName();
-
-            $permissions = config("$moduleName.permissions", []);
-
-            if (!empty($permissions)) {
-                $userRole->giveTenantPermissionTo($tenant->id, ...$permissions);
-            }
-        }
-
-        Auth::login($user);
+        auth()->login($user);
 
         return redirect()->intended('/dashboard');
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $this->authService->logout($request);
 
         return redirect('/login');
     }
@@ -130,15 +79,12 @@ class AuthController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->tenants()->where('tenants.id', $tenantId)->exists()) {
-            session(['active_tenant_id' => $tenantId]);
-
-            // dd(session(['active_tenant_id' => $tenantId]));
+        if ($this->tenantService->checkIfUserInTenant($user, $tenantId)) {
+            $this->tenantService->changeUserActiveTenantSession($tenantId);
 
             return redirect()->back()->with('success', 'Tenant switched.');
         }
 
         abort(403, "Unauthorized tenant");
     }
-
 }

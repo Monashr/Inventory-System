@@ -72,6 +72,11 @@
         "migrate-all": [
             "php artisan migrate:fresh --path=database/migrations/landlord",
             "php artisan migrate"
+        ],
+        "migrate-and-seed-all": [
+            "php artisan migrate:fresh --path=database/migrations/landlord",
+            "php artisan migrate",
+            "php artisan db:seed"
         ]
     },
     "extra": {

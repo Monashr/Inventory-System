@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateTenantRequest;
+use App\Http\Services\PictureService;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
@@ -11,6 +13,13 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
+    protected $pictureService;
+
+    public function __construct(PictureService $pictureService)
+    {
+        $this->pictureService = $pictureService;
+    }
+
     public function dashboard()
     {
         return Inertia::render('DashboardIndex');
@@ -30,37 +39,14 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function updateTenant(Request $request)
+    public function updateTenant(UpdateTenantRequest $request)
     {
         $tenant = tenant();
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'industry' => ['nullable', 'string', 'max:255'],
-            'website' => ['nullable', 'url', 'max:255'],
-            'picture' => ['nullable', 'image', 'max:2048'],
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('picture')) {
-            if ($tenant->picture && Storage::disk('public')->exists($tenant->picture)) {
-                Storage::disk('public')->delete($tenant->picture);
-            }
-
-            $manager = new ImageManager(new Driver());
-            $image = $manager->read($request->file('picture')->getRealPath());
-
-            $image->cover(500, 500);
-
-            $filename = uniqid('profile_') . '.jpg';
-            $path = 'organization_picture/' . $filename;
-
-            Storage::disk('public')->put($path, (string) $image->toJpeg());
-
-            $validated['pictures'] = $path;
+            $validated['pictures'] = $this->pictureService->handlePictureUpload($request->file('picture'), 'organization_picture/', $tenant->picture);
         }
 
         $tenant->update($validated);
