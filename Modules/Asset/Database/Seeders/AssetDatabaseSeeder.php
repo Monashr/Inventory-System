@@ -17,8 +17,9 @@ class AssetDatabaseSeeder extends Seeder
 
         $permissions = [
             'view assets',
-            'edit assets',
-            'delete assets',
+            'manage assets',
+            'repair assets',
+            'audit assets',
         ];
 
         foreach ($permissions as $permission) {

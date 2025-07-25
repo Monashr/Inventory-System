@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
+use Modules\Employee\Http\Services\EmployeeService;
 use Modules\Employee\Models\Inbox;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,12 @@ use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
+    protected $employeeService;
+
+    public function __construct(EmployeeService $employeeService)
+    {
+        $this->employeeService = $employeeService;
+    }
     public function index(Request $request)
     {
 
@@ -24,10 +31,15 @@ class EmployeeController extends Controller
 
         $perPage = $request->input('per_page', 10);
 
-        $employees = auth()->user()->usersFromSameTenant($perPage);
+        $employees = $this->employeeService->getAllEmployeePaginated($request, $perPage);
 
         return Inertia::render('Employee/EmployeesIndex', [
             'employees' => $employees,
+            'filters' => [
+                'search' => $request->search,
+                'sort_by' => $request->sort_by,
+                'sort_direction' => $request->sort_direction,
+            ],
             'authUser' => auth()->user(),
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
@@ -68,7 +80,7 @@ class EmployeeController extends Controller
     }
 
 
-    public function showInbox()
+    public function showInbox(Request $request)
     {
         $inboxes = Inbox::with(['sender', 'tenant'])
             ->where('receiver_id', auth()->id())
@@ -78,6 +90,11 @@ class EmployeeController extends Controller
 
         return Inertia::render("Employee/EmployeesInbox", [
             'inboxes' => $inboxes,
+            'filters' => [
+                'search' => $request->search,
+                'sort_by' => $request->sort_by,
+                'sort_direction' => $request->sort_direction,
+            ],
         ]);
     }
 
@@ -141,7 +158,7 @@ class EmployeeController extends Controller
             ->paginate(10);
 
         return Inertia::render("Employee/EmployeesPermission", [
-            'user' => [
+            'employee' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,

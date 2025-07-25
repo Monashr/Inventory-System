@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->foreignId('loan_id')->constrained()->nullOnDelete();
             $table->dateTime('loaned_date');
             $table->dateTime('return_date')->nullable();
+            $table->enum('loaned_status', ['loaned', 'returned'])->nullable();
             $table->enum('loaned_condition', ['good', 'used', 'defect'])->default('good')->nullable();
             $table->enum('return_condition', ['good', 'used', 'defect'])->nullable();
             $table->timestamps();

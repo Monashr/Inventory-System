@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Dashboard from "@components/layout/Dashboard";
 import { router, useForm, usePage, Link } from "@inertiajs/react";
 
-import { ChevronRight, UserCog, Save } from "lucide-react";
+import { ChevronRight, UserCog, Save, ChevronLeft } from "lucide-react";
 import { Separator } from "@components/ui/separator";
 
 export default function AssignPermissions() {
@@ -34,7 +34,7 @@ export default function AssignPermissions() {
     };
 
     const groupKeywords = {
-        "Items and Units Management": ["item", "items"],
+        "Assets Management": ["asset", "assets"],
         "Employees Management": ["employee", "employees"],
         "Loans Management": ["loan", "loans"],
     };
@@ -63,27 +63,24 @@ export default function AssignPermissions() {
     });
 
     return (
-        <div>
-            <Card className="w-full mx-auto">
-                <div className="flex justify-between items-center px-12 py-6">
-                    <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                        <UserCog className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                        Assign Permission For {user.name}
-                    </h1>
-                    <div>
-                        <Link
-                            href={`/dashboard/employees/permission/${user.id}`}
-                        >
-                            <Button className="cursor-pointer">
-                                Back
-                                <ChevronRight />
-                            </Button>
-                        </Link>
-                    </div>
+        <div className="space-y-4">
+            <div className="flex justify-between items-center px-6 py-2">
+                <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
+                    <UserCog className="w-8 h-8 md:w-10 md:h-10 mr-2" />
+                    Assign Permission For {user.name}
+                </h1>
+                <div>
+                    <Link href={`/dashboard/employees/permission/${user.id}`}>
+                        <Button className="cursor-pointer">
+                            <ChevronLeft />
+                            Back
+                        </Button>
+                    </Link>
                 </div>
-                <Separator />
+            </div>
+            <Card className="w-full mx-auto">
                 <form onSubmit={handleSubmit}>
-                    <CardContent className="space-y-8 px-12">
+                    <CardContent className="space-y-8 px-6">
                         {Object.entries(groupedPermissions).map(
                             ([groupName, perms]) =>
                                 perms.length === 0 ? null : (
@@ -121,12 +118,17 @@ export default function AssignPermissions() {
                                                 </div>
                                             ))}
                                         </div>
+                                        <Separator />
                                     </div>
                                 )
                         )}
 
                         <div className="flex justify-end">
-                            <Button className="cursor-pointer" type="submit" disabled={processing}>
+                            <Button
+                                className="cursor-pointer"
+                                type="submit"
+                                disabled={processing}
+                            >
                                 <Save />
                                 {processing ? "Saving..." : "Save Permissions"}
                             </Button>

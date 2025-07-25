@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->text('description');
             $table->foreignId('user_id')->constrained()->nullOnDelete();
             $table->foreignId('tenant_id')->constrained()->nullOnDelete();
-            $table->enum('status', ['accepted', 'pending', 'rejected', 'canceled'])->default('pending')->nullable();
+            $table->enum('status', ['accepted', 'pending', 'rejected', 'cancelled'])->default('pending')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

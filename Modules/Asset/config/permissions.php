@@ -3,7 +3,8 @@
 return [
     'permissions' => [
         'view' => 'view assets',
-        'edit' => 'edit assets',
-        'delete' => 'delete assets',
+        'manage' => 'manage assets',
+        'repair' => 'repair assets',
+        'audit' => 'audit assets',
     ],
 ];

@@ -126,15 +126,19 @@ export default function LoansForm({ assetTypes, users, loan }) {
             .filter((id) => id);
     };
 
+    const formatDateLocal = (date) => {
+        if (!(date instanceof Date)) return null;
+
+        return date.toLocaleDateString("en-CA");
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const payloadAssets = assetEntries.map((entry) => ({
             asset_type_id: entry.asset_type_id,
             asset_id: entry.asset_id,
-            loaned_date: entry.loaned_date
-                ? entry.loaned_date.toISOString().split("T")[0]
-                : null,
+            loaned_date: formatDateLocal(entry.loaned_date),
         }));
 
         const url = loan ? `/dashboard/loans/${loan.id}` : `/dashboard/loans`;

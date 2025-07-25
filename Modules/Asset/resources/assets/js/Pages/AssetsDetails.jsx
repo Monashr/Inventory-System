@@ -2,16 +2,45 @@ import React from "react";
 
 import { usePage, Link } from "@inertiajs/react";
 import Dashboard from "@components/layout/Dashboard";
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { Input } from "@components/ui/input";
+import {
+    ChevronLeft,
+    Package,
+    Plus,
+    Filter,
+    SearchIcon,
+    Pen,
+    ArrowUpDown,
+} from "lucide-react";
+import {
+    Table,
+    TableHeader,
+    TableRow,
+    TableHead,
+    TableBody,
+    TableCell,
+} from "@components/ui/table";
+import {
+    Select,
+    SelectTrigger,
+    SelectContent,
+    SelectItem,
+    SelectValue,
+} from "@/components/ui/select";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationPrevious,
+    PaginationNext,
+} from "@components/ui/pagination";
 
 function AssetDetail() {
-    const { asset } = usePage().props;
-
-    console.log(asset);
+    const { asset, permissions, log } = usePage().props;
 
     const formatDate = (dateString) => {
         if (!dateString) return "-";
@@ -24,7 +53,6 @@ function AssetDetail() {
                 minute: "2-digit",
             });
         } catch (error) {
-            console.error("Error formatting date:", error);
             return "-";
         }
     };
@@ -38,42 +66,50 @@ function AssetDetail() {
                 day: "numeric",
             });
         } catch (error) {
-            console.error("Error formatting date:", error);
             return "-";
         }
     };
 
     return (
-        <div className="space-y-6">
-            <Card className="p-6 px-8 space-y-6">
-                <div className="flex items-center justify-end sm:justify-between flex-wrap gap-6 p-4 bg-muted/40 rounded-lg shadow-sm border">
-                    <div className="flex items-center justify-center gap-6 flex-wrap">
-                        <Avatar className="w-24 h-24">
-                            <AvatarFallback className="text-4xl font-semibold">
-                                {asset.asset_type?.name?.charAt(0) || "A"}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <h2 className="text-xl lg:text-3xl font-extrabold text-primary">
-                                {asset.serial_code}
-                            </h2>
-                            <p className="text-xl text-muted-foreground">
-                                {asset.brand}
-                            </p>
-                        </div>
+        <div className="space-y-4">
+            <div className="flex items-center justify-between px-6 py-2">
+                <div className="flex items-center justify-center gap-6 flex-wrap">
+                    <Avatar className="w-16 h-16">
+                        <AvatarFallback className="text-4xl font-semibold">
+                            {asset.asset_type?.name?.charAt(0) || "A"}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p-0">
+                            {asset.serial_code}
+                        </h1>
+                        <p className="text-xl text-muted-foreground">
+                            {asset.brand}
+                        </p>
                     </div>
-
-                    <Link href={`/dashboard/assets/${asset.asset_type_id}`}>
+                </div>
+                <div className="flex gap-2">
+                    {permissions.includes("edit assets") ? (
+                        <Link href={`/dashboard/assets/edit/${asset.id}`}>
+                            <Button
+                                className="cursor-pointer"
+                                variant="outline"
+                            >
+                                <Pen className="w-4 h-4" />
+                                Edit
+                            </Button>
+                        </Link>
+                    ) : null}
+                    <Link href={`/dashboard/assets`}>
                         <Button className="cursor-pointer">
+                            <ChevronLeft className="w-4 h-4" />
                             Back
-                            <ChevronRight className="w-4 h-4" />
                         </Button>
                     </Link>
                 </div>
-
-                <Separator />
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
+            </div>
+            <Card className="p-6 px-8">
+                <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-2">
                     <Detail label="Specification" value={asset.specification} />
                     <Detail label="Brand" value={asset.brand} />
                     <Detail
@@ -110,6 +146,161 @@ function AssetDetail() {
                     />
                 </div>
             </Card>
+            {permissions.includes("audit assets") ? (
+                <Card>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between px-6 py-2">
+                                <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
+                                    <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
+                                    Logs
+                                </h1>
+                                <Button
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                >
+                                    <Filter className="w-4 h-4" />
+                                    Filter
+                                </Button>
+                            </div>
+
+                            <Card>
+                                <Table className="border-b">
+                                    <TableHeader>
+                                        <TableRow className="bg-slate-200 hover:bg-slate-200">
+                                            <TableHead className="pl-7">
+                                                <Button
+                                                    variant="ghost"
+                                                    className="cursor-pointer"
+                                                >
+                                                    Activity Date
+                                                    <ArrowUpDown className="w-4 h-4" />
+                                                </Button>
+                                            </TableHead>
+
+                                            <TableHead className="text-left">
+                                                <Button
+                                                    variant="ghost"
+                                                    className="cursor-pointer"
+                                                >
+                                                    User
+                                                    <ArrowUpDown className="w-4 h-4" />
+                                                </Button>
+                                            </TableHead>
+
+                                            <TableHead className="text-right">
+                                                <Button
+                                                    variant="ghost"
+                                                    className="cursor-pointer"
+                                                >
+                                                    Activity Type
+                                                    <ArrowUpDown className="w-4 h-4" />
+                                                </Button>
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {log.data.map((log, index) => (
+                                            <TableRow
+                                                key={asset.id + "" + index}
+                                                className="group relative hover:bg-muted/50"
+                                            >
+                                                <TableCell className="pl-9">
+                                                    {formatDate(
+                                                        log.activity_date
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {log.user.name}
+                                                </TableCell>
+                                                <TableCell className="pr-12 text-right">
+                                                    {log.activity_type}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </Card>
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center justify-center gap-2">
+                                    <Button variant="outline">
+                                        {log.from}-{log.to} of {log.total}
+                                    </Button>
+                                    <Select
+                                        defaultValue={String(log.per_page)}
+                                        onValueChange={(value) => {
+                                            router.get(
+                                                `/dashboard/assets/`,
+                                                {
+                                                    per_page: value,
+                                                },
+                                                {
+                                                    preserveScroll: true,
+                                                }
+                                            );
+                                        }}
+                                    >
+                                        <SelectTrigger className="w-[180px] cursor-pointer">
+                                            <SelectValue placeholder="Select a value" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem
+                                                value="10"
+                                                className="cursor-pointer"
+                                            >
+                                                10
+                                            </SelectItem>
+                                            <SelectItem
+                                                value="25"
+                                                className="cursor-pointer"
+                                            >
+                                                25
+                                            </SelectItem>
+                                            <SelectItem
+                                                value="50"
+                                                className="cursor-pointer"
+                                            >
+                                                50
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <Pagination className="justify-end items-center">
+                                    <PaginationContent>
+                                        {log.prev_page_url && (
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    href={log.prev_page_url}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        router.visit(
+                                                            log.prev_page_url
+                                                        );
+                                                    }}
+                                                />
+                                            </PaginationItem>
+                                        )}
+
+                                        {log.next_page_url && (
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    href={log.next_page_url}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        router.visit(
+                                                            log.next_page_url
+                                                        );
+                                                    }}
+                                                />
+                                            </PaginationItem>
+                                        )}
+                                    </PaginationContent>
+                                </Pagination>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            ) : null}
         </div>
     );
 }

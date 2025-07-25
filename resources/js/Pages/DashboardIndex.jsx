@@ -5,6 +5,7 @@ import Dashboard from "@components/layout/Dashboard";
 
 function DashboardIndex() {
     return (
+
         <div>
             <Head title="Check" />
             <h1 className="text-xl font-bold">CBN Inventory System</h1>

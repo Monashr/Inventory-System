@@ -32,14 +32,14 @@ class AuthController extends Controller
     {
         $this->authService->redirectToDashboardIfAlreadyAuthenticated();
 
-        return Inertia::render('Login');
+        return Inertia::render('LoginForm');
     }
 
     public function showRegisterForm()
     {
         $this->authService->redirectToDashboardIfAlreadyAuthenticated();
 
-        return Inertia::render('Register');
+        return Inertia::render('RegisterForm');
     }
 
     public function login(LoginRequest $request)

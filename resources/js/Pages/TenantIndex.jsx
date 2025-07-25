@@ -4,6 +4,7 @@ import { Card, CardContent } from "@components/ui/card";
 import { Button } from "@components/ui/button";
 import Dashboard from "@components/layout/Dashboard";
 import { Pencil } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 
 function TenantIndex() {
     const { tenant } = usePage().props;
@@ -14,25 +15,31 @@ function TenantIndex() {
                 <Card>
                     <CardContent className="space-y-6 px-8 py-6">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-bold">
-                                Organization
-                            </h2>
+                            <h2 className="text-xl font-bold">Organization</h2>
                             <Link href="/dashboard/tenant/edit">
-                                <Button className="cursor-pointer" variant="outline" size="sm">
+                                <Button
+                                    className="cursor-pointer"
+                                    variant="outline"
+                                    size="sm"
+                                >
                                     <Pencil />
                                     Edit Organization
                                 </Button>
                             </Link>
                         </div>
 
-                        <div className="flex justify-around">
-                            {tenant.pictures && (
+                        <div className="flex justify-around items-center">
+                            {tenant.pictures ? (
                                 <div className="flex justify-center">
                                     <img
                                         src={`/storage/${tenant.pictures}`}
                                         alt="Profile"
                                         className="w-48 h-48 object-cover rounded-full border"
                                     />
+                                </div>
+                            ) : (
+                                <div className="flex justify-center items-center w-48 h-48 rounded-full border text-gray-500 text-sm">
+                                    No Image
                                 </div>
                             )}
 
@@ -47,7 +54,9 @@ function TenantIndex() {
                                     <p className="text-sm text-muted-foreground">
                                         Email
                                     </p>
-                                    <p className="font-medium">{tenant.email}</p>
+                                    <p className="font-medium">
+                                        {tenant.email}
+                                    </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">

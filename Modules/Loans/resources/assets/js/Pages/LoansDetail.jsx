@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import Dashboard from "@components/layout/Dashboard";
 import { Link, usePage } from "@inertiajs/react";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import Calendar08 from "@components/calendar-08";
 import { ChevronRight, PackageOpen, Pencil, Plus } from "lucide-react";
 import { Button } from "@components/ui/button";
+import { Separator } from "@components/ui/separator";
+import { router } from "@inertiajs/react";
+import {
+    Select,
+    SelectTrigger,
+    SelectContent,
+    SelectItem,
+    SelectValue,
+} from "@/components/ui/select";
 
 function LoansDetail() {
     const { loan } = usePage().props;
+
+    const [returnDates, setReturnDates] = useState([]);
+    const [returnConditions, setReturnConditions] = useState([]);
 
     const formatDateNoHour = (dateString) => {
         if (!dateString) return "-";
@@ -21,6 +39,11 @@ function LoansDetail() {
             return null;
         }
     };
+
+    const isAnyAssetUnavailable = loan.assets.some(
+        (asset) =>
+            asset.avaibility === "loaned" || asset.avaibility === "defect"
+    );
 
     return (
         <div>
@@ -120,20 +143,163 @@ function LoansDetail() {
                                 >
                                     <CardHeader className="px-6 py-4 rounded-t-xl border-b">
                                         <CardTitle className="flex justify-between items-center text-lg font-bold text-gray-900">
-                                            {console.log(entry)}
-                                            <div>
+                                            <div className="flex items-center gap-2">
                                                 {index + 1}.{" "}
                                                 {entry.asset_type?.name} (
                                                 {entry.serial_code})
+                                                {entry.pivot.loaned_status ===
+                                                "loaned" ? (
+                                                    <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">
+                                                        Loaned
+                                                    </span>
+                                                ) : entry.pivot
+                                                      .loaned_status ===
+                                                  "returned" ? (
+                                                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">
+                                                        Returned
+                                                    </span>
+                                                ) : null}
+                                                {entry.avaibility ===
+                                                    "defect" && (
+                                                    <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">
+                                                        Defective
+                                                    </span>
+                                                )}
                                             </div>
-                                            <Link
-                                                href={`/dashboard/assets/${entry.pivot?.asset_id}/details`}
-                                            >
-                                                <Button className="cursor-pointer">
-                                                    Asset Details{" "}
-                                                    <ChevronRight />
-                                                </Button>
-                                            </Link>
+                                            <div className="flex gap-2 justify-center items-center">
+                                                {loan.status === "accepted" &&
+                                                    entry.pivot
+                                                        .loaned_status ===
+                                                        "loaned" && (
+                                                        <Popover>
+                                                            <PopoverTrigger
+                                                                asChild
+                                                            >
+                                                                <Button
+                                                                    variant="outline"
+                                                                    className="text-sm"
+                                                                >
+                                                                    Return Asset
+                                                                </Button>
+                                                            </PopoverTrigger>
+
+                                                            <PopoverContent className="w-fit space-y-4">
+                                                                <div className="flex flex-col md:flex-row md:items-start gap-6">
+                                                                    {/* Calendar */}
+                                                                    <div className="flex flex-col space-y-2 min-w-[220px]">
+                                                                        <Label className="text-sm">
+                                                                            Return
+                                                                            Date
+                                                                        </Label>
+                                                                        <Calendar08
+                                                                            value={
+                                                                                returnDates[
+                                                                                    index
+                                                                                ] ||
+                                                                                null
+                                                                            }
+                                                                            onChange={(
+                                                                                val
+                                                                            ) => {
+                                                                                const updated =
+                                                                                    [
+                                                                                        ...returnDates,
+                                                                                    ];
+                                                                                updated[
+                                                                                    index
+                                                                                ] =
+                                                                                    val;
+                                                                                setReturnDates(
+                                                                                    updated
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </div>
+
+                                                                    {/* Condition */}
+                                                                    <div className="flex flex-col space-y-2 min-w-[160px]">
+                                                                        <Label className="text-sm">
+                                                                            Condition
+                                                                        </Label>
+                                                                        <Select
+                                                                            value={
+                                                                                returnConditions[
+                                                                                    index
+                                                                                ] ||
+                                                                                ""
+                                                                            }
+                                                                            onValueChange={(
+                                                                                val
+                                                                            ) => {
+                                                                                const updated =
+                                                                                    [
+                                                                                        ...returnConditions,
+                                                                                    ];
+                                                                                updated[
+                                                                                    index
+                                                                                ] =
+                                                                                    val;
+                                                                                setReturnConditions(
+                                                                                    updated
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <SelectTrigger>
+                                                                                <SelectValue placeholder="Select Condition" />
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                <SelectItem value="good">
+                                                                                    Good
+                                                                                </SelectItem>
+                                                                                <SelectItem value="used">
+                                                                                    Used
+                                                                                </SelectItem>
+                                                                                <SelectItem value="defect">
+                                                                                    Defect
+                                                                                </SelectItem>
+                                                                            </SelectContent>
+                                                                        </Select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div>
+                                                                    <Button
+                                                                        className="w-full"
+                                                                        onClick={() =>
+                                                                            router.post(
+                                                                                `/dashboard/loans/${loan.id}/return`,
+                                                                                {
+                                                                                    asset_id:
+                                                                                        entry.id,
+                                                                                    return_date:
+                                                                                        returnDates[
+                                                                                            index
+                                                                                        ],
+                                                                                    return_condition:
+                                                                                        returnConditions[
+                                                                                            index
+                                                                                        ],
+                                                                                }
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Submit
+                                                                        Return
+                                                                    </Button>
+                                                                </div>
+                                                            </PopoverContent>
+                                                        </Popover>
+                                                    )}
+
+                                                <Link
+                                                    href={`/dashboard/assets/${entry.pivot?.asset_id}/details`}
+                                                >
+                                                    <Button className="cursor-pointer">
+                                                        Asset Details{" "}
+                                                        <ChevronRight />
+                                                    </Button>
+                                                </Link>
+                                            </div>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="p-6 space-y-4">
@@ -186,18 +352,19 @@ function LoansDetail() {
                                                 </Label>
                                                 <div
                                                     className={`mt-1 p-2 rounded text-sm border ${
-                                                        entry.return_date
+                                                        entry.pivot.return_date
                                                             ? "bg-gray-100 border-gray-200 text-gray-700"
                                                             : "bg-red-50 border-red-200 text-red-600 font-semibold"
                                                     }`}
                                                 >
                                                     {formatDateNoHour(
-                                                        entry.return_date
+                                                        entry.pivot.return_date
                                                     ) === "-"
                                                         ? "Not Returned Yet"
                                                         : formatDateNoHour(
-                                                              entry.return_date
+                                                              entry.pivot.return_date
                                                           )}
+
                                                 </div>
                                             </div>
                                             <div>
@@ -206,12 +373,12 @@ function LoansDetail() {
                                                 </Label>
                                                 <div
                                                     className={`mt-1 p-2 rounded text-sm border ${
-                                                        entry.return_date
+                                                        entry.pivot.return_condition
                                                             ? "bg-gray-100 border-gray-200 text-gray-700"
                                                             : "bg-red-50 border-red-200 text-red-600 font-semibold"
                                                     }`}
                                                 >
-                                                    {entry.return_condition ||
+                                                    {entry.pivot.return_condition ||
                                                         "Not Returned Yet"}
                                                 </div>
                                             </div>
@@ -221,6 +388,45 @@ function LoansDetail() {
                             ))
                         )}
                     </div>
+
+                    {!["cancelled", "rejected", "accepted"].includes(
+                        loan.status
+                    ) && (
+                        <>
+                            <Separator />
+
+                            <div className="flex justify-start items-center gap-2">
+                                <Button
+                                    onClick={() =>
+                                        router.post(
+                                            `/dashboard/loans/${loan.id}/cancel`
+                                        )
+                                    }
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={() =>
+                                        router.post(
+                                            `/dashboard/loans/${loan.id}/reject`
+                                        )
+                                    }
+                                >
+                                    Reject
+                                </Button>
+                                <Button
+                                    disabled={isAnyAssetUnavailable}
+                                    onClick={() =>
+                                        router.post(
+                                            `/dashboard/loans/${loan.id}/accept`
+                                        )
+                                    }
+                                >
+                                    Accept
+                                </Button>
+                            </div>
+                        </>
+                    )}
                 </CardContent>
             </Card>
         </div>

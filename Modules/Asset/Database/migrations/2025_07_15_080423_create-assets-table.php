@@ -15,6 +15,13 @@ return new class extends Migration {
             $table->string('name');
             $table->string('model');
             $table->foreignId('tenant_id')->constrained()->nullOnDelete();
+            $table->foreignId('created_by')->nullable();
+            $table->foreignId('updated_by')->nullable();
+            $table->foreignId('deleted_by')->nullable();
+
+            $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('deleted_by')->references('id')->on('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,7 +37,7 @@ return new class extends Migration {
             $table->decimal('purchase_price')->nullable();
             $table->enum('initial_condition', ['new', 'used', 'defect'])->default('new');
             $table->enum('condition', ['good', 'used', 'defect'])->default('good');
-            $table->enum('avaibility', ['available', 'loaned', 'repair'])->default('available');
+            $table->enum('avaibility', ['available', 'pending', 'loaned', 'repair'])->default('available');
             $table->foreignId('created_by')->nullable();
             $table->foreignId('updated_by')->nullable();
             $table->foreignId('deleted_by')->nullable();

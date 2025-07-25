@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ChevronRight, Save } from "lucide-react";
+import { Package, ChevronRight, Save, ChevronLeft } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -32,30 +32,31 @@ function AssetCreate() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post("/dashboard/assets/add/assets", {
+        post("/dashboard/assets/add", {
             onSuccess: () => reset(),
         });
     };
 
     return (
-        <div className="space-y-6">
-            <Card className="p-6 md:p-8 space-y-6">
-                <div className="flex items-center justify-between border-b pb-4 border-border">
-                    <h1 className="text-2xl font-bold">Add New Asset</h1>
-                    <Link href="/dashboard/assets">
-                        <Button className="cursor-pointer">
-                            Back
-                            <ChevronRight className="w-4 h-4" />
-                        </Button>
-                    </Link>
-                </div>
-
+        <div className="space-y-4">
+            <div className="flex items-center justify-between px-6 py-2">
+                <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p-0">
+                    <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
+                    Add New Asset
+                </h1>
+                <Link href="/dashboard/assets">
+                    <Button className="cursor-pointer">
+                        <ChevronLeft className="w-4 h-4" />
+                        Back
+                    </Button>
+                </Link>
+            </div>
+            <Card className="px-6 py-8 space-y-2">
                 <form
                     onSubmit={handleSubmit}
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
                 >
-                    {/* Asset Type */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="asset_type_id">Asset Type</Label>
                         <Select
                             value={data.asset_type_id}
@@ -97,8 +98,7 @@ function AssetCreate() {
                         )}
                     </div>
 
-                    {/* Serial Code */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="serial_code">Serial Code</Label>
                         <Input
                             type="text"
@@ -113,8 +113,7 @@ function AssetCreate() {
                         )}
                     </div>
 
-                    {/* Brand */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="brand">Brand</Label>
                         <Input
                             type="text"
@@ -129,8 +128,7 @@ function AssetCreate() {
                         )}
                     </div>
 
-                    {/* Purchase Price */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="purchase_price">Purchase Price</Label>
                         <Input
                             type="number"
@@ -148,8 +146,7 @@ function AssetCreate() {
                         )}
                     </div>
 
-                    {/* Specification */}
-                    <div className="sm:col-span-3">
+                    <div className="sm:col-span-3 space-y-2">
                         <Label htmlFor="specification">Specification</Label>
                         <Textarea
                             id="specification"
@@ -165,8 +162,7 @@ function AssetCreate() {
                         )}
                     </div>
 
-                    {/* Purchase Date */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="purchase_date">Purchase Date</Label>
                         <Input
                             type="date"
@@ -183,8 +179,7 @@ function AssetCreate() {
                         )}
                     </div>
 
-                    {/* Initial Condition */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="initial_condition">
                             Initial Condition
                         </Label>
@@ -216,8 +211,7 @@ function AssetCreate() {
                         </Select>
                     </div>
 
-                    {/* Current Condition */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="condition">Current Condition</Label>
                         <Select
                             value={data.condition}
@@ -237,8 +231,7 @@ function AssetCreate() {
                         </Select>
                     </div>
 
-                    {/* Availability */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="avaibility">Availability</Label>
                         <Select
                             value={data.avaibility}
@@ -260,9 +253,12 @@ function AssetCreate() {
                         </Select>
                     </div>
 
-                    {/* Submit Button */}
-                    <div className=" flex justify-end pt-2">
-                        <Button type="submit" className="cursor-pointer" disabled={processing}>
+                    <div className="flex justify-end items-center">
+                        <Button
+                            type="submit"
+                            className="cursor-pointer"
+                            disabled={processing}
+                        >
                             Save Asset
                             <Save className="w-4 h-4 mr-2" />
                         </Button>

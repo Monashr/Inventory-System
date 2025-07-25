@@ -7,11 +7,13 @@ Route::middleware(['auth', 'tenant'])->prefix('dashboard/employees')->name('empl
     Route::get('/', [EmployeeController::class, 'index'])->name('index');
     Route::post('/add', [EmployeeController::class, 'store'])->name('store');
 
-    Route::get('/inbox', [EmployeeController::class, 'showInbox'])->name('inbox');
-    Route::post('/inbox/accept/{id}', [EmployeeController::class, 'acceptInvitation'])->name('accept');
-    Route::delete('/inbox/decline/{id}', [EmployeeController::class, 'declineInvitation'])->name('decline');
-
     Route::get('/permission/{id}', [EmployeeController::class, 'showPermission'])->name('permission');
     Route::get('/permissions/{id}', [EmployeeController::class, 'showAddPermissionForm'])->name('permission.edit');
     Route::post('/permissions/{id}', [EmployeeController::class, 'assignPermissions'])->name('permission.assign');
+});
+
+Route::middleware(['auth', 'tenant'])->prefix('dashboard/inbox')->name('inbox.')->group(function () {
+    Route::get('/', [EmployeeController::class, 'showInbox'])->name('index');
+    Route::post('/accept/{id}', [EmployeeController::class, 'acceptInvitation'])->name('accept');
+    Route::delete('/decline/{id}', [EmployeeController::class, 'declineInvitation'])->name('decline');
 });

@@ -12,8 +12,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Save } from "lucide-react";
+import { Save, Package, ChevronLeft } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 function AssetsEdit() {
     const { asset, assetTypes } = usePage().props;
@@ -32,32 +32,29 @@ function AssetsEdit() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/dashboard/assets/edit/assets/${asset.id}`);
+        put(`/dashboard/assets/edit/${asset.id}`);
     };
 
     return (
-        <div className="space-y-6">
-            <Card className="p-6 md:p-8 space-y-6">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-primary">
-                        Edit Asset
-                    </h2>
-                    <Link href={`/dashboard/assets/${asset.asset_type_id}`}>
-                        <Button variant="outline">
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back
-                        </Button>
-                    </Link>
-                </div>
-
-                <Separator />
-
+        <div className="space-y-4">
+            <div className="flex items-center justify-between px-6 py-2">
+                <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p-0">
+                    <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
+                    Edit Asset
+                </h1>
+                <Link href={`/dashboard/assets/${asset.id}/details`}>
+                    <Button className="cursor-pointer">
+                        <ChevronLeft className="w-4 h-4" />
+                        Back
+                    </Button>
+                </Link>
+            </div>
+            <Card className="px-6 py-8 space-y-2">
                 <form
                     onSubmit={handleSubmit}
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
                 >
-                    {/* Asset Type */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="asset_type_id">Asset Type</Label>
                         <Select
                             value={data.asset_type_id}
@@ -87,8 +84,7 @@ function AssetsEdit() {
                         )}
                     </div>
 
-                    {/* Serial Code */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="serial_code">Serial Code</Label>
                         <Input
                             type="text"
@@ -105,8 +101,7 @@ function AssetsEdit() {
                         )}
                     </div>
 
-                    {/* Brand */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="brand">Brand</Label>
                         <Input
                             type="text"
@@ -115,8 +110,7 @@ function AssetsEdit() {
                         />
                     </div>
 
-                    {/* Purchase Price */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="purchase_price">Purchase Price</Label>
                         <Input
                             type="number"
@@ -127,11 +121,10 @@ function AssetsEdit() {
                         />
                     </div>
 
-                    {/* Specification */}
-                    <div className="sm:col-span-2 lg:col-span-3">
+                    <div className="sm:col-span-3 space-y-2">
                         <Label htmlFor="specification">Specification</Label>
-                        <Input
-                            type="text"
+                        <Textarea
+                            id="specification"
                             value={data.specification}
                             onChange={(e) =>
                                 setData("specification", e.target.value)
@@ -139,8 +132,7 @@ function AssetsEdit() {
                         />
                     </div>
 
-                    {/* Purchase Date */}
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="purchase_date">Purchase Date</Label>
                         <Input
                             type="date"
@@ -151,8 +143,7 @@ function AssetsEdit() {
                         />
                     </div>
 
-                    {/* Initial Condition */}
-                    <div>
+                    <div className="space-y-2">
                         <Label>Initial Condition</Label>
                         <Select
                             value={data.initial_condition}
@@ -176,8 +167,7 @@ function AssetsEdit() {
                         </Select>
                     </div>
 
-                    {/* Current Condition */}
-                    <div>
+                    <div className="space-y-2">
                         <Label>Current Condition</Label>
                         <Select
                             value={data.condition}
@@ -196,8 +186,7 @@ function AssetsEdit() {
                         </Select>
                     </div>
 
-                    {/* Availability */}
-                    <div>
+                    <div className="space-y-2">
                         <Label>Availability</Label>
                         <Select
                             value={data.avaibility}
@@ -219,8 +208,7 @@ function AssetsEdit() {
                         </Select>
                     </div>
 
-                    {/* Submit Button */}
-                    <div className="flex justify-end">
+                    <div className="flex justify-end items-center">
                         <Button type="submit" className="cursor-pointer">
                             Update Asset
                             <Save className="w-4 h-4 mr-2" />

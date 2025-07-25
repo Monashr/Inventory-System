@@ -1,13 +1,23 @@
 import React from "react";
-import { usePage, router, Link } from "@inertiajs/react";
+import { usePage, router, Link, Head } from "@inertiajs/react";
 
-import { Package, Plus, SquarePen } from "lucide-react";
+import {
+    Package,
+    Plus,
+    SquarePen,
+    ChevronRight,
+    Filter,
+    SearchIcon,
+    ArrowUpDown,
+} from "lucide-react";
 
 import { Button } from "@components/ui/button";
 import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 import { Card, CardContent } from "@components/ui/card";
 import Dashboard from "@components/layout/Dashboard";
-import ItemsAddForm from "./AssetTypesAdd";
+import AssetTypesForm from "./AssetTypesAdd";
+
+import { Input } from "@components/ui/input";
 
 import {
     Table,
@@ -43,206 +53,323 @@ import {
 } from "@/components/ui/dialog";
 
 function AssetTypesIndex() {
-    const { assetTypes, permissions } = usePage().props;
+    const { assetTypes, permissions, filters } = usePage().props;
     const [open, setOpen] = React.useState(false);
+    const [search, setSearch] = React.useState(filters.search || "");
+    const sortBy = filters.sort_by || "";
+    const sortDirection = filters.sort_direction || "";
+
+    const handleSort = (column) => {
+        let direction = "asc";
+        if (sortBy === column && sortDirection === "asc") {
+            direction = "desc";
+        }
+
+        router.get(
+            "/dashboard/assettypes",
+            {
+                search,
+                per_page: assetTypes.per_page,
+                sort_by: column,
+                sort_direction: direction,
+            },
+            { preserveScroll: true }
+        );
+    };
+
+    const formatDateNoHour = (dateString) => {
+        if (!dateString) return "-";
+        try {
+            return new Date(dateString).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            });
+        } catch (error) {
+            return "-";
+        }
+    };
 
     return (
         <div>
-            <Card className="w-full mx-auto">
-                <CardContent className="space-y-4">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead colSpan={4}>
-                                    <div className="flex items-center justify-between px-4 py-6">
-                                        <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                                            <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                                            Assets
-                                        </h1>
-                                        <div className="flex gap-2">
-                                            <Pagination className="justify-end items-center">
-                                                <PaginationContent>
-                                                    {assetTypes.prev_page_url && (
-                                                        <PaginationItem>
-                                                            <PaginationPrevious
-                                                                href={
-                                                                    assetTypes.prev_page_url
-                                                                }
-                                                                onClick={(
-                                                                    e
-                                                                ) => {
-                                                                    e.preventDefault();
-                                                                    router.visit(
-                                                                        assetTypes.prev_page_url
-                                                                    );
-                                                                }}
-                                                            />
-                                                        </PaginationItem>
-                                                    )}
+            <Head title="New Page Title" />
+            <div className="w-full mx-auto">
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between px-6 py-2">
+                        <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
+                            <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
+                            Asset Types
+                        </h1>
 
-                                                    {assetTypes.next_page_url && (
-                                                        <PaginationItem>
-                                                            <PaginationNext
-                                                                href={
-                                                                    assetTypes.next_page_url
-                                                                }
-                                                                onClick={(
-                                                                    e
-                                                                ) => {
-                                                                    e.preventDefault();
-                                                                    router.visit(
-                                                                        assetTypes.next_page_url
-                                                                    );
-                                                                }}
-                                                            />
-                                                        </PaginationItem>
-                                                    )}
-                                                </PaginationContent>
-                                            </Pagination>
-                                            <Button variant="outline">
-                                                {assetTypes.from}-{assetTypes.to} of{" "}
-                                                {assetTypes.total}
-                                            </Button>
-                                            <Select
-                                                defaultValue={String(
-                                                    assetTypes.per_page
+                        {permissions.includes("manage assets") ? (
+                            <Dialog open={open} onOpenChange={setOpen}>
+                                <DialogTrigger
+                                    className="cursor-pointer"
+                                    asChild
+                                >
+                                    <Button>
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Add Asset Type
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            Add New Asset Type
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <AssetTypesForm
+                                        onClose={() => setOpen(false)}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        ) : null}
+                    </div>
+                    <Card>
+                        <div className="flex justify-between px-6">
+                            <Button
+                                variant="outline"
+                                className="cursor-pointer"
+                            >
+                                <Filter className="w-4 h-4" />
+                                Filter
+                            </Button>
+                            <div className="flex w-full max-w-sm items-center gap-2">
+                                <Input
+                                    type="text"
+                                    placeholder="Search"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                                <Button
+                                    type="submit"
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                    onClick={() =>
+                                        router.get(
+                                            "/dashboard/assettypes",
+                                            {
+                                                per_page: assetTypes.per_page,
+                                                search,
+                                                sort_by: sortBy,
+                                                sort_direction: sortDirection,
+                                            },
+                                            { preserveScroll: true }
+                                        )
+                                    }
+                                >
+                                    <SearchIcon className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+                        <Table className="border-b">
+                            <TableHeader>
+                                <TableRow className="bg-slate-200 hover:bg-slate-200">
+                                    <TableHead className="pl-7">
+                                        <Button
+                                            variant={
+                                                filters.sort_by === "name"
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                            className="cursor-pointer"
+                                            onClick={() => handleSort("name")}
+                                        >
+                                            Name
+                                            <ArrowUpDown className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </TableHead>
+                                    <TableHead className="pr-6">
+                                        <Button
+                                            variant={
+                                                filters.sort_by === "model"
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                            className="cursor-pointer"
+                                            onClick={() => handleSort("model")}
+                                        >
+                                            Model
+                                            <ArrowUpDown className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </TableHead>
+                                    <TableHead className="w-full text-right pr-6">
+                                        <Button
+                                            variant={
+                                                filters.sort_by === "created_at"
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                            className="cursor-pointer"
+                                            onClick={() =>
+                                                handleSort("created_at")
+                                            }
+                                        >
+                                            Created At
+                                            <ArrowUpDown className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {assetTypes?.data?.length > 0 ? (
+                                    assetTypes?.data?.map((assetType) => (
+                                        <TableRow
+                                            key={assetType.id}
+                                            className="group relative hover:bg-muted/50 cursor-pointer"
+                                            onClick={() =>
+                                                router.visit(
+                                                    `/dashboard/assettypes/${assetType.id}`
+                                                )
+                                            }
+                                        >
+                                            <TableCell className="text-left font-medium pl-10">
+                                                {assetType.name}
+                                            </TableCell>
+                                            <TableCell className="text-left font-medium">
+                                                {assetType.model}
+                                            </TableCell>
+                                            <TableCell className="text-right font-medium pr-10">
+                                                {formatDateNoHour(
+                                                    assetType.created_at
                                                 )}
-                                                onValueChange={(value) => {
-                                                    router.get(
-                                                        "/dashboard/assets",
-                                                        { per_page: value },
-                                                        { preserveScroll: true }
-                                                    );
-                                                }}
-                                            >
-                                                <SelectTrigger className="w-[180px] cursor-pointer">
-                                                    <SelectValue placeholder="Select a value" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem
-                                                        value="10"
-                                                        className="cursor-pointer"
-                                                    >
-                                                        10
-                                                    </SelectItem>
-                                                    <SelectItem
-                                                        value="25"
-                                                        className="cursor-pointer"
-                                                    >
-                                                        25
-                                                    </SelectItem>
-                                                    <SelectItem
-                                                        value="50"
-                                                        className="cursor-pointer"
-                                                    >
-                                                        50
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            {permissions.includes(
-                                                "edit assets"
-                                            ) ? (
-                                                <Dialog
-                                                    open={open}
-                                                    onOpenChange={setOpen}
-                                                >
-                                                    <DialogTrigger
-                                                        className="cursor-pointer"
-                                                        asChild
-                                                    >
-                                                        <Button>
-                                                            <Plus className="mr-2 h-4 w-4" />
-                                                            Add Asset
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="sm:max-w-md">
-                                                        <DialogHeader>
-                                                            <DialogTitle>
-                                                                Add New Asset
-                                                            </DialogTitle>
-                                                        </DialogHeader>
-                                                        <ItemsAddForm
-                                                            onClose={() =>
-                                                                setOpen(false)
+                                                <div className="absolute bg-[#F2F2F3] right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
+                                                    {permissions.includes(
+                                                        "manage assets"
+                                                    ) ? (
+                                                        <Link
+                                                            href={`/dashboard/assettypes/edit/${assetType.id}`}
+                                                            onClick={(e) =>
+                                                                e.stopPropagation()
                                                             }
-                                                        />
-                                                    </DialogContent>
-                                                </Dialog>
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                </TableHead>
-                            </TableRow>
-                            <TableRow className="bg-slate-200 hover:bg-slate-200">
-                                <TableHead className="text-left px-9">
-                                    Name
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {assetTypes?.data?.length > 0 ? (
-                                assetTypes.data.map((assetType) => (
-                                    <TableRow
-                                        key={assetType.id}
-                                        className="group relative hover:bg-muted/50 cursor-pointer"
-                                        onClick={() =>
-                                            router.visit(
-                                                `/dashboard/assets/${assetType.id}`
-                                            )
-                                        }
-                                    >
-                                        <TableCell className="text-lft font-medium px-9">
-                                            {assetType.name}
-                                            <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
-                                                {permissions.includes(
-                                                    "edit assets"
-                                                ) ? (
-                                                    <Link
-                                                        href={`/dashboard/assets/edit/${assetType.id}`}
-                                                        onClick={(e) =>
-                                                            e.stopPropagation()
-                                                        }
-                                                    >
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            className="cursor-pointer"
                                                         >
-                                                            <SquarePen />
-                                                        </Button>
-                                                    </Link>
-                                                ) : null}
-                                                {permissions.includes(
-                                                    "delete assets"
-                                                ) ? (
-                                                    <div
-                                                        onClick={(e) =>
-                                                            e.stopPropagation()
-                                                        }
-                                                    >
-                                                        <DeleteAlertDialog
-                                                            itemId={assetType.id}
-                                                        />
-                                                    </div>
-                                                ) : null}
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline"
+                                                                className="cursor-pointer"
+                                                            >
+                                                                <SquarePen />
+                                                            </Button>
+                                                        </Link>
+                                                    ) : null}
+                                                    {permissions.includes(
+                                                        "manage assets"
+                                                    ) ? (
+                                                        <div
+                                                            onClick={(e) =>
+                                                                e.stopPropagation()
+                                                            }
+                                                        >
+                                                            <DeleteAlertDialog
+                                                                url={`/dashboard/assettypes/delete/${assetType.id}`}
+                                                            />
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={5}
+                                            className="text-center py-12 px-6"
+                                        >
+                                            <div className="flex flex-col gap-4">
+                                                <img
+                                                    src="/NoExist.svg"
+                                                    alt="no exist"
+                                                    className="max-w-60 m-auto"
+                                                />
+                                                No Assets found.
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={4}
-                                        className="text-center py-6"
+                                )}
+                            </TableBody>
+                        </Table>
+                    </Card>
+
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center justify-center gap-2">
+                            <Button variant="outline">
+                                {assetTypes.from}-{assetTypes.to} of{" "}
+                                {assetTypes.total}
+                            </Button>
+                            <Select
+                                defaultValue={String(assetTypes.per_page)}
+                                onValueChange={(value) => {
+                                    router.get(
+                                        "/dashboard/assettypes",
+                                        {
+                                            per_page: value,
+                                            search,
+                                            sort_by: sortBy,
+                                            sort_direction: sortDirection,
+                                        },
+                                        { preserveScroll: true }
+                                    );
+                                }}
+                            >
+                                <SelectTrigger className="w-[180px] cursor-pointer">
+                                    <SelectValue placeholder="Select a value" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem
+                                        value="10"
+                                        className="cursor-pointer"
                                     >
-                                        No assets found.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                                        10
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="25"
+                                        className="cursor-pointer"
+                                    >
+                                        25
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="50"
+                                        className="cursor-pointer"
+                                    >
+                                        50
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Pagination className="justify-end items-center">
+                            <PaginationContent>
+                                {assetTypes.prev_page_url && (
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            href={assetTypes.prev_page_url}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                router.visit(
+                                                    assetTypes.prev_page_url
+                                                );
+                                            }}
+                                        />
+                                    </PaginationItem>
+                                )}
+
+                                {assetTypes.next_page_url && (
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            href={assetTypes.next_page_url}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                router.visit(
+                                                    assetTypes.next_page_url
+                                                );
+                                            }}
+                                        />
+                                    </PaginationItem>
+                                )}
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

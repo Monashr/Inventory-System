@@ -10,12 +10,12 @@ export default function AssetTypesAdd({ onClose }) {
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         model: "",
-        unit: "",
+        asset: "",
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post("/dashboard/assets/add", {
+        post("/dashboard/assettypes/add", {
             onSuccess: () => {
                 onClose?.();
             },
@@ -29,7 +29,7 @@ export default function AssetTypesAdd({ onClose }) {
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Asset Type Name</Label>
+                            <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
                                 value={data.name}
@@ -45,7 +45,7 @@ export default function AssetTypesAdd({ onClose }) {
                             )}
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="model">Asset Type Model</Label>
+                            <Label htmlFor="model">Model</Label>
                             <Input
                                 id="model"
                                 value={data.model}
@@ -57,23 +57,6 @@ export default function AssetTypesAdd({ onClose }) {
                             {errors.model && (
                                 <p className="text-sm text-red-500">
                                     {errors.model}
-                                </p>
-                            )}
-                        </div>
-                        <div className="flex-1 space-y-2">
-                            <Label htmlFor="unit">Total Unit</Label>
-                            <Input
-                                id="unit"
-                                type="number"
-                                value={data.unit}
-                                onChange={(e) =>
-                                    setData("unit", e.target.value)
-                                }
-                                placeholder="Enter asset quantity"
-                            />
-                            {errors.unit && (
-                                <p className="text-sm text-red-500">
-                                    {errors.unit}
                                 </p>
                             )}
                         </div>

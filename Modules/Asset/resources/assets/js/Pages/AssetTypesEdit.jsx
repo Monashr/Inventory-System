@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useForm, usePage } from "@inertiajs/react";
 
-import { ChevronRight, Package } from "lucide-react";
+import { ChevronLeft, ChevronRight, Package } from "lucide-react";
 
 import Dashboard from "@components/layout/Dashboard";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -19,7 +19,7 @@ function AssetTypesEdit() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/dashboard/assets/edit/${assetType.id}`, {
+        put(`/dashboard/assettypes/edit/${assetType.id}`, {
             onError: () => {},
         });
     };
@@ -33,10 +33,10 @@ function AssetTypesEdit() {
                             <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
                             Edit Asset Type
                         </h1>
-                        <Link href={`/dashboard/assets/${assetType.id}`}>
+                        <Link href={`/dashboard/assettypes/${assetType.id}`}>
                             <Button className="cursor-pointer">
+                                <ChevronLeft className="w-4 h-4" />
                                 Back
-                                <ChevronRight />
                             </Button>
                         </Link>
                     </CardTitle>

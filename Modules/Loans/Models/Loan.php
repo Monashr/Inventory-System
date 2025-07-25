@@ -18,12 +18,12 @@ class Loan extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['user_id', 'name', 'description'];
+    protected $fillable = ['user_id', 'name', 'description', 'status'];
 
     public function assets(): BelongsToMany
     {
         return $this->belongsToMany(Asset::class)
-            ->withPivot('loaned_date', 'return_date', 'loaned_condition', 'return_condition')
+            ->withPivot('loaned_date', 'return_date', 'loaned_condition', 'return_condition', 'loaned_status')
             ->with('assetType')
             ->withTimestamps();
     }
