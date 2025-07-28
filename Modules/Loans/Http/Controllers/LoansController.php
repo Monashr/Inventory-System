@@ -10,6 +10,7 @@ use Modules\Asset\Models\Asset;
 use Modules\Loans\Models\Loan;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Exception;
 
 class LoansController extends Controller
 {
@@ -37,32 +38,23 @@ class LoansController extends Controller
         ]);
     }
 
-    public function concept(Request $request)
+    public function showAddLoans(Request $request)
     {
+
         $perPage = 10;
-
-        return Inertia::render('Loans/Concept', [
-            'assets' => $this->assetService->getAssetPagination($request, $perPage),
-            'permissions' => auth()->user()->getTenantPermission(),
-        ]);
-    }
-
-    public function showAddLoans()
-    {
-
-        $assetTypes = AssetType::all();
         $users = auth()->user()->usersFromSameTenant();
 
         return Inertia::render('Loans/LoansAdd', [
-            'assetTypes' => $assetTypes,
+            'assets' => $this->assetService->getAssetPagination($request, $perPage),
             'users' => $users,
+            'permissions' => auth()->user()->getTenantPermission(),
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'loaner' => 'required|string|max:255',
+            'loaner' => 'required|numeric',
             'description' => 'nullable|string|max:1000',
             'assets' => 'required|array|min:1',
             'assets.*.asset_type_id' => 'required|integer|exists:asset_types,id',
@@ -90,7 +82,7 @@ class LoansController extends Controller
             DB::commit();
 
             return redirect()->route('loans.index')->with('success', 'Loan created successfully.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             report($e);
             dd($e);

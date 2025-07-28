@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Modules\Asset\Exports\AssetExport;
 use Modules\Asset\Http\Controllers\AssetController;
-use Modules\Asset\Http\Controllers\AssetLogController;
+use Modules\Asset\Http\Controllers\AssetImportController;
 use Modules\Asset\Http\Controllers\AssetTypeController;
 use Modules\Asset\Http\Controllers\RepairController;
 
@@ -20,6 +22,11 @@ Route::middleware(['auth', 'tenant'])->prefix('dashboard/assets')->name('assets.
     Route::delete('/delete/{asset}', [AssetController::class, 'destroy'])->name('delete');
 
     Route::get('/api/{assetType}/assets', [AssetController::class, 'getAssets'])->name('asset.api');
+    Route::post('/import', [AssetImportController::class, 'import'])->name('import');
+    Route::get('/template', [AssetImportController::class, 'template'])->name('template');
+
+    Route::get('/export', [AssetImportController::class, 'export'])->name('export');
+
 });
 
 Route::middleware(['auth', 'tenant'])->prefix('dashboard/assettypes')->name('assettypes.')->group(function () {
@@ -47,8 +54,4 @@ Route::middleware(['auth', 'tenant'])->prefix('dashboard/repairs')->name('repair
 
     Route::post('/{repair}/cancel', [RepairController::class, 'cancel'])->name('cancel');
     Route::post('/{repair}/complete', [RepairController::class, 'complete'])->name('complete');
-});
-
-Route::middleware(['auth', 'tenant'])->prefix('dashboard/assets/logging')->name('log.')->group(function () {
-    Route::get('/', [AssetLogController::class, 'index'])->name('index');
 });

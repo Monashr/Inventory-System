@@ -10,6 +10,7 @@ import {
     ChevronLeft,
     Pen,
     SearchIcon,
+    Trash,
 } from "lucide-react";
 
 import { Input } from "@components/ui/input";
@@ -117,19 +118,32 @@ function AssetsIndex() {
                                 <Label htmlFor="stock">Defect Assets</Label>
                                 {totalDefectAssets}
                             </Button>
-                            {permissions.includes("edit assets") ? (
+                            {permissions.includes("manage assets") ? (
                                 <Link
                                     href={`/dashboard/assettypes/edit/${assetType.id}`}
                                 >
                                     <Button
                                         variant="outline"
                                         data-modal-trigger="add-product"
-                                        className=" cursor-pointer"
+                                        className="cursor-pointer"
                                     >
                                         <Pen className="w-4 h-4" />
-                                        Edit Asset Type
+                                        Edit
                                     </Button>
                                 </Link>
+                            ) : null}
+                            {permissions.includes("manage assets") ? (
+                                <DeleteAlertDialog
+                                    url={`/dashboard/assettypes/delete/${assetType.id}`}
+                                >
+                                    <Button
+                                        variant="destructive"
+                                        className="cursor-pointer"
+                                    >
+                                        <Trash />
+                                        Delete
+                                    </Button>
+                                </DeleteAlertDialog>
                             ) : null}
                             <Link href="/dashboard/assettypes">
                                 <Button
@@ -386,17 +400,21 @@ function AssetsIndex() {
                 </Table>
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center justify-center gap-2">
+                        <Button variant="outline">
+                            {assets.from}-{assets.to} of {assets.total}
+                        </Button>
                         <Select
                             defaultValue={String(assets.per_page)}
                             onValueChange={(value) => {
                                 router.get(
-                                    `/dashboard/items/${assetType.id}/unit`,
+                                    `/dashboard/assettypes/${assetType.id}`,
                                     {
+                                        search,
                                         per_page: value,
+                                        sort_by: sortBy,
+                                        sort_direction: sortDirection,
                                     },
-                                    {
-                                        preserveScroll: true,
-                                    }
+                                    { preserveScroll: true }
                                 );
                             }}
                         >
@@ -424,10 +442,6 @@ function AssetsIndex() {
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-
-                        <Button variant="outline">
-                            {assets.from}-{assets.to} of {assets.total}
-                        </Button>
                     </div>
 
                     <Pagination className="justify-end items-center">

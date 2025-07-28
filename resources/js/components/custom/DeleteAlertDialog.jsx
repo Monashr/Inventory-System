@@ -11,10 +11,9 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@components/ui/alert-dialog";
-import { Trash2 } from "lucide-react";
 import { router } from "@inertiajs/react";
 
-export default function DeleteAlertDialog({ url }) {
+export default function DeleteAlertDialog({ url, children }) {
     const [open, setOpen] = useState(false);
 
     function handleDelete() {
@@ -28,13 +27,7 @@ export default function DeleteAlertDialog({ url }) {
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-                <Button
-                    size="sm"
-                    variant="destructive"
-                    className="cursor-pointer hover:bg-red-700"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </Button>
+                {children}
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

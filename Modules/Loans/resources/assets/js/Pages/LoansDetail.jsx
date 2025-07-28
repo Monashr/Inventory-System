@@ -9,7 +9,16 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import Calendar08 from "@components/calendar-08";
-import { ChevronRight, PackageOpen, Pencil, Plus } from "lucide-react";
+import {
+    Ban,
+    ChevronLeft,
+    ChevronRight,
+    CircleSlash,
+    PackageOpen,
+    Pencil,
+    Plus,
+    Check,
+} from "lucide-react";
 import { Button } from "@components/ui/button";
 import { Separator } from "@components/ui/separator";
 import { router } from "@inertiajs/react";
@@ -52,7 +61,7 @@ function LoansDetail() {
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div className="space-y-1">
                             <h1 className="flex items-center text-3xl font-extrabold text-gray-900">
-                                <PackageOpen className="w-10 h-10 mr-3 text-primary" />
+                                <PackageOpen className="w-10 h-10 mr-3" />
                                 Loan Details
                             </h1>
                             <p className="text-sm text-gray-500">
@@ -82,6 +91,7 @@ function LoansDetail() {
                             <div>
                                 <Link href="/dashboard/loans">
                                     <Button
+                                        variant="outline"
                                         data-modal-trigger="add-product"
                                         className="cursor-pointer h-full"
                                     >
@@ -93,6 +103,7 @@ function LoansDetail() {
                             <div>
                                 <Link href={`/dashboard/loans/${loan.id}/edit`}>
                                     <Button
+                                        variant="outline"
                                         data-modal-trigger="add-product"
                                         className="cursor-pointer h-full"
                                     >
@@ -107,8 +118,8 @@ function LoansDetail() {
                                         data-modal-trigger="add-product"
                                         className="cursor-pointer h-full"
                                     >
+                                        <ChevronLeft />
                                         Back
-                                        <ChevronRight />
                                     </Button>
                                 </Link>
                             </div>
@@ -362,9 +373,9 @@ function LoansDetail() {
                                                     ) === "-"
                                                         ? "Not Returned Yet"
                                                         : formatDateNoHour(
-                                                              entry.pivot.return_date
+                                                              entry.pivot
+                                                                  .return_date
                                                           )}
-
                                                 </div>
                                             </div>
                                             <div>
@@ -373,12 +384,14 @@ function LoansDetail() {
                                                 </Label>
                                                 <div
                                                     className={`mt-1 p-2 rounded text-sm border ${
-                                                        entry.pivot.return_condition
+                                                        entry.pivot
+                                                            .return_condition
                                                             ? "bg-gray-100 border-gray-200 text-gray-700"
                                                             : "bg-red-50 border-red-200 text-red-600 font-semibold"
                                                     }`}
                                                 >
-                                                    {entry.pivot.return_condition ||
+                                                    {entry.pivot
+                                                        .return_condition ||
                                                         "Not Returned Yet"}
                                                 </div>
                                             </div>
@@ -394,36 +407,45 @@ function LoansDetail() {
                     ) && (
                         <>
                             <Separator />
-
-                            <div className="flex justify-start items-center gap-2">
-                                <Button
-                                    onClick={() =>
-                                        router.post(
-                                            `/dashboard/loans/${loan.id}/cancel`
-                                        )
-                                    }
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={() =>
-                                        router.post(
-                                            `/dashboard/loans/${loan.id}/reject`
-                                        )
-                                    }
-                                >
-                                    Reject
-                                </Button>
-                                <Button
-                                    disabled={isAnyAssetUnavailable}
-                                    onClick={() =>
-                                        router.post(
-                                            `/dashboard/loans/${loan.id}/accept`
-                                        )
-                                    }
-                                >
-                                    Accept
-                                </Button>
+                            <div className="flex justify-end items-center gap-2">
+                                <div className="flex justify-start items-center gap-2">
+                                    <Button
+                                        className="cursor-pointer"
+                                        variant="outline"
+                                        onClick={() =>
+                                            router.post(
+                                                `/dashboard/loans/${loan.id}/cancel`
+                                            )
+                                        }
+                                    >
+                                        Cancel
+                                        <CircleSlash />
+                                    </Button>
+                                    <Button
+                                        className="cursor-pointer"
+                                        variant="destructive"
+                                        onClick={() =>
+                                            router.post(
+                                                `/dashboard/loans/${loan.id}/reject`
+                                            )
+                                        }
+                                    >
+                                        Reject
+                                        <Ban />
+                                    </Button>
+                                    <Button
+                                        className="cursor-pointer"
+                                        disabled={isAnyAssetUnavailable}
+                                        onClick={() =>
+                                            router.post(
+                                                `/dashboard/loans/${loan.id}/accept`
+                                            )
+                                        }
+                                    >
+                                        Accept
+                                        <Check />
+                                    </Button>
+                                </div>
                             </div>
                         </>
                     )}

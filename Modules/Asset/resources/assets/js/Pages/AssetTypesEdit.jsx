@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useForm, usePage } from "@inertiajs/react";
 
-import { ChevronLeft, ChevronRight, Package } from "lucide-react";
+import { ChevronLeft, ChevronRight, Package, SaveAll } from "lucide-react";
 
 import Dashboard from "@components/layout/Dashboard";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -79,7 +79,9 @@ function AssetTypesEdit() {
                             type="submit"
                             disabled={processing}
                         >
+
                             Update Item
+                            <SaveAll />
                         </Button>
                     </form>
                 </CardContent>

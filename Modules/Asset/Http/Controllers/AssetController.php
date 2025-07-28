@@ -60,7 +60,7 @@ class AssetController extends Controller
 
         $this->assetLogService->userDeleteAsset($asset);
 
-        return redirect()->route('assets.index')->with('success', 'Asset deleted successfully');
+        return redirect()->route('assets.index')->with('success', 'Asset Deleted Successfully');
     }
 
     public function showAssetDetails($asset)
@@ -109,7 +109,7 @@ class AssetController extends Controller
 
         $this->assetLogService->userAddAsset($asset);
 
-        return redirect()->route('assets.index')->with('success', 'Assets added successfully.');
+        return redirect()->route('assets.index')->with('success', 'Assets Added Successfully.');
     }
 
     public function showAssetEdit($asset)
@@ -132,7 +132,7 @@ class AssetController extends Controller
 
         $this->assetLogService->userEditAsset($asset);
 
-        return redirect()->route('assets.index');
+        return redirect()->route('assets.index')->with('success', 'Asset Updated Sucessfully');
     }
 
     public function getAssets($assetType)

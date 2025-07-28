@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { usePage, router, Link } from "@inertiajs/react";
 
 import {
@@ -10,6 +10,7 @@ import {
     ArrowUpDown,
     FileUp,
     FileDown,
+    Trash2Icon,
 } from "lucide-react";
 
 import Dashboard from "@components/layout/Dashboard";
@@ -51,13 +52,29 @@ import {
 
 import { Label } from "@components/ui/label";
 import { Card, CardContent } from "@components/ui/card";
+import { toast } from "sonner";
 
 function AssetsIndex() {
-    const { assets, permissions, filters } = usePage().props;
+    const { assets, permissions, filters, flash } = usePage().props;
 
     const [search, setSearch] = React.useState(filters.search || "");
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";
+    const fileInputRef = useRef(null);
+
+    function handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            router.post("/dashboard/assets/import", formData, {
+                forceFormData: true,
+                onSuccess: () => {},
+                onError: () => {},
+            });
+        }
+    }
 
     const formatDate = (dateString) => {
         if (!dateString) return "-";
@@ -92,6 +109,25 @@ function AssetsIndex() {
         );
     };
 
+    useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success);
+        }
+        if (flash?.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
+
+    const handleExport = () => {
+        const link = document.createElement("a");
+        link.href = "/dashboard/assets/export";
+        link.setAttribute("download", "assets.xlsx");
+        link.setAttribute("target", "_blank");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    };
+
     return (
         <div>
             <div className="w-full mx-auto">
@@ -104,26 +140,67 @@ function AssetsIndex() {
                         <div className="flex justify-center items-center gap-2">
                             {permissions.includes("manage assets") ? (
                                 <>
+                                    <input
+                                        type="file"
+                                        accept=".xlsx,.csv"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                    />
+
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className="cursor-pointer"
+                                            >
+                                                <FileDown className="mr-2 w-4 h-4" />
+                                                Import Assets
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-48 p-2 flex flex-col gap-2">
+                                            <a
+                                                href="/dashboard/assets/template"
+                                                target="_blank"
+                                                className=""
+                                                rel="noopener noreferrer"
+                                            >
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full cursor-pointer justify-start"
+                                                >
+                                                    <FileDown className="mr-2 w-4 h-4" />
+                                                    Download Template
+                                                </Button>
+                                            </a>
+                                            <a
+                                                href="/dashboard/assets/export"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <Button
+                                                    variant="outline"
+                                                    className="cursor-pointer w-full justify-start"
+                                                >
+                                                    <FileUp className="mr-2 w-4 h-4" />
+                                                    Export Assets
+                                                </Button>
+                                            </a>
+                                        </PopoverContent>
+                                    </Popover>
+
+                                    <a
+                                        href="/dashboard/assets/export"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center border border-input rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition"
+                                    >
+                                        <FileUp className="mr-2 w-4 h-4" />
+                                        Export Assets
+                                    </a>
+
                                     <Link href="/dashboard/assets/add">
-                                        <Button
-                                            variant="outline"
-                                            className=" cursor-pointer"
-                                        >
-                                            <FileDown />
-                                            Import Assets
-                                        </Button>
-                                    </Link>
-                                    <Link href="/dashboard/assets/add">
-                                        <Button
-                                            variant="outline"
-                                            className=" cursor-pointer"
-                                        >
-                                            <FileUp />
-                                            Export Assets
-                                        </Button>
-                                    </Link>
-                                    <Link href="/dashboard/assets/add">
-                                        <Button className=" cursor-pointer">
+                                        <Button className="cursor-pointer">
                                             <Plus />
                                             Add Asset
                                         </Button>
@@ -413,7 +490,15 @@ function AssetsIndex() {
                                                         >
                                                             <DeleteAlertDialog
                                                                 url={`/dashboard/assets/delete/${asset.id}`}
-                                                            />
+                                                            >
+                                                                <Button
+                                                                    variant="destructive"
+                                                                    size="sm"
+                                                                    className="cursor-pointer"
+                                                                >
+                                                                    <Trash2Icon className="w-4 h-4" />
+                                                                </Button>
+                                                            </DeleteAlertDialog>
                                                         </div>
                                                     ) : null}
                                                 </div>

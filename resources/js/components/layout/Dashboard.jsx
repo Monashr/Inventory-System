@@ -1,5 +1,7 @@
 import React from "react";
 
+import { toast } from "sonner";
+
 import { usePage, Link, router } from "@inertiajs/react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
@@ -15,6 +17,8 @@ import {
     PackageOpenIcon,
     ChevronDown,
 } from "lucide-react";
+
+import { Toaster } from "@components/ui/sonner";
 
 import { Button } from "@components/ui/button";
 
@@ -215,6 +219,7 @@ export default function Dashboard({ children }) {
                     <div className="flex justify-start items-center gap-2 flex-1">
                         <SidebarTrigger className="-ml-1" />
                         <DynamicBreadcrumbs />
+                        <Toaster />
                     </div>
                     <Popover>
                         <PopoverTrigger className="bg-secondary h-12" asChild>
@@ -240,10 +245,13 @@ export default function Dashboard({ children }) {
                                 <h1 className="font-bold">{user.name}</h1>
                                 <Button
                                     variant="outline"
-                                    className="w-full"
+                                    className="w-full cursor-pointer"
                                     size="sm"
                                 >
-                                    <Link href="/dashboard/profile" className="flex gap-2 justify-center items-center">
+                                    <Link
+                                        href="/dashboard/profile"
+                                        className="flex gap-2 justify-center items-center"
+                                    >
                                         <SquareUser />
                                         Profile
                                     </Link>

@@ -28,6 +28,12 @@ class MenuServiceProvider extends ServiceProvider
                 : [],
             'currentTenantId' => fn() => session('active_tenant_id'),
             'user' => fn() => auth()->user(),
+            'flash' => function () {
+                return [
+                    'success' => session('success'),
+                    'error' => session('error'),
+                ];
+            },
 
             // Dynamic module menus
             'moduleMenus' => function () {

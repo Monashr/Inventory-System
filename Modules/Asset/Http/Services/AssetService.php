@@ -113,7 +113,7 @@ class AssetService
     {
         return Asset::where('asset_type_id', $assetType)
             ->whereIn('avaibility', ['available', 'pending'])
-            ->get(['id', 'serial_code']);
+            ->get(['id', 'serial_code', 'condition', 'specification', 'brand']);
     }
 
     public function createAsset($validated, $assetType)

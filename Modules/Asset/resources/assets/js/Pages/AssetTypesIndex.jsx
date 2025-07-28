@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { usePage, router, Link, Head } from "@inertiajs/react";
+import { toast } from "sonner";
 
 import {
     Package,
@@ -9,6 +10,7 @@ import {
     Filter,
     SearchIcon,
     ArrowUpDown,
+    Trash,
 } from "lucide-react";
 
 import { Button } from "@components/ui/button";
@@ -53,7 +55,10 @@ import {
 } from "@/components/ui/dialog";
 
 function AssetTypesIndex() {
-    const { assetTypes, permissions, filters } = usePage().props;
+    const { assetTypes, permissions, filters, flash } = usePage().props;
+
+    console.log(flash);
+
     const [open, setOpen] = React.useState(false);
     const [search, setSearch] = React.useState(filters.search || "");
     const sortBy = filters.sort_by || "";
@@ -89,6 +94,12 @@ function AssetTypesIndex() {
             return "-";
         }
     };
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success);
+        }
+    }, [flash]);
 
     return (
         <div>
@@ -262,7 +273,11 @@ function AssetTypesIndex() {
                                                         >
                                                             <DeleteAlertDialog
                                                                 url={`/dashboard/assettypes/delete/${assetType.id}`}
-                                                            />
+                                                            >
+                                                                <Button size="sm" variant="destructive" className="cursor-pointer">
+                                                                    <Trash />
+                                                                </Button>
+                                                            </DeleteAlertDialog>
                                                         </div>
                                                     ) : null}
                                                 </div>

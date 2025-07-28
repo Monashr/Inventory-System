@@ -75,9 +75,9 @@ class AssetTypeController extends Controller
 
         $validated = $request->validated();
 
-        $this->assetTypeService->createAssetType($validated);
+        $assetType = $this->assetTypeService->createAssetType($validated);
 
-        return redirect()->route('assettypes.index')->with('success', 'Item created successfully with units.');
+        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' created successfully');
     }
 
     public function showAssetTypeEditForm(AssetType $assetType)
@@ -101,7 +101,7 @@ class AssetTypeController extends Controller
 
         $assetType->update($validated);
 
-        return redirect()->route('assettypes.index');
+        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' updated successfully');;
     }
 
     public function destroy($assetType)
@@ -118,7 +118,7 @@ class AssetTypeController extends Controller
 
         $assetType->delete();
 
-        return redirect()->route('assets.index')->with('success', 'Asset deleted successfully');
+        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' deleted successfully');;
     }
 
 }

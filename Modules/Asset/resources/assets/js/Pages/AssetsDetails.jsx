@@ -1,20 +1,17 @@
 import React from "react";
 
-import { usePage, Link } from "@inertiajs/react";
+import { usePage, Link, router } from "@inertiajs/react";
 import Dashboard from "@components/layout/Dashboard";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@components/ui/input";
 import {
     ChevronLeft,
     Package,
-    Plus,
     Filter,
-    SearchIcon,
     Pen,
     ArrowUpDown,
+    Trash2Icon,
 } from "lucide-react";
 import {
     Table,
@@ -38,6 +35,8 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "@components/ui/pagination";
+
+import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 
 function AssetDetail() {
     const { asset, permissions, log } = usePage().props;
@@ -89,16 +88,29 @@ function AssetDetail() {
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    {permissions.includes("edit assets") ? (
-                        <Link href={`/dashboard/assets/edit/${asset.id}`}>
-                            <Button
-                                className="cursor-pointer"
-                                variant="outline"
+                    {permissions.includes("manage assets") ? (
+                        <div className="flex gap-2">
+                            <Link href={`/dashboard/assets/edit/${asset.id}`}>
+                                <Button
+                                    className="cursor-pointer"
+                                    variant="outline"
+                                >
+                                    <Pen className="w-4 h-4" />
+                                    Edit
+                                </Button>
+                            </Link>
+                            <DeleteAlertDialog
+                                url={`/dashboard/assets/delete/${asset.id}`}
                             >
-                                <Pen className="w-4 h-4" />
-                                Edit
-                            </Button>
-                        </Link>
+                                <Button
+                                    className="cursor-pointer"
+                                    variant="destructive"
+                                >
+                                    <Trash2Icon className="w-4 h-4" />
+                                    Delete
+                                </Button>
+                            </DeleteAlertDialog>
+                        </div>
                     ) : null}
                     <Link href={`/dashboard/assets`}>
                         <Button className="cursor-pointer">

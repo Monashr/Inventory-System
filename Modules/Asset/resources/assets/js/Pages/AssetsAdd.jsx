@@ -77,12 +77,13 @@ function AssetCreate() {
                                 setData("serial_code", serial);
                             }}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className="w-full cursor-pointer">
                                 <SelectValue placeholder="Select Asset Type" />
                             </SelectTrigger>
                             <SelectContent>
                                 {assetTypes.map((type) => (
                                     <SelectItem
+                                        className="cursor-pointer"
                                         key={type.id}
                                         value={String(type.id)}
                                     >
@@ -165,6 +166,7 @@ function AssetCreate() {
                     <div className="space-y-2">
                         <Label htmlFor="purchase_date">Purchase Date</Label>
                         <Input
+                            className="cursor-pointer"
                             type="date"
                             id="purchase_date"
                             value={data.purchase_date}
@@ -200,13 +202,28 @@ function AssetCreate() {
                                 );
                             }}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className="w-full cursor-pointer">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="new">New</SelectItem>
-                                <SelectItem value="used">Used</SelectItem>
-                                <SelectItem value="defect">Defect</SelectItem>
+                                <SelectItem
+                                    className="cursor-pointer"
+                                    value="new"
+                                >
+                                    New
+                                </SelectItem>
+                                <SelectItem
+                                    className="cursor-pointer"
+                                    value="used"
+                                >
+                                    Used
+                                </SelectItem>
+                                <SelectItem
+                                    className="cursor-pointer"
+                                    value="defect"
+                                >
+                                    Defect
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

@@ -13,6 +13,8 @@ import {
     Pen,
     Check,
     ChevronLeft,
+    Trash,
+    FileWarning,
 } from "lucide-react";
 
 function RepairDetails() {
@@ -52,6 +54,13 @@ function RepairDetails() {
             </div>
 
             <Card className="px-2 py-8 space-y-2">
+                <div className="px-4 w-full">
+                {repair.asset?.deleted_at && (
+                    <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded flex gap-2 justify-center items-center">
+                        <FileWarning className="w-4 h-4" />  This asset is deleted <Trash className="w-4 h-4" />
+                    </span>
+                )}
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
                     <div className="space-y-2">
                         <Label>Asset Serial</Label>
@@ -129,7 +138,6 @@ function RepairDetails() {
                                     Mark as Complete
                                     <Check className="w-4 h-4 ml-2" />
                                 </Button>
-
                             </>
                         )}
                     </div>

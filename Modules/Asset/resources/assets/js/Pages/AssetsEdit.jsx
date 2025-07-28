@@ -135,6 +135,7 @@ function AssetsEdit() {
                     <div className="space-y-2">
                         <Label htmlFor="purchase_date">Purchase Date</Label>
                         <Input
+                            className="cursor-pointer"
                             type="date"
                             value={data.purchase_date}
                             onChange={(e) =>
@@ -170,18 +171,19 @@ function AssetsEdit() {
                     <div className="space-y-2">
                         <Label>Current Condition</Label>
                         <Select
+                            
                             value={data.condition}
                             onValueChange={(value) =>
                                 setData("condition", value)
                             }
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className="w-full cursor-pointer">
                                 <SelectValue placeholder="Select condition" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="good">Good</SelectItem>
-                                <SelectItem value="used">Used</SelectItem>
-                                <SelectItem value="defect">Defect</SelectItem>
+                                <SelectItem className="cursor-pointer" value="good">Good</SelectItem>
+                                <SelectItem className="cursor-pointer" value="used">Used</SelectItem>
+                                <SelectItem className="cursor-pointer" value="defect">Defect</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

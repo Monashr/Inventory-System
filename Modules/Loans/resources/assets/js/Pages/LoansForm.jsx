@@ -12,7 +12,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X } from "lucide-react";
+import { SaveAll, X } from "lucide-react";
 import Calendar08 from "@components/calendar-08";
 
 export default function LoansForm({ assetTypes, users, loan }) {
@@ -179,12 +179,13 @@ export default function LoansForm({ assetTypes, users, loan }) {
                         value={data.loaner}
                         onValueChange={(val) => setData("loaner", val)}
                     >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="w-full cursor-pointer">
                             <SelectValue placeholder="Select user" />
                         </SelectTrigger>
                         <SelectContent>
                             {users.map((user) => (
                                 <SelectItem
+                                    className="cursor-pointer"
                                     key={user.id}
                                     value={String(user.id)}
                                 >
@@ -237,103 +238,171 @@ export default function LoansForm({ assetTypes, users, loan }) {
                                         <CardTitle>Asset {index + 1}</CardTitle>
                                     </CardHeader>
 
-                                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label>Asset Type</Label>
-                                            <Select
-                                                value={entry.asset_type_id}
-                                                onValueChange={(val) =>
-                                                    handleAssetTypeChange(
-                                                        index,
-                                                        val
-                                                    )
-                                                }
-                                            >
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select asset type" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {assetTypes.map(
-                                                        (assetType) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    assetType.id
-                                                                }
-                                                                value={String(
-                                                                    assetType.id
-                                                                )}
-                                                            >
-                                                                {assetType.name}
-                                                            </SelectItem>
+                                    <CardContent className="flex justify-between gap-4">
+                                        <div className="w-2/3">
+                                            <div className="space-y-2">
+                                                <Label>Asset Type</Label>
+                                                <Select
+                                                    value={entry.asset_type_id}
+                                                    onValueChange={(val) =>
+                                                        handleAssetTypeChange(
+                                                            index,
+                                                            val
                                                         )
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-full cursor-pointer">
+                                                        <SelectValue placeholder="Select asset type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {assetTypes.map(
+                                                            (assetType) => (
+                                                                <SelectItem
+                                                                    className="cursor-pointer"
+                                                                    key={
+                                                                        assetType.id
+                                                                    }
+                                                                    value={String(
+                                                                        assetType.id
+                                                                    )}
+                                                                >
+                                                                    {
+                                                                        assetType.name
+                                                                    }
+                                                                </SelectItem>
+                                                            )
+                                                        )}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
 
-                                        <div className="space-y-2">
-                                            <Label>Asset</Label>
-                                            <Select
-                                                value={entry.asset_id}
-                                                onValueChange={(val) =>
-                                                    handleFieldChange(
-                                                        index,
-                                                        "asset_id",
-                                                        val
-                                                    )
-                                                }
-                                                disabled={!entry.assets.length}
-                                            >
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select asset" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {entry.assets
-                                                        .filter((asset) => {
-                                                            const selectedIds =
-                                                                getSelectedAssetIds(
-                                                                    index
-                                                                );
-                                                            return (
-                                                                !selectedIds.includes(
+                                            <div className="space-y-2">
+                                                <Label>Asset</Label>
+                                                <Select
+                                                    value={entry.asset_id}
+                                                    onValueChange={(val) =>
+                                                        handleFieldChange(
+                                                            index,
+                                                            "asset_id",
+                                                            val
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        !entry.assets.length
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-full cursor-pointer">
+                                                        <SelectValue placeholder="Select asset" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {entry.assets
+                                                            .filter((asset) => {
+                                                                const selectedIds =
+                                                                    getSelectedAssetIds(
+                                                                        index
+                                                                    );
+                                                                return (
+                                                                    !selectedIds.includes(
+                                                                        String(
+                                                                            asset.id
+                                                                        )
+                                                                    ) ||
                                                                     String(
                                                                         asset.id
-                                                                    )
-                                                                ) ||
-                                                                String(
-                                                                    asset.id
-                                                                ) ===
-                                                                    entry.asset_id
-                                                            );
-                                                        })
-                                                        .map((asset) => (
-                                                            <SelectItem
-                                                                key={asset.id}
-                                                                value={String(
-                                                                    asset.id
-                                                                )}
-                                                            >
-                                                                {
-                                                                    asset.serial_code
-                                                                }
-                                                            </SelectItem>
-                                                        ))}
-                                                </SelectContent>
-                                            </Select>
+                                                                    ) ===
+                                                                        entry.asset_id
+                                                                );
+                                                            })
+                                                            .map((asset) => (
+                                                                <SelectItem
+                                                                    className="cursor-pointer"
+                                                                    key={
+                                                                        asset.id
+                                                                    }
+                                                                    value={String(
+                                                                        asset.id
+                                                                    )}
+                                                                >
+                                                                    {
+                                                                        asset.serial_code
+                                                                    }
+                                                                </SelectItem>
+                                                            ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="pt-4 space-y-1 text-sm text-muted-foreground">
+                                                {(() => {
+                                                    const selectedAsset =
+                                                        entry.assets.find(
+                                                            (a) =>
+                                                                String(a.id) ===
+                                                                entry.asset_id
+                                                        );
+
+                                                    if (!selectedAsset)
+                                                        return null;
+
+                                                    return (
+                                                        <>
+                                                            <div className="space-y-2 p-2 bg-accent rounded-2xl">
+                                                                <div className="w-full flex justify-between items-center">
+                                                                    <span className="font-bold text-foreground">
+                                                                        Condition:
+                                                                    </span>{" "}
+                                                                    <div
+                                                                        className={`border px-2 rounded-2xl text-sm ${
+                                                                            selectedAsset.condition ===
+                                                                            "good"
+                                                                                ? "bg-green-50 border-green-200 text-green-600"
+                                                                                : selectedAsset.condition ===
+                                                                                  "used"
+                                                                                ? "bg-yellow-50 border-yellow-200 text-yellow-600"
+                                                                                : selectedAsset.condition ===
+                                                                                  "defect"
+                                                                                ? "bg-red-50 border-red-200 text-red-600"
+                                                                                : "bg-red-50 border-red-200 text-red-600"
+                                                                        }`}
+                                                                    >
+                                                                        {selectedAsset.condition ||
+                                                                            "-"}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="w-full flex justify-between items-center">
+                                                                    <span className="font-bold text-foreground">
+                                                                        Brand:
+                                                                    </span>{" "}
+                                                                    {selectedAsset.brand ||
+                                                                        "-"}
+                                                                </div>
+                                                                <div className="w-full flex justify-between items-center">
+                                                                    <span className="font-bold text-foreground">
+                                                                        Specification:
+                                                                    </span>{" "}
+                                                                    {selectedAsset.specification ||
+                                                                        "-"}
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <Label>Loaned Date</Label>
-                                            <Calendar08
-                                                value={entry.loaned_date}
-                                                onChange={(val) =>
-                                                    handleFieldChange(
-                                                        index,
-                                                        "loaned_date",
-                                                        val
-                                                    )
-                                                }
-                                            />
+                                        <div className="w-1/3 flex justify-center items-center">
+                                            <div className="space-y-2 flex flex-col justify-center items-center">
+                                                <Label>Loaned Date</Label>
+                                                <Calendar08
+                                                    value={entry.loaned_date}
+                                                    onChange={(val) =>
+                                                        handleFieldChange(
+                                                            index,
+                                                            "loaned_date",
+                                                            val
+                                                        )
+                                                    }
+                                                />
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -344,7 +413,7 @@ export default function LoansForm({ assetTypes, users, loan }) {
                             type="button"
                             onClick={handleAddAssetEntry}
                             variant="outline"
-                            className="w-full md:w-auto"
+                            className="w-full md:w-auto cursor-pointer"
                         >
                             + Add Asset
                         </Button>
@@ -352,13 +421,14 @@ export default function LoansForm({ assetTypes, users, loan }) {
                 </CardContent>
             </Card>
 
-            <div className="pt-4">
+            <div className="pt-4 w-full flex justify-end items-center">
                 <Button
                     type="submit"
                     disabled={processing}
-                    className="w-full md:w-auto"
+                    className="w-full md:w-auto cursor-pointer"
                 >
                     Save Loan
+                    <SaveAll />
                 </Button>
             </div>
         </form>
