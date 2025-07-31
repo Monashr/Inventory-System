@@ -1,12 +1,15 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+import { router, useForm, usePage, Link } from "@inertiajs/react";
+
+import Dashboard from "@components/layout/Dashboard";
+
+import { UserCog, Save, ChevronLeft } from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import Dashboard from "@components/layout/Dashboard";
-import { router, useForm, usePage, Link } from "@inertiajs/react";
-
-import { ChevronRight, UserCog, Save, ChevronLeft } from "lucide-react";
 import { Separator } from "@components/ui/separator";
 
 export default function AssignPermissions() {

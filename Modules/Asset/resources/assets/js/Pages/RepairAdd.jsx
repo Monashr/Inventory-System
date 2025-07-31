@@ -1,12 +1,16 @@
 import React from "react";
+
 import { useForm, Link, usePage } from "@inertiajs/react";
+
 import Dashboard from "@components/layout/Dashboard";
+
+import { ChevronLeft, Plus, Hammer, Save } from "lucide-react";
+
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, ChevronRight, Hammer, Save } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -67,171 +71,186 @@ function RepairAdd() {
             </div>
 
             <Card className="px-6 py-8 space-y-2">
-                <form
-                    onSubmit={handleSubmit}
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-                >
-                    {/* Asset Type */}
-                    <div className="space-y-2">
-                        <Label htmlFor="asset_type_id">Asset Type</Label>
-                        <Select onValueChange={handleAssetTypeChange}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select Asset Type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {assetTypes.map((type) => (
-                                    <SelectItem
-                                        key={type.id}
-                                        value={String(type.id)}
-                                    >
-                                        {type.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.asset_type_id && (
-                            <p className="text-sm text-red-500">
-                                {errors.asset_type_id}
-                            </p>
-                        )}
+                {!assetTypes || assetTypes.length === 0 ? (
+                    <div className="space-y-4 flex flex-col justify-center items-center">
+                        <p className="text-lg font-medium text-gray-700">
+                            You need to add at least one asset type before
+                            creating repairs.
+                        </p>
+                        <Link href="/dashboard/assettypes/add">
+                            <Button
+                                variant="default"
+                                className="mx-auto cursor-pointer"
+                            >
+                                <Plus />
+                                Add Asset Type
+                            </Button>
+                        </Link>
                     </div>
+                ) : (
+                    <form
+                        onSubmit={handleSubmit}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+                    >
+                        <div className="space-y-2">
+                            <Label htmlFor="asset_type_id">Asset Type</Label>
+                            <Select onValueChange={handleAssetTypeChange}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Asset Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {assetTypes.map((type) => (
+                                        <SelectItem
+                                            key={type.id}
+                                            value={String(type.id)}
+                                        >
+                                            {type.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.asset_type_id && (
+                                <p className="text-sm text-red-500">
+                                    {errors.asset_type_id}
+                                </p>
+                            )}
+                        </div>
 
-                    {/* Asset */}
-                    <div className="space-y-2">
-                        <Label htmlFor="asset_id">Asset</Label>
-                        <Select
-                            value={data.asset_id ?? ""}
-                            onValueChange={(value) =>
-                                setData("asset_id", value)
-                            }
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select Asset" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {assets.map((asset) => (
-                                    <SelectItem
-                                        key={asset.id}
-                                        value={String(asset.id)}
-                                    >
-                                        {asset.serial_code ||
-                                            `Asset ${asset.id}`}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.asset_id && (
-                            <p className="text-sm text-red-500">
-                                {errors.asset_id}
-                            </p>
-                        )}
-                    </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="asset_id">Asset</Label>
+                            <Select
+                                value={data.asset_id ?? ""}
+                                onValueChange={(value) =>
+                                    setData("asset_id", value)
+                                }
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Asset" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {assets.map((asset) => (
+                                        <SelectItem
+                                            key={asset.id}
+                                            value={String(asset.id)}
+                                        >
+                                            {asset.serial_code ||
+                                                `Asset ${asset.id}`}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.asset_id && (
+                                <p className="text-sm text-red-500">
+                                    {errors.asset_id}
+                                </p>
+                            )}
+                        </div>
 
-                    {/* Repair Start Date */}
-                    <div className="space-y-2">
-                        <Label htmlFor="repair_start_date">
-                            Repair Start Date
-                        </Label>
-                        <Input
-                            type="date"
-                            id="repair_start_date"
-                            value={data.repair_start_date}
-                            onChange={(e) =>
-                                setData("repair_start_date", e.target.value)
-                            }
-                        />
-                        {errors.repair_start_date && (
-                            <p className="text-sm text-red-500">
-                                {errors.repair_start_date}
-                            </p>
-                        )}
-                    </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="repair_start_date">
+                                Repair Start Date
+                            </Label>
+                            <Input
+                                type="date"
+                                id="repair_start_date"
+                                value={data.repair_start_date}
+                                onChange={(e) =>
+                                    setData("repair_start_date", e.target.value)
+                                }
+                            />
+                            {errors.repair_start_date && (
+                                <p className="text-sm text-red-500">
+                                    {errors.repair_start_date}
+                                </p>
+                            )}
+                        </div>
 
-                    {/* Vendor */}
-                    <div className="space-y-2">
-                        <Label htmlFor="vendor">Vendor</Label>
-                        <Input
-                            type="text"
-                            id="vendor"
-                            value={data.vendor}
-                            onChange={(e) => setData("vendor", e.target.value)}
-                        />
-                        {errors.vendor && (
-                            <p className="text-sm text-red-500">
-                                {errors.vendor}
-                            </p>
-                        )}
-                    </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="vendor">Vendor</Label>
+                            <Input
+                                type="text"
+                                id="vendor"
+                                value={data.vendor}
+                                onChange={(e) =>
+                                    setData("vendor", e.target.value)
+                                }
+                            />
+                            {errors.vendor && (
+                                <p className="text-sm text-red-500">
+                                    {errors.vendor}
+                                </p>
+                            )}
+                        </div>
 
-                    {/* Defect Description */}
-                    <div className="sm:col-span-2 space-y-2">
-                        <Label htmlFor="defect_description">
-                            Defect Description
-                        </Label>
-                        <Textarea
-                            id="defect_description"
-                            value={data.defect_description}
-                            onChange={(e) =>
-                                setData("defect_description", e.target.value)
-                            }
-                        />
-                        {errors.defect_description && (
-                            <p className="text-sm text-red-500">
-                                {errors.defect_description}
-                            </p>
-                        )}
-                    </div>
+                        <div className="sm:col-span-2 space-y-2">
+                            <Label htmlFor="defect_description">
+                                Defect Description
+                            </Label>
+                            <Textarea
+                                id="defect_description"
+                                value={data.defect_description}
+                                onChange={(e) =>
+                                    setData(
+                                        "defect_description",
+                                        e.target.value
+                                    )
+                                }
+                            />
+                            {errors.defect_description && (
+                                <p className="text-sm text-red-500">
+                                    {errors.defect_description}
+                                </p>
+                            )}
+                        </div>
 
-                    {/* Corrective Action */}
-                    <div className="sm:col-span-2 space-y-2">
-                        <Label htmlFor="corrective_action">
-                            Corrective Action
-                        </Label>
-                        <Textarea
-                            id="corrective_action"
-                            value={data.corrective_action}
-                            onChange={(e) =>
-                                setData("corrective_action", e.target.value)
-                            }
-                        />
-                        {errors.corrective_action && (
-                            <p className="text-sm text-red-500">
-                                {errors.corrective_action}
-                            </p>
-                        )}
-                    </div>
+                        <div className="sm:col-span-2 space-y-2">
+                            <Label htmlFor="corrective_action">
+                                Corrective Action
+                            </Label>
+                            <Textarea
+                                id="corrective_action"
+                                value={data.corrective_action}
+                                onChange={(e) =>
+                                    setData("corrective_action", e.target.value)
+                                }
+                            />
+                            {errors.corrective_action && (
+                                <p className="text-sm text-red-500">
+                                    {errors.corrective_action}
+                                </p>
+                            )}
+                        </div>
 
-                    {/* Repair Cost */}
-                    <div className="sm:col-span-2 space-y-2">
-                        <Label htmlFor="repair_cost">Repair Cost</Label>
-                        <Input
-                            type="number"
-                            step="0.01"
-                            id="repair_cost"
-                            value={data.repair_cost}
-                            onChange={(e) =>
-                                setData("repair_cost", e.target.value)
-                            }
-                        />
-                        {errors.repair_cost && (
-                            <p className="text-sm text-red-500">
-                                {errors.repair_cost}
-                            </p>
-                        )}
-                    </div>
+                        <div className="sm:col-span-2 space-y-2">
+                            <Label htmlFor="repair_cost">Repair Cost</Label>
+                            <Input
+                                type="number"
+                                step="0.01"
+                                id="repair_cost"
+                                value={data.repair_cost}
+                                onChange={(e) =>
+                                    setData("repair_cost", e.target.value)
+                                }
+                            />
+                            {errors.repair_cost && (
+                                <p className="text-sm text-red-500">
+                                    {errors.repair_cost}
+                                </p>
+                            )}
+                        </div>
 
-                    {/* Submit Button */}
-                    <div className="sm:col-span-2 flex justify-end items-center pt-2">
-                        <Button
-                            type="submit"
-                            className="cursor-pointer"
-                            disabled={processing}
-                        >
-                            <Save className="w-4 h-4 mr-2" />
-                            Save Repair
-                        </Button>
-                    </div>
-                </form>
+                        <div className="sm:col-span-2 flex justify-end items-center pt-2">
+                            <Button
+                                type="submit"
+                                className="cursor-pointer"
+                                disabled={processing}
+                            >
+                                <Save className="w-4 h-4 mr-2" />
+                                Save Repair
+                            </Button>
+                        </div>
+                    </form>
+                )}
             </Card>
         </div>
     );

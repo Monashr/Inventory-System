@@ -1,23 +1,31 @@
 import React from "react";
-import { useForm } from "@inertiajs/react";
+
+import { useForm, usePage } from "@inertiajs/react";
+
+import Dashboard from "@components/layout/Dashboard";
+import { ComboBoxInput } from "@components/custom/ComboBoxInput";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export default function AssetTypesAdd({ onClose }) {
+function AssetTypesAdd() {
+
+    const { models } = usePage().props;
+
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         model: "",
         asset: "",
     });
 
+    console.log(data);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         post("/dashboard/assettypes/add", {
             onSuccess: () => {
-                onClose?.();
             },
             onError: () => {},
         });
@@ -44,15 +52,15 @@ export default function AssetTypesAdd({ onClose }) {
                                 </p>
                             )}
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="model">Model</Label>
-                            <Input
+                            <ComboBoxInput
                                 id="model"
+                                options={models}
                                 value={data.model}
-                                onChange={(e) =>
-                                    setData("model", e.target.value)
-                                }
-                                placeholder="Enter asset model"
+                                onChange={(value) => setData("model", value)}
+                                placeholder=""
                             />
                             {errors.model && (
                                 <p className="text-sm text-red-500">
@@ -74,3 +82,7 @@ export default function AssetTypesAdd({ onClose }) {
         </div>
     );
 }
+
+AssetTypesAdd.layout = (page) => <Dashboard children={page} />;
+
+export default AssetTypesAdd;

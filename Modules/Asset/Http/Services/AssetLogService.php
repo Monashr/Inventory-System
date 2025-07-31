@@ -38,6 +38,11 @@ class AssetLogService
         $this->createLog($asset, 'complete repair', $ActivityDescription);
     }
 
+    public function userAddAssetByImport(Asset $asset, string $ActivityDescription = null)
+    {
+        $this->createLog($asset, 'Asset Imported', $ActivityDescription);
+    }
+
     public function getAssetLogs(Asset $asset)
     {
         return $asset->logs()->with('user')->paginate(10);
@@ -45,6 +50,14 @@ class AssetLogService
 
     public function userEditRepair(Asset $asset, string $ActivityDescription = null) {
         $this->createLog($asset, 'edit repair', $ActivityDescription);
+    }
+
+    public function userLoanAsset(Asset $asset, string $ActivityDescription = null) {
+        $this->createLog($asset, 'Loaned', $ActivityDescription);
+    }
+
+    public function userReturnAsset(Asset $asset, string $ActivityDescription = null) {
+        $this->createLog($asset, 'Returned', $ActivityDescription);
     }
 
     private function createLog(Asset $asset, string $activityType, string $ActivityDescription = null)

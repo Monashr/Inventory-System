@@ -1,12 +1,16 @@
 import React from "react";
+
 import { useForm, Link, usePage } from "@inertiajs/react";
+
 import Dashboard from "@components/layout/Dashboard";
+
+import { ChevronLeft, Hammer, Save } from "lucide-react";
+
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, ChevronRight, Hammer, Save } from "lucide-react";
 import {
     Select,
     SelectContent,

@@ -1,16 +1,19 @@
 import React from "react";
+
 import { router, Link, usePage } from "@inertiajs/react";
+
+import Dashboard from "@components/layout/Dashboard";
+
 import {
     Mail,
     ChevronLeft,
     SearchIcon,
     Filter,
     ArrowUpDown,
-    Search,
 } from "lucide-react";
-import Dashboard from "@components/layout/Dashboard";
+
 import { Input } from "@components/ui/input";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
     Table,
     TableHeader,
@@ -209,29 +212,49 @@ function EmployeesInbox() {
                                                 {formatDate(inbox.created_at)}
                                             </TableCell>
                                             <TableCell className="text-right space-x-2 pr-8">
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        router.post(
-                                                            `/dashboard/inbox/accept/${inbox.id}`
-                                                        )
-                                                    }
-                                                    className="bg-green-600 text-white hover:bg-green-700 cursor-pointer"
-                                                >
-                                                    Accept
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() =>
-                                                        router.delete(
-                                                            `/dashboard/inbox/decline/${inbox.id}`
-                                                        )
-                                                    }
-                                                    className="hover:bg-red-100 hover:text-red-500 cursor-pointer"
-                                                >
-                                                    Decline
-                                                </Button>
+                                                {inbox.status === "pending" ? (
+                                                    <div className="flex justify-end items-center gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                router.post(
+                                                                    `/dashboard/inbox/accept/${inbox.id}`
+                                                                )
+                                                            }
+                                                            className="bg-green-600 text-white hover:bg-green-700 cursor-pointer"
+                                                        >
+                                                            Accept
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() =>
+                                                                router.delete(
+                                                                    `/dashboard/inbox/decline/${inbox.id}`
+                                                                )
+                                                            }
+                                                            className="hover:bg-red-100 hover:text-red-500 cursor-pointer"
+                                                        >
+                                                            Decline
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <span
+                                                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                                            inbox.status ===
+                                                            "accepted"
+                                                                ? "bg-green-100 text-green-800"
+                                                                : "bg-red-100 text-red-800"
+                                                        }`}
+                                                    >
+                                                        {inbox.status
+                                                            .charAt(0)
+                                                            .toUpperCase() +
+                                                            inbox.status.slice(
+                                                                1
+                                                            )}
+                                                    </span>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -239,9 +262,20 @@ function EmployeesInbox() {
                                     <TableRow>
                                         <TableCell
                                             colSpan={4}
-                                            className="text-center py-6"
+                                            className="text-center py-12 px-6"
                                         >
-                                            No inbox messages found.
+                                            <div className="flex flex-col gap-4">
+                                                <img
+                                                    src="/NoExist.svg"
+                                                    alt="no exist"
+                                                    className="max-w-60 m-auto"
+                                                />
+                                                <div>
+                                                    <h1 className="font-bold">
+                                                        No Messages Found.
+                                                    </h1>
+                                                </div>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 )}

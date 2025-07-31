@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\Loans\Models\Loan;
-// use Modules\Items\Database\Factories\UnitFactory;
 
 class Asset extends Model
 {

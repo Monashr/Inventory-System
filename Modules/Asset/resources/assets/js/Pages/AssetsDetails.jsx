@@ -1,10 +1,10 @@
 import React from "react";
 
 import { usePage, Link, router } from "@inertiajs/react";
+
 import Dashboard from "@components/layout/Dashboard";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
+
 import {
     ChevronLeft,
     Package,
@@ -13,6 +13,10 @@ import {
     ArrowUpDown,
     Trash2Icon,
 } from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
     Table,
     TableHeader,
@@ -36,7 +40,6 @@ import {
     PaginationNext,
 } from "@components/ui/pagination";
 
-import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 
 function AssetDetail() {
     const { asset, permissions, log } = usePage().props;
@@ -90,7 +93,7 @@ function AssetDetail() {
                 <div className="flex gap-2">
                     {permissions.includes("manage assets") ? (
                         <div className="flex gap-2">
-                            <Link href={`/dashboard/assets/edit/${asset.id}`}>
+                            <Link href={`/dashboard/assets/${asset.id}/edit`}>
                                 <Button
                                     className="cursor-pointer"
                                     variant="outline"
@@ -100,7 +103,7 @@ function AssetDetail() {
                                 </Button>
                             </Link>
                             <DeleteAlertDialog
-                                url={`/dashboard/assets/delete/${asset.id}`}
+                                url={`/dashboard/assets/${asset.id}/delete`}
                             >
                                 <Button
                                     className="cursor-pointer"

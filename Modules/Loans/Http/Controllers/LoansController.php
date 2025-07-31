@@ -3,6 +3,7 @@
 namespace Modules\Loans\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Modules\Asset\Http\Services\AssetLogService;
 use Modules\Asset\Http\Services\AssetService;
 use Modules\Asset\Models\AssetType;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,12 @@ class LoansController extends Controller
 {
 
     protected $assetService;
+    protected $assetLogService;
 
-    public function __construct(AssetService $assetService)
+    public function __construct(AssetService $assetService, AssetLogService $assetLogService)
     {
         $this->assetService = $assetService;
+        $this->assetLogService = $assetLogService;
     }
     public function index(Request $request)
     {
@@ -40,12 +43,11 @@ class LoansController extends Controller
 
     public function showAddLoans(Request $request)
     {
-
         $perPage = 10;
         $users = auth()->user()->usersFromSameTenant();
 
         return Inertia::render('Loans/LoansAdd', [
-            'assets' => $this->assetService->getAssetPagination($request, $perPage),
+            'assets' => $this->assetService->getAvailableAssetPagination($request, $perPage),
             'users' => $users,
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
@@ -86,7 +88,7 @@ class LoansController extends Controller
             DB::rollBack();
             report($e);
             dd($e);
-            return back()->withErrors(['error' => 'An error occurred while creating the loan.']);
+            return back()->withErrors(['error' => 'Error occurred while creating loan.']);
         }
     }
 
@@ -163,14 +165,15 @@ class LoansController extends Controller
         });
 
         if ($unavailableAssets->isNotEmpty()) {
-            $names = $unavailableAssets->pluck('serial_code')->implode(', ');
-            return back()->withErrors(['message' => "Cannot accept loan. The following assets are not available: {$names}"]);
+            // $names = $unavailableAssets->pluck('serial_code')->implode(', ');
+            return back();
         }
 
         $loan->update(['status' => 'accepted']);
 
         foreach ($loan->assets as $asset) {
             $asset->update(['avaibility' => 'loaned']);
+            $this->assetLogService->userLoanAsset($asset);
 
             $loan->assets()->updateExistingPivot($asset->id, [
                 'loaned_status' => 'loaned',
@@ -230,9 +233,13 @@ class LoansController extends Controller
             'return_condition' => $request->return_condition,
         ]);
 
-        Asset::find($assetId)->update([
+        $asset = Asset::findOrFail($assetId);
+        $asset->update([
             'avaibility' => 'available',
+            'condition' => $request->return_condition,
         ]);
+
+        $this->assetLogService->userReturnAsset($asset);
 
         return back()->with('success', 'Asset marked as returned.');
     }

@@ -1,10 +1,8 @@
 import React from "react";
 
-import { toast } from "sonner";
-
 import { usePage, Link, router } from "@inertiajs/react";
 
-import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
+import TenantSwitcher from "@components/custom/TenantSwitcher";
 
 import {
     PackageIcon,
@@ -18,16 +16,14 @@ import {
     ChevronDown,
 } from "lucide-react";
 
+import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
 import { Toaster } from "@components/ui/sonner";
-
 import { Button } from "@components/ui/button";
-
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@components/ui/popover";
-
 import {
     Sidebar,
     SidebarProvider,
@@ -36,27 +32,17 @@ import {
     SidebarHeader,
     SidebarContent,
     SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarMenu,
-    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
     SidebarFooter,
 } from "@/components/ui/sidebar";
-
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@components/ui/collapsible";
-
 import { Separator } from "@components/ui/separator";
-
-import TenantSwitcher from "@components/custom/TenantSwitcher";
 
 const iconMap = {
     PackageIcon: PackageIcon,
@@ -70,9 +56,8 @@ import DynamicBreadcrumbs from "@components/custom/DynamicBreadcrumbs";
 export default function Dashboard({ children }) {
     const { moduleMenus, tenants, currentTenantId, user } = usePage().props;
 
-    const { url, component } = usePage();
+    const { url } = usePage();
     const currentPath = url;
-    const isHomeActive = currentPath === "/dashboard";
 
     return (
         <SidebarProvider>
@@ -105,7 +90,7 @@ export default function Dashboard({ children }) {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
-                            {/* Dynamic Menus */}
+                            {/* Dynamic Menu */}
                             {moduleMenus.map((menu, idx) => {
                                 const Icon = iconMap[menu.icon] || HomeIcon;
                                 const isParentActive = currentPath.startsWith(

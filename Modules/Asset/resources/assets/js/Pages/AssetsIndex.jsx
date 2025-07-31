@@ -1,5 +1,9 @@
 import React, { useRef, useEffect } from "react";
+
 import { usePage, router, Link } from "@inertiajs/react";
+
+import Dashboard from "@components/layout/Dashboard";
+import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 
 import {
     Package,
@@ -13,12 +17,9 @@ import {
     Trash2Icon,
 } from "lucide-react";
 
-import Dashboard from "@components/layout/Dashboard";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
-import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
-
 import {
     Table,
     TableHeader,
@@ -27,7 +28,6 @@ import {
     TableBody,
     TableCell,
 } from "@components/ui/table";
-
 import {
     Pagination,
     PaginationContent,
@@ -35,13 +35,11 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "@components/ui/pagination";
-
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-
 import {
     Select,
     SelectTrigger,
@@ -49,9 +47,8 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
-
 import { Label } from "@components/ui/label";
-import { Card, CardContent } from "@components/ui/card";
+import { Card } from "@components/ui/card";
 import { toast } from "sonner";
 
 function AssetsIndex() {
@@ -118,16 +115,6 @@ function AssetsIndex() {
         }
     }, [flash]);
 
-    const handleExport = () => {
-        const link = document.createElement("a");
-        link.href = "/dashboard/assets/export";
-        link.setAttribute("download", "assets.xlsx");
-        link.setAttribute("target", "_blank");
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-    };
-
     return (
         <div>
             <div className="w-full mx-auto">
@@ -140,14 +127,6 @@ function AssetsIndex() {
                         <div className="flex justify-center items-center gap-2">
                             {permissions.includes("manage assets") ? (
                                 <>
-                                    <input
-                                        type="file"
-                                        accept=".xlsx,.csv"
-                                        ref={fileInputRef}
-                                        onChange={handleFileChange}
-                                        className="hidden"
-                                    />
-
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
@@ -162,7 +141,6 @@ function AssetsIndex() {
                                             <a
                                                 href="/dashboard/assets/template"
                                                 target="_blank"
-                                                className=""
                                                 rel="noopener noreferrer"
                                             >
                                                 <Button
@@ -173,19 +151,24 @@ function AssetsIndex() {
                                                     Download Template
                                                 </Button>
                                             </a>
-                                            <a
-                                                href="/dashboard/assets/export"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
+
+                                            <Button
+                                                variant="outline"
+                                                className="cursor-pointer w-full justify-start"
+                                                onClick={() =>
+                                                    fileInputRef.current?.click()
+                                                }
                                             >
-                                                <Button
-                                                    variant="outline"
-                                                    className="cursor-pointer w-full justify-start"
-                                                >
-                                                    <FileUp className="mr-2 w-4 h-4" />
-                                                    Export Assets
-                                                </Button>
-                                            </a>
+                                                <FileDown className="mr-2 w-4 h-4" />
+                                                Import File
+                                            </Button>
+                                            <input
+                                                type="file"
+                                                accept=".xlsx,.csv"
+                                                ref={fileInputRef}
+                                                onChange={handleFileChange}
+                                                className="hidden"
+                                            />
                                         </PopoverContent>
                                     </Popover>
 
@@ -466,7 +449,7 @@ function AssetsIndex() {
                                                         "manage assets"
                                                     ) ? (
                                                         <Link
-                                                            href={`/dashboard/assets/edit/${asset.id}`}
+                                                            href={`/dashboard/assets/${asset.id}/edit`}
                                                             onClick={(e) =>
                                                                 e.stopPropagation()
                                                             }
@@ -489,7 +472,7 @@ function AssetsIndex() {
                                                             }
                                                         >
                                                             <DeleteAlertDialog
-                                                                url={`/dashboard/assets/delete/${asset.id}`}
+                                                                url={`/dashboard/assets/${asset.id}/delete`}
                                                             >
                                                                 <Button
                                                                     variant="destructive"
@@ -517,7 +500,16 @@ function AssetsIndex() {
                                                     alt="no exist"
                                                     className="max-w-60 m-auto"
                                                 />
-                                                No Assets found.
+                                                <div>
+                                                    <h1 className="font-bold">
+                                                        No Assets Found.
+                                                    </h1>
+                                                    <p className="font-light">
+                                                        Add assets or try
+                                                        searching with different
+                                                        keyword
+                                                    </p>
+                                                </div>
                                             </div>
                                         </TableCell>
                                     </TableRow>

@@ -1,9 +1,12 @@
 import React from "react";
+
 import { useForm } from "@inertiajs/react";
+
+import { Loader2 } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
 
 export default function AddEmployeeForm({ onClose }) {
     const { data, setData, post, processing, errors } = useForm({

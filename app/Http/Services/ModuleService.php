@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Models\Role;
 use App\Models\Tenant;
 use Nwidart\Modules\Facades\Module;
-use Illuminate\Support\Facades\Hash;
 
 class ModuleService
 {

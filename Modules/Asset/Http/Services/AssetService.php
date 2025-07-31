@@ -3,6 +3,7 @@
 namespace Modules\Asset\Http\Services;
 
 use Modules\Asset\Models\Asset;
+use Modules\Loans\Models\Loan;
 
 class AssetService
 {
@@ -109,11 +110,62 @@ class AssetService
         return Asset::with('assetType', 'loans')->findOrFail($asset);
     }
 
-    public function getAvailableOrPendingAssetsByAssetType($assetType)
+    public function getAvailableAssetsByAssetType($assetType, $loanId = null)
     {
         return Asset::where('asset_type_id', $assetType)
-            ->whereIn('avaibility', ['available', 'pending'])
+            ->where(function ($query) use ($loanId) {
+                $query->where(function ($q) {
+                    $q->where('avaibility', 'available')
+                        ->where('condition', '!=', 'defect');
+                });
+
+                if ($loanId) {
+                    $query->orWhereHas('loans', function ($subQ) use ($loanId) {
+                        $subQ->where('loans.id', $loanId);
+                    });
+                }
+            })
             ->get(['id', 'serial_code', 'condition', 'specification', 'brand']);
+    }
+
+    public function getAvailableAssetPagination($request, $perPage)
+    {
+        $query = Asset::query()->where('avaibility', 'available')->where('condition', '!=', 'defect');
+
+        $allowedSorts = ['serial_code', 'brand', 'condition', 'avaibility', 'created_at'];
+
+        $sortBy = $request->get('sort_by');
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'serial_code';
+        }
+
+        $sortDirection = strtolower($request->get('sort_direction', 'asc'));
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $query->orderBy($sortBy, $sortDirection);
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(brand) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(serial_code) LIKE ?', ["%{$search}%"]);
+            });
+        }
+
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    public function getAllAssetBrands()
+    {
+        return Asset::select('brand')
+            ->distinct()
+            ->whereNotNull('brand')
+            ->where('brand', '!=', '')
+            ->orderBy('brand')
+            ->get()
+            ->pluck('brand');
     }
 
     public function createAsset($validated, $assetType)

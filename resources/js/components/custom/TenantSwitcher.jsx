@@ -1,4 +1,7 @@
 import React from "react";
+
+import { router } from "@inertiajs/react";
+
 import {
     Select,
     SelectTrigger,
@@ -6,10 +9,8 @@ import {
     SelectItem,
     SelectValue,
 } from "@components/ui/select";
-
 import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
 
-import { router } from "@inertiajs/react";
 
 export default function TenantSwitcher({ tenants, currentTenantId }) {
     function handleChange(tenantId) {

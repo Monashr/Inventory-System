@@ -1,11 +1,13 @@
 import React from "react";
-import Dashboard from "@components/layout/Dashboard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@components/ui/button";
+
 import { Link } from "@inertiajs/react";
 
-import { UserCog, Pencil, ChevronRight, ChevronLeft } from "lucide-react";
+import Dashboard from "@components/layout/Dashboard";
 
+import { UserCog, Pencil, ChevronLeft } from "lucide-react";
+
+import { Card } from "@/components/ui/card";
+import { Button } from "@components/ui/button";
 import {
     Pagination,
     PaginationContent,
@@ -13,7 +15,6 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "@components/ui/pagination";
-
 import {
     Select,
     SelectTrigger,
@@ -21,7 +22,6 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
-
 import {
     Table,
     TableHeader,

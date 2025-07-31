@@ -18,7 +18,7 @@ class AssetImportController extends Controller
         ]);
 
         try {
-            Excel::import(new AssetImport, $request->file('file'));
+            Excel::import(new AssetImport(), $request->file('file'));
             return redirect()->route('assets.index')->with('success', 'Assets imported successfully!');
         } catch (Exception $e) {
             return redirect()->route('assets.index')->with('success', 'Import failed: ' . $e->getMessage());

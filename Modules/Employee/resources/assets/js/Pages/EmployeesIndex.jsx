@@ -1,10 +1,14 @@
 import React from "react";
+
 import { usePage, router } from "@inertiajs/react";
-import { UserRound, Plus, Filter, SearchIcon, ArrowUpDown } from "lucide-react";
 
 import Dashboard from "@components/layout/Dashboard";
+import AddEmployeeForm from "./EmployeesAdd";
+
+import { UserRound, Plus, Filter, SearchIcon, ArrowUpDown } from "lucide-react";
+
 import { Button } from "@components/ui/button";
-import { Card, CardContent } from "@components/ui/card";
+import { Card } from "@components/ui/card";
 import { Input } from "@components/ui/input";
 import {
     Table,
@@ -28,7 +32,6 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
-
 import {
     Dialog,
     DialogContent,
@@ -36,10 +39,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-
 import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
-
-import AddEmployeeForm from "./EmployeesAdd";
 
 function EmployeesIndex() {
     const { employees, authUser, permissions, filters } = usePage().props;

@@ -35,12 +35,24 @@ class AssetTypeController extends Controller
 
         return Inertia::render('Asset/AssetTypesIndex', [
             'assetTypes' => $this->assetTypeService->getAssetTypePagination($request, $perPage),
+            'models' => $this->assetTypeService->getAllModels(),
             'permissions' => auth()->user()->getTenantPermission(),
             'filters' => [
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,
                 'sort_direction' => $request->sort_direction,
             ],
+        ]);
+    }
+
+    public function showAssetTypeAddForm()
+    {
+        if (!checkAuthority(config('asset.permissions')['permissions']['view'])) {
+            return redirect()->route('dashboard.index');
+        }
+
+        return Inertia::render('Asset/AssetTypesAdd', [
+            'models' => $this->assetTypeService->getAllModels(),
         ]);
     }
 
@@ -101,7 +113,8 @@ class AssetTypeController extends Controller
 
         $assetType->update($validated);
 
-        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' updated successfully');;
+        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' updated successfully');
+        ;
     }
 
     public function destroy($assetType)
@@ -118,7 +131,8 @@ class AssetTypeController extends Controller
 
         $assetType->delete();
 
-        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' deleted successfully');;
+        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' deleted successfully');
+        ;
     }
 
 }

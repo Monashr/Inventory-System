@@ -1,22 +1,19 @@
 import React from "react";
+
 import { usePage, router, Link } from "@inertiajs/react";
 
 import {
     Hammer,
     Filter,
     Plus,
-    SquarePen,
     SearchIcon,
     ArrowUpDown,
 } from "lucide-react";
 
 import Dashboard from "@components/layout/Dashboard";
+
 import { Button } from "@components/ui/button";
-import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
-import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
-
 import { Input } from "@components/ui/input";
-
 import {
     Table,
     TableHeader,
@@ -25,7 +22,6 @@ import {
     TableBody,
     TableCell,
 } from "@components/ui/table";
-
 import {
     Pagination,
     PaginationContent,
@@ -33,7 +29,6 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "@components/ui/pagination";
-
 import {
     Select,
     SelectTrigger,
@@ -41,9 +36,7 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
-
-import { Label } from "@components/ui/label";
-import { Card, CardContent } from "@components/ui/card";
+import { Card } from "@components/ui/card";
 
 function RepairIndex() {
     const { repairs, permissions, filters } = usePage().props;
@@ -143,8 +136,7 @@ function RepairIndex() {
                                     <TableHead className="text-left pl-7">
                                         <Button
                                             variant={
-                                                filters.sort_by ===
-                                                "asset_name"
+                                                filters.sort_by === "asset_name"
                                                     ? "default"
                                                     : "ghost"
                                             }
@@ -309,10 +301,26 @@ function RepairIndex() {
                                 ) : (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={5}
-                                            className="text-center py-6"
+                                            colSpan={6}
+                                            className="text-center py-12 px-6"
                                         >
-                                            No Assets found.
+                                            <div className="flex flex-col gap-4">
+                                                <img
+                                                    src="/NoExist.svg"
+                                                    alt="no exist"
+                                                    className="max-w-60 m-auto"
+                                                />
+                                                <div>
+                                                    <h1 className="font-bold">
+                                                        No Repairs Found.
+                                                    </h1>
+                                                    <p className="font-light">
+                                                        Add repairs or try
+                                                        searching with different
+                                                        keyword
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 )}

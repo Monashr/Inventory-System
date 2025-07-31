@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
+
 import { usePage, router, Link, Head } from "@inertiajs/react";
-import { toast } from "sonner";
+
+import Dashboard from "@components/layout/Dashboard";
+import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 
 import {
     Package,
     Plus,
     SquarePen,
-    ChevronRight,
     Filter,
     SearchIcon,
     ArrowUpDown,
@@ -14,13 +16,9 @@ import {
 } from "lucide-react";
 
 import { Button } from "@components/ui/button";
-import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
-import { Card, CardContent } from "@components/ui/card";
-import Dashboard from "@components/layout/Dashboard";
-import AssetTypesForm from "./AssetTypesAdd";
-
+import { Card } from "@components/ui/card";
 import { Input } from "@components/ui/input";
-
+import { toast } from "sonner";
 import {
     Table,
     TableHeader,
@@ -29,7 +27,6 @@ import {
     TableBody,
     TableCell,
 } from "@components/ui/table";
-
 import {
     Pagination,
     PaginationContent,
@@ -37,7 +34,6 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "@components/ui/pagination";
-
 import {
     Select,
     SelectTrigger,
@@ -45,14 +41,6 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
-
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 
 function AssetTypesIndex() {
     const { assetTypes, permissions, filters, flash } = usePage().props;
@@ -112,29 +100,12 @@ function AssetTypesIndex() {
                             Asset Types
                         </h1>
 
-                        {permissions.includes("manage assets") ? (
-                            <Dialog open={open} onOpenChange={setOpen}>
-                                <DialogTrigger
-                                    className="cursor-pointer"
-                                    asChild
-                                >
-                                    <Button>
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Add Asset Type
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-md">
-                                    <DialogHeader>
-                                        <DialogTitle>
-                                            Add New Asset Type
-                                        </DialogTitle>
-                                    </DialogHeader>
-                                    <AssetTypesForm
-                                        onClose={() => setOpen(false)}
-                                    />
-                                </DialogContent>
-                            </Dialog>
-                        ) : null}
+                        <Link href={"/dashboard/assettypes/add"}>
+                            <Button className="cursor-pointer">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Asset Type
+                            </Button>
+                        </Link>
                     </div>
                     <Card>
                         <div className="flex justify-between px-6">
@@ -230,7 +201,7 @@ function AssetTypesIndex() {
                                             className="group relative hover:bg-muted/50 cursor-pointer"
                                             onClick={() =>
                                                 router.visit(
-                                                    `/dashboard/assettypes/${assetType.id}`
+                                                    `/dashboard/assettypes/${assetType.id}/details`
                                                 )
                                             }
                                         >
@@ -249,7 +220,7 @@ function AssetTypesIndex() {
                                                         "manage assets"
                                                     ) ? (
                                                         <Link
-                                                            href={`/dashboard/assettypes/edit/${assetType.id}`}
+                                                            href={`/dashboard/assettypes/${assetType.id}/edit`}
                                                             onClick={(e) =>
                                                                 e.stopPropagation()
                                                             }
@@ -272,9 +243,13 @@ function AssetTypesIndex() {
                                                             }
                                                         >
                                                             <DeleteAlertDialog
-                                                                url={`/dashboard/assettypes/delete/${assetType.id}`}
+                                                                url={`/dashboard/assettypes/${assetType.id}/delete`}
                                                             >
-                                                                <Button size="sm" variant="destructive" className="cursor-pointer">
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="destructive"
+                                                                    className="cursor-pointer"
+                                                                >
                                                                     <Trash />
                                                                 </Button>
                                                             </DeleteAlertDialog>
@@ -296,7 +271,16 @@ function AssetTypesIndex() {
                                                     alt="no exist"
                                                     className="max-w-60 m-auto"
                                                 />
-                                                No Assets found.
+                                                <div>
+                                                    <h1 className="font-bold">
+                                                        No Asset Types Found.
+                                                    </h1>
+                                                    <p className="font-light">
+                                                        Add asset type or try
+                                                        searching with different
+                                                        keyword
+                                                    </p>
+                                                </div>
                                             </div>
                                         </TableCell>
                                     </TableRow>

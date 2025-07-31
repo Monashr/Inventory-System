@@ -3,6 +3,7 @@
 namespace Modules\Asset\Imports;
 
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Modules\Asset\Http\Services\AssetLogService;
 use Modules\Asset\Models\Asset;
 use Maatwebsite\Excel\Concerns\ToModel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -13,11 +14,13 @@ use Modules\Asset\Models\AssetType;
 
 class AssetImport implements ToModel, WithHeadingRow
 {
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
+    protected $assetLogService;
+
+    public function __construct()
+    {
+        $this->assetLogService = new AssetLogService();
+    }
+
     public function model(array $row)
     {
         $tenant = tenant()->id;
@@ -47,7 +50,7 @@ class AssetImport implements ToModel, WithHeadingRow
             }
         }
 
-        return new Asset([
+        $asset = new Asset([
             'asset_type_id' => $assetType->id,
             'tenant_id' => $tenant,
             'serial_code' => $serial_code,
@@ -59,6 +62,12 @@ class AssetImport implements ToModel, WithHeadingRow
             'condition' => $row['condition'],
             'avaibility' => 'available',
         ]);
+
+        $asset->save();
+
+        $this->assetLogService->userAddAssetByImport($asset);
+
+        return $asset;
     }
 
     private function generateSerialCode(string $assetTypeName): string

@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";

@@ -8,9 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 
-
-// use Modules\Asset\Database\Factories\RepairFactory;
-
 class Repair extends Model
 {
     use HasFactory, SoftDeletes;

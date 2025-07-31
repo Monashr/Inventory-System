@@ -1,14 +1,19 @@
 import React from "react";
-import { Head, usePage, router, Link } from "@inertiajs/react";
+
+import { usePage, router, Link } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
-import { PackageOpen, Plus, Filter, SearchIcon, ArrowUpDown } from "lucide-react";
+
+import {
+    PackageOpen,
+    Plus,
+    Filter,
+    SearchIcon,
+    ArrowUpDown,
+} from "lucide-react";
 
 import { Button } from "@components/ui/button";
-
 import { Input } from "@components/ui/input";
-import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
-
 import {
     Table,
     TableHeader,
@@ -17,7 +22,6 @@ import {
     TableBody,
     TableCell,
 } from "@components/ui/table";
-
 import {
     Pagination,
     PaginationContent,
@@ -25,7 +29,6 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "@components/ui/pagination";
-
 import {
     Select,
     SelectTrigger,
@@ -33,8 +36,7 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
-
-import { Card, CardContent } from "@components/ui/card";
+import { Card } from "@components/ui/card";
 
 function LoansIndex() {
     const { loans, permissions, filters } = usePage().props;
@@ -243,9 +245,25 @@ function LoansIndex() {
                                     <TableRow>
                                         <TableCell
                                             colSpan={4}
-                                            className="text-center py-6"
+                                            className="text-center py-12 px-6"
                                         >
-                                            No items found.
+                                            <div className="flex flex-col gap-4">
+                                                <img
+                                                    src="/NoExist.svg"
+                                                    alt="no exist"
+                                                    className="max-w-60 m-auto"
+                                                />
+                                                <div>
+                                                    <h1 className="font-bold">
+                                                        No Loans Found.
+                                                    </h1>
+                                                    <p className="font-light">
+                                                        Add loans or try
+                                                        searching with different
+                                                        keyword
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 )}

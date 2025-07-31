@@ -1,12 +1,15 @@
 import React from "react";
+
 import { Head, useForm, Link } from "@inertiajs/react";
+
+import { Loader2 } from "lucide-react";
+
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
-import { Loader2 } from "lucide-react";
 
-export default function LoginForm({ className, errors, ...props }) {
+export default function LoginForm({ errors }) {
     const { data, setData, post, processing, error, reset } = useForm({
         email: "",
         password: "",
@@ -103,12 +106,12 @@ export default function LoginForm({ className, errors, ...props }) {
                                     </Button>
                                     <div className="text-center text-sm">
                                         Don&apos;t have an account?{" "}
-                                        <a
+                                        <Link
                                             href="/register"
                                             className="underline underline-offset-4"
                                         >
                                             Sign up
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </form>

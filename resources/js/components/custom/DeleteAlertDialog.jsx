@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Button } from "@components/ui/button";
+
+import { router } from "@inertiajs/react";
+
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,7 +13,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@components/ui/alert-dialog";
-import { router } from "@inertiajs/react";
 
 export default function DeleteAlertDialog({ url, children }) {
     const [open, setOpen] = useState(false);

@@ -1,6 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
+
 import { useForm, Link, usePage } from "@inertiajs/react";
+
 import Dashboard from "@components/layout/Dashboard";
+import { ComboBoxInput } from "@components/custom/ComboBoxInput";
+
+import { Save, Package, ChevronLeft } from "lucide-react";
+
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +18,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Save, Package, ChevronLeft } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 function AssetsEdit() {
-    const { asset, assetTypes } = usePage().props;
+    const { asset, assetTypes, brands } = usePage().props;
 
     const { data, setData, put, errors } = useForm({
         asset_type_id: String(asset.asset_type_id),
@@ -32,7 +37,7 @@ function AssetsEdit() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/dashboard/assets/edit/${asset.id}`);
+        put(`/dashboard/assets/${asset.id}/edit`);
     };
 
     return (
@@ -103,10 +108,12 @@ function AssetsEdit() {
 
                     <div className="space-y-2">
                         <Label htmlFor="brand">Brand</Label>
-                        <Input
-                            type="text"
+                        <ComboBoxInput
+                            id="brand"
+                            options={brands}
                             value={data.brand}
-                            onChange={(e) => setData("brand", e.target.value)}
+                            onChange={(value) => setData("brand", value)}
+                            placeholder=""
                         />
                     </div>
 
@@ -171,7 +178,6 @@ function AssetsEdit() {
                     <div className="space-y-2">
                         <Label>Current Condition</Label>
                         <Select
-                            
                             value={data.condition}
                             onValueChange={(value) =>
                                 setData("condition", value)
@@ -181,9 +187,24 @@ function AssetsEdit() {
                                 <SelectValue placeholder="Select condition" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem className="cursor-pointer" value="good">Good</SelectItem>
-                                <SelectItem className="cursor-pointer" value="used">Used</SelectItem>
-                                <SelectItem className="cursor-pointer" value="defect">Defect</SelectItem>
+                                <SelectItem
+                                    className="cursor-pointer"
+                                    value="good"
+                                >
+                                    Good
+                                </SelectItem>
+                                <SelectItem
+                                    className="cursor-pointer"
+                                    value="used"
+                                >
+                                    Used
+                                </SelectItem>
+                                <SelectItem
+                                    className="cursor-pointer"
+                                    value="defect"
+                                >
+                                    Defect
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-use Modules\Asset\Exports\AssetExport;
 use Modules\Asset\Http\Controllers\AssetController;
 use Modules\Asset\Http\Controllers\AssetImportController;
 use Modules\Asset\Http\Controllers\AssetTypeController;
@@ -16,29 +14,28 @@ Route::middleware(['auth', 'tenant'])->prefix('dashboard/assets')->name('assets.
     Route::get('/add', [AssetController::class, 'showAssetAdd'])->name('add');
     Route::post('/add', [AssetController::class, 'storeAssets'])->name('store');
 
-    Route::get('/edit/{asset}', [AssetController::class, 'showAssetEdit'])->name('edit');
-    Route::put('/edit/{asset}', [AssetController::class, 'AssetUpdate'])->name('update');
+    Route::get('/{asset}/edit', [AssetController::class, 'showAssetEdit'])->name('edit');
+    Route::put('/{asset}/edit', [AssetController::class, 'AssetUpdate'])->name('update');
 
-    Route::delete('/delete/{asset}', [AssetController::class, 'destroy'])->name('delete');
+    Route::delete('/{asset}/delete', [AssetController::class, 'destroy'])->name('delete');
 
     Route::get('/api/{assetType}/assets', [AssetController::class, 'getAssets'])->name('asset.api');
     Route::post('/import', [AssetImportController::class, 'import'])->name('import');
     Route::get('/template', [AssetImportController::class, 'template'])->name('template');
-
     Route::get('/export', [AssetImportController::class, 'export'])->name('export');
-
 });
 
 Route::middleware(['auth', 'tenant'])->prefix('dashboard/assettypes')->name('assettypes.')->group(function () {
     Route::get('/', [AssetTypeController::class, 'assetTypeIndex'])->name('index');
-    Route::get('/{assetType}', [AssetTypeController::class, 'assetTypeDetails'])->name('details');
+    Route::get('/{assetType}/details', [AssetTypeController::class, 'assetTypeDetails'])->name('details');
 
+    Route::get('/add', [AssetTypeController::class, 'showAssetTypeAddForm'])->name('add');
     Route::post('/add', [AssetTypeController::class, 'storeAssetType'])->name('store');
 
-    Route::get('/edit/{assetType}', [AssetTypeController::class, 'showAssetTypeEditForm'])->name('edit');
-    Route::put('/edit/{assetType}', [AssetTypeController::class, 'updateAssetType'])->name('update');
+    Route::get('/{assetType}/edit', [AssetTypeController::class, 'showAssetTypeEditForm'])->name('edit');
+    Route::put('/{assetType}/edit', [AssetTypeController::class, 'updateAssetType'])->name('update');
 
-    Route::delete('/delete/{assetType}', [AssetTypeController::class, 'destroy'])->name('delete');
+    Route::delete('/{assetType}/delete/', [AssetTypeController::class, 'destroy'])->name('delete');
 });
 
 Route::middleware(['auth', 'tenant'])->prefix('dashboard/repairs')->name('repairs.')->group(function () {

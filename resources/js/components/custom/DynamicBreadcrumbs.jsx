@@ -1,4 +1,7 @@
 import React from "react";
+
+import { Link, usePage } from "@inertiajs/react";
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -6,7 +9,6 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Link, usePage } from "@inertiajs/react";
 
 export default function DynamicBreadcrumbs() {
     const page = usePage();

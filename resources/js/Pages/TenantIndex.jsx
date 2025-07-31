@@ -1,10 +1,13 @@
 import React from "react";
+
 import { usePage, Link } from "@inertiajs/react";
+
+import Dashboard from "@components/layout/Dashboard";
+
+import { Pencil } from "lucide-react";
+
 import { Card, CardContent } from "@components/ui/card";
 import { Button } from "@components/ui/button";
-import Dashboard from "@components/layout/Dashboard";
-import { Pencil } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
 
 function TenantIndex() {
     const { tenant } = usePage().props;

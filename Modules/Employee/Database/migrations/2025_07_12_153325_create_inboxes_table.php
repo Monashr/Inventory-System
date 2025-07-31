@@ -16,6 +16,7 @@ return new class extends Migration {
 
             $table->foreignId('sender_id')->constrained('users')->nullOnDelete();
             $table->foreignId('receiver_id')->constrained('users')->nullOnDelete();
+            $table->enum('status', ['accepted', 'rejected', 'pending'])->default('pending');
 
             $table->foreignId('tenant_id')->constrained()->nullOnDelete();
             $table->timestamps();

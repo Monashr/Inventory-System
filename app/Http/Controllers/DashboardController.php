@@ -4,11 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateTenantRequest;
 use App\Http\Services\PictureService;
-use App\Models\Tenant;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class DashboardController extends Controller

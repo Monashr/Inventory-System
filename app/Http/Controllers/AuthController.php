@@ -5,17 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Services\TenantService;
-use App\Models\Position;
-use App\Models\User;
 use App\Http\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
-use App\Models\Tenant;
-use App\Models\Role;
-use Nwidart\Modules\Facades\Module;
-
 class AuthController extends Controller
 {
 

@@ -1,14 +1,11 @@
 import React from "react";
+
 import { Link, usePage, useForm } from "@inertiajs/react";
+
 import Dashboard from "@components/layout/Dashboard";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import {
     Ban,
-    ChevronRight,
     Hammer,
     Pen,
     Check,
@@ -16,6 +13,13 @@ import {
     Trash,
     FileWarning,
 } from "lucide-react";
+
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 
 function RepairDetails() {
     const { repair } = usePage().props;

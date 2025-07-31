@@ -1,7 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Dashboard from "@components/layout/Dashboard";
+import React, { useState } from "react";
+
 import { Link, usePage, router } from "@inertiajs/react";
+
+import Dashboard from "@components/layout/Dashboard";
+
+import {
+    Package,
+    PackageOpen,
+    Plus,
+    ShoppingCart,
+    TrashIcon,
+    ChevronLeft,
+} from "lucide-react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,14 +24,7 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-    Package,
-    PackageOpen,
-    SearchIcon,
-    ShoppingCart,
-    TrashIcon,
-    ChevronLeft,
-} from "lucide-react";
+
 
 function Concept() {
     const { assets, users } = usePage().props;
@@ -49,12 +54,6 @@ function Concept() {
             asset.brand.toLowerCase().includes(search.toLowerCase()) ||
             asset.serial_code.toLowerCase().includes(search.toLowerCase())
     );
-
-    const formatDateLocal = (date) => {
-        if (!(date instanceof Date)) return null;
-
-        return date.toLocaleDateString("en-CA");
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -106,7 +105,6 @@ function Concept() {
                 </div>
 
                 <div className="flex w-full h-[70vh] gap-4 overflow-hidden">
-                    {/* Assets Section */}
                     <Card className="w-2/3 flex flex-col">
                         <CardHeader>
                             <CardTitle className="flex justify-between items-center">
@@ -181,14 +179,26 @@ function Concept() {
                                             </Card>
                                         ))
                                     ) : (
-                                        <p>No assets found.</p>
+                                        <div className="space-y-4 flex flex-col justify-center items-center">
+                                            <p className="text-lg font-medium text-gray-700">
+                                                No Assets Found
+                                            </p>
+                                            <Link href="/dashboard/assets/add">
+                                                <Button
+                                                    variant="default"
+                                                    className="mx-auto cursor-pointer"
+                                                >
+                                                    <Plus />
+                                                    Add Assets
+                                                </Button>
+                                            </Link>
+                                        </div>
                                     )}
                                 </div>
                             </ScrollArea>
                         </CardContent>
                     </Card>
 
-                    {/* Cart Section */}
                     <Card className="w-1/3 flex flex-col">
                         <CardHeader>
                             <CardTitle className="text-lg">
@@ -272,10 +282,9 @@ function Concept() {
                                 </div>
                             </div>
 
-                            {/* Proceed Button Pinned Bottom */}
                             <div className="mt-4">
                                 <Button
-                                    className="w-full"
+                                    className="w-full cursor-pointer"
                                     disabled={
                                         !selectedUser ||
                                         cart.length === 0 ||

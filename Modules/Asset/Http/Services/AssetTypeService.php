@@ -50,6 +50,17 @@ class AssetTypeService
         return $assetTypes;
     }
 
+        public function getAllModels()
+    {
+        return AssetType::select('model')
+            ->distinct()
+            ->whereNotNull('model')
+            ->where('model', '!=', '')
+            ->orderBy('model')
+            ->get()
+            ->pluck('model');
+    }
+
     public function createAssetType($validated)
     {
         return AssetType::create([

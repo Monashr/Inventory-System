@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
+
 import { useForm, router } from "@inertiajs/react";
+
+import { SaveAll, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +15,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SaveAll, X } from "lucide-react";
 import Calendar08 from "@components/calendar-08";
 
 export default function LoansForm({ assetTypes, users, loan }) {
@@ -39,8 +41,9 @@ export default function LoansForm({ assetTypes, users, loan }) {
             const entriesWithAssets = await Promise.all(
                 loan.assets.map(async (entry) => {
                     const response = await fetch(
-                        `/dashboard/assets/api/${entry.asset_type_id}/assets`
+                        `/dashboard/assets/api/${entry.asset_type_id}/assets?loan_id=${loan.id}`
                     );
+
                     const assets = await response.json();
 
                     const matchedAsset = assets.find((a) => a.id === entry.id);
@@ -88,7 +91,7 @@ export default function LoansForm({ assetTypes, users, loan }) {
     const fetchAssets = async (assetTypeId, index) => {
         try {
             const response = await fetch(
-                `/dashboard/assets/api/${assetTypeId}/assets`
+                `/dashboard/assets/api/${assetTypeId}/assets?loan_id=${loan.id}`
             );
             const assets = await response.json();
 
@@ -141,29 +144,17 @@ export default function LoansForm({ assetTypes, users, loan }) {
             loaned_date: formatDateLocal(entry.loaned_date),
         }));
 
-        const url = loan ? `/dashboard/loans/${loan.id}` : `/dashboard/loans`;
+        const url = `/dashboard/loans/${loan.id}`;
 
-        if (loan) {
-            router.put(
-                url,
-                {
-                    loaner: data.loaner,
-                    description: data.description,
-                    assets: payloadAssets,
-                },
-                { preserveScroll: true }
-            );
-        } else {
-            router.post(
-                url,
-                {
-                    loaner: data.loaner,
-                    description: data.description,
-                    assets: payloadAssets,
-                },
-                { preserveScroll: true }
-            );
-        }
+        router.put(
+            url,
+            {
+                loaner: data.loaner,
+                description: data.description,
+                assets: payloadAssets,
+            },
+            { preserveScroll: true }
+        );
     };
 
     if (assetTypes.length == 0) {
@@ -345,6 +336,9 @@ export default function LoansForm({ assetTypes, users, loan }) {
 
                                                     return (
                                                         <>
+                                                            {console.log(
+                                                                selectedAsset
+                                                            )}
                                                             <div className="space-y-2 p-2 bg-accent rounded-2xl">
                                                                 <div className="w-full flex justify-between items-center">
                                                                     <span className="font-bold text-foreground">

@@ -1,5 +1,9 @@
 import React from "react";
+
 import { usePage, router, Link } from "@inertiajs/react";
+
+import Dashboard from "@components/layout/Dashboard";
+import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 
 import {
     Package,
@@ -14,11 +18,8 @@ import {
 } from "lucide-react";
 
 import { Input } from "@components/ui/input";
-import Dashboard from "@components/layout/Dashboard";
 import { Button } from "@components/ui/button";
-import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
-
 import {
     Table,
     TableHeader,
@@ -26,9 +27,7 @@ import {
     TableHead,
     TableBody,
     TableCell,
-    TableFooter,
 } from "@components/ui/table";
-
 import {
     Pagination,
     PaginationContent,
@@ -36,7 +35,6 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "@components/ui/pagination";
-
 import {
     Select,
     SelectTrigger,
@@ -44,7 +42,6 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
-
 import { Label } from "@components/ui/label";
 import { Card } from "@components/ui/card";
 
@@ -70,7 +67,7 @@ function AssetsIndex() {
         }
 
         router.get(
-            `/dashboard/assettypes/${assetType.id}`,
+            `/dashboard/assettypes/${assetType.id}/details`,
             {
                 search,
                 per_page: assets.per_page,
@@ -120,7 +117,7 @@ function AssetsIndex() {
                             </Button>
                             {permissions.includes("manage assets") ? (
                                 <Link
-                                    href={`/dashboard/assettypes/edit/${assetType.id}`}
+                                    href={`/dashboard/assettypes/${assetType.id}/edit`}
                                 >
                                     <Button
                                         variant="outline"
@@ -134,7 +131,7 @@ function AssetsIndex() {
                             ) : null}
                             {permissions.includes("manage assets") ? (
                                 <DeleteAlertDialog
-                                    url={`/dashboard/assettypes/delete/${assetType.id}`}
+                                    url={`/dashboard/assettypes/${assetType.id}/delete`}
                                 >
                                     <Button
                                         variant="destructive"
@@ -355,7 +352,7 @@ function AssetsIndex() {
                                                 "edit assets"
                                             ) ? (
                                                 <Link
-                                                    href={`/dashboard/assets/edit/${asset.id}`}
+                                                    href={`/dashboard/assets/${asset.id}/edit`}
                                                     onClick={(e) =>
                                                         e.stopPropagation()
                                                     }
@@ -407,7 +404,7 @@ function AssetsIndex() {
                             defaultValue={String(assets.per_page)}
                             onValueChange={(value) => {
                                 router.get(
-                                    `/dashboard/assettypes/${assetType.id}`,
+                                    `/dashboard/assettypes/${assetType.id}/details`,
                                     {
                                         search,
                                         per_page: value,

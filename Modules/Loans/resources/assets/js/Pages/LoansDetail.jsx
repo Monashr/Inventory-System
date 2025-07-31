@@ -1,14 +1,9 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+
+import { Link, usePage, router } from "@inertiajs/react";
+
 import Dashboard from "@components/layout/Dashboard";
-import { Link, usePage } from "@inertiajs/react";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import Calendar08 from "@components/calendar-08";
+
 import {
     Ban,
     ChevronLeft,
@@ -19,9 +14,17 @@ import {
     Plus,
     Check,
 } from "lucide-react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import Calendar08 from "@components/calendar-08";
 import { Button } from "@components/ui/button";
 import { Separator } from "@components/ui/separator";
-import { router } from "@inertiajs/react";
 import {
     Select,
     SelectTrigger,
@@ -188,7 +191,7 @@ function LoansDetail() {
                                                             >
                                                                 <Button
                                                                     variant="outline"
-                                                                    className="text-sm"
+                                                                    className="text-sm cursor-pointer"
                                                                 >
                                                                     Return Asset
                                                                 </Button>

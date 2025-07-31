@@ -113,9 +113,13 @@ class EmployeeController extends Controller
             $user->tenants()->attach($tenantId);
         }
 
-        $inbox->delete();
+        //$inbox->delete();
 
-        return redirect()->back()->with('success', 'You have joined the tenant successfully.');
+        $inbox->update([
+            'status' => 'accepted',
+        ]);
+
+        return redirect()->back()->with('success', 'Invitation Accepted.');
     }
 
     public function declineInvitation($id)
@@ -126,7 +130,12 @@ class EmployeeController extends Controller
             abort(403);
         }
 
-        $inbox->delete();
+        //$inbox->delete();
+
+        $inbox->update([
+            'status' => 'rejected',
+        ]);
+
 
         return redirect()->back()->with('info', 'Invitation declined.');
     }

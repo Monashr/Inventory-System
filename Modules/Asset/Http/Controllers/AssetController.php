@@ -92,6 +92,7 @@ class AssetController extends Controller
 
         return Inertia::render('Asset/AssetsAdd', [
             'assetTypes' => $this->assetTypeService->getAllAssetTypes(),
+            'brands' => $this->assetService->getAllAssetBrands(),
         ]);
     }
 
@@ -120,7 +121,8 @@ class AssetController extends Controller
 
         return Inertia::render('Asset/AssetsEdit', [
             'asset' => $this->assetService->findAsset($asset),
-            'assetTypes' => $this->assetTypeService->getAllAssetTypes()
+            'assetTypes' => $this->assetTypeService->getAllAssetTypes(),
+            'brands' => $this->assetService->getAllAssetBrands(),
         ]);
     }
 
@@ -135,8 +137,8 @@ class AssetController extends Controller
         return redirect()->route('assets.index')->with('success', 'Asset Updated Sucessfully');
     }
 
-    public function getAssets($assetType)
+    public function getAssets($assetType, Request $request)
     {
-        return response()->json($this->assetService->getAvailableOrPendingAssetsByAssetType($assetType));
+        return response()->json($this->assetService->getAvailableAssetsByAssetType($assetType, $request->loan_id));
     }
 }

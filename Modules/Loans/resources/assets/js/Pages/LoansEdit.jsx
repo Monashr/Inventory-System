@@ -1,11 +1,15 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Dashboard from "@components/layout/Dashboard";
+
 import { usePage, Link } from "@inertiajs/react";
-import { Button } from "@components/ui/button";
+
+import Dashboard from "@components/layout/Dashboard";
 import LoansForm from "./LoansForm";
+
+import { PackageOpen, Ban } from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@components/ui/button";
 import { Separator } from "@components/ui/separator";
-import { PackageOpen, Ban, SaveAll } from "lucide-react";
 
 function LoansEdit() {
     const { assetTypes, users, loan } = usePage().props;

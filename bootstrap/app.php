@@ -6,7 +6,6 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\HandleInertiaRequests;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
-use Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession;
 use App\Http\Middleware\CustomEnsureValidTenantSession;
 
 return Application::configure(basePath: dirname(__DIR__))

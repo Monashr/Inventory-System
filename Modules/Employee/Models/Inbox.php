@@ -17,6 +17,7 @@ class Inbox extends Model
         'name',
         'sender_id',
         'receiver_id',
+        'status',
         'tenant_id',
     ];
 
