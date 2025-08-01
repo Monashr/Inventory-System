@@ -3,9 +3,22 @@
 namespace Modules\Employee\Http\Services;
 
 use App\Models\User;
+use App\Http\Services\TenantService;
+use App\Http\Services\UserService;
+use App\Http\Services\PositionService;
+use App\Http\Services\RoleService;
+use Illuminate\Http\Request;
+use Modules\Employee\Http\Requests\CreateEmployeeRequest;
 
 class EmployeeService
 {
+    public function __construct(
+        protected TenantService $tenantService,
+        protected UserService $userService,
+        protected PositionService $positionService,
+        protected RoleService $roleService,
+    ) {
+    }
     public function getAllEmployeePaginated($request, $perPage)
     {
         $tenantId = session('active_tenant_id');
@@ -30,7 +43,6 @@ class EmployeeService
 
         $query->orderBy($sortBy, $sortDirection);
 
-        // Search
         if ($request->filled('search')) {
             $search = strtolower($request->search);
 
@@ -44,5 +56,26 @@ class EmployeeService
         return $query->paginate($perPage)->withQueryString();
     }
 
+    public function createNewEmployee(CreateEmployeeRequest $request)
+    {
+        $credentials = $request->validated();
 
+        $tenant = $this->tenantService->createTenant($credentials);
+
+        $position = $this->positionService->createPosition('employee', $tenant->id);
+
+        $user = $this->userService->createUser($credentials);
+
+        $role = $this->roleService->createRole('user', $tenant->id);
+        
+        $user->positions()->attach($position);
+
+        $user->assignRole($tenant->id, $role);
+
+        $user->tenants()->attach($tenant->id);
+
+        $user->tenants()->attach(tenant());
+
+        return $user;
+    }
 }

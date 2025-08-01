@@ -1,9 +1,7 @@
 import React from "react";
-
 import { router, useForm, usePage, Link } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
-
 import { UserCog, Save, ChevronLeft } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,20 +9,20 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 export default function AssignPermissions() {
     const { user, permissions, assignedPermissions } = usePage().props;
 
     const { data, setData, post, processing } = useForm({
         assignedPermissions: [...assignedPermissions],
+        position: user.positions[0]?.name || "",
     });
 
     const togglePermission = (permissionId, checked) => {
-        const prev = data.assignedPermissions || [];
-
         const updated = checked
-            ? [...prev, permissionId]
-            : prev.filter((id) => id !== permissionId);
+            ? [...data.assignedPermissions, permissionId]
+            : data.assignedPermissions.filter((id) => id !== permissionId);
 
         setData("assignedPermissions", updated);
     };
@@ -42,10 +40,9 @@ export default function AssignPermissions() {
         "Loans Management": ["loan", "loans"],
     };
 
-    const groupedPermissions = {};
-    Object.keys(groupKeywords).forEach((group) => {
-        groupedPermissions[group] = [];
-    });
+    const groupedPermissions = Object.fromEntries(
+        Object.keys(groupKeywords).map((key) => [key, []])
+    );
     groupedPermissions["Other"] = [];
 
     permissions.forEach((permission) => {
@@ -68,25 +65,40 @@ export default function AssignPermissions() {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center px-6 py-2">
-                <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
+                <h1 className="flex items-center font-bold text-lg md:text-2xl">
                     <UserCog className="w-8 h-8 md:w-10 md:h-10 mr-2" />
                     Assign Permission For {user.name}
                 </h1>
-                <div>
-                    <Link href={`/dashboard/employees/permission/${user.id}`}>
-                        <Button className="cursor-pointer">
-                            <ChevronLeft />
-                            Back
-                        </Button>
-                    </Link>
-                </div>
+                <Link href={`/dashboard/employees/permission/${user.id}`}>
+                    <Button className="cursor-pointer">
+                        <ChevronLeft />
+                        Back
+                    </Button>
+                </Link>
             </div>
+
             <Card className="w-full mx-auto">
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-8 px-6">
+                        <div className="space-y-2">
+                            <div className="font-bold">Employee Position</div>
+                            <Input
+                                id="position"
+                                type="text"
+                                value={data.position}
+                                onChange={(e) =>
+                                    setData("position", e.target.value)
+                                }
+                                placeholder={
+                                    data.position?.name ||
+                                    "Enter Employee Position"
+                                }
+                            />
+                        </div>
+
                         {Object.entries(groupedPermissions).map(
                             ([groupName, perms]) =>
-                                perms.length === 0 ? null : (
+                                perms.length > 0 && (
                                     <div key={groupName} className="space-y-3">
                                         <h3 className="text-md font-semibold text-muted-foreground">
                                             {groupName}
@@ -95,7 +107,7 @@ export default function AssignPermissions() {
                                             {perms.map((permission) => (
                                                 <div
                                                     key={permission.id}
-                                                    className="flex items-center gap-3 p-0 border rounded-md shadow-sm hover:bg-muted transition"
+                                                    className="flex items-center gap-3 p-0 border rounded-md shadow-sm hover:bg-muted transition cursor-pointer"
                                                 >
                                                     <Checkbox
                                                         id={`perm-${permission.id}`}
@@ -114,7 +126,7 @@ export default function AssignPermissions() {
                                                     />
                                                     <Label
                                                         htmlFor={`perm-${permission.id}`}
-                                                        className="text-sm font-medium w-full h-full m-3 cursor-pointer"
+                                                        className="text-sm font-medium w-full m-3 cursor-pointer"
                                                     >
                                                         {permission.name}
                                                     </Label>
@@ -128,11 +140,11 @@ export default function AssignPermissions() {
 
                         <div className="flex justify-end">
                             <Button
-                                className="cursor-pointer"
                                 type="submit"
                                 disabled={processing}
+                                className="cursor-pointer"
                             >
-                                <Save />
+                                <Save className="mr-2" />
                                 {processing ? "Saving..." : "Save Permissions"}
                             </Button>
                         </div>

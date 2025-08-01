@@ -336,9 +336,6 @@ export default function LoansForm({ assetTypes, users, loan }) {
 
                                                     return (
                                                         <>
-                                                            {console.log(
-                                                                selectedAsset
-                                                            )}
                                                             <div className="space-y-2 p-2 bg-accent rounded-2xl">
                                                                 <div className="w-full flex justify-between items-center">
                                                                     <span className="font-bold text-foreground">

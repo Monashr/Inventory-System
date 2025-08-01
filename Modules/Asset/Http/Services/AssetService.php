@@ -3,7 +3,6 @@
 namespace Modules\Asset\Http\Services;
 
 use Modules\Asset\Models\Asset;
-use Modules\Loans\Models\Loan;
 
 class AssetService
 {
@@ -71,6 +70,37 @@ class AssetService
     }
 
     public function getAssetPagination($request, $perPage)
+    {
+        $query = Asset::query();
+
+        $query->where('avaibility', 'available');
+
+        $allowedSorts = ['serial_code', 'brand', 'condition', 'avaibility', 'created_at'];
+
+        $sortBy = $request->get('sort_by');
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'serial_code';
+        }
+
+        $sortDirection = strtolower($request->get('sort_direction', 'asc'));
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $query->orderBy($sortBy, $sortDirection);
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(brand) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(serial_code) LIKE ?', ["%{$search}%"]);
+            });
+        }
+
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    public function getAllAssetPagination($request, $perPage)
     {
         $query = Asset::query();
 

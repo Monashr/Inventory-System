@@ -3,9 +3,11 @@
 namespace Modules\Employee\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
+use Modules\Employee\Http\Requests\CreateEmployeeRequest;
 use Modules\Employee\Http\Services\EmployeeService;
 use Modules\Employee\Models\Inbox;
 use Spatie\Permission\Models\Permission;
@@ -82,14 +84,17 @@ class EmployeeController extends Controller
 
     public function showInbox(Request $request)
     {
-        $inboxes = Inbox::with(['sender', 'tenant'])
-            ->where('receiver_id', auth()->id())
+        $inboxes = Inbox::with(['sender', 'tenant', 'receiver'])
+            ->where(function ($query) {
+                $query->where('receiver_id', auth()->id())
+                    ->orWhere('sender_id', auth()->id());
+            })
             ->latest()
             ->paginate(10);
 
-
         return Inertia::render("Employee/EmployeesInbox", [
             'inboxes' => $inboxes,
+            'user' => auth()->user(),
             'filters' => [
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,
@@ -113,8 +118,6 @@ class EmployeeController extends Controller
             $user->tenants()->attach($tenantId);
         }
 
-        //$inbox->delete();
-
         $inbox->update([
             'status' => 'accepted',
         ]);
@@ -130,12 +133,9 @@ class EmployeeController extends Controller
             abort(403);
         }
 
-        //$inbox->delete();
-
         $inbox->update([
             'status' => 'rejected',
         ]);
-
 
         return redirect()->back()->with('info', 'Invitation declined.');
     }
@@ -191,7 +191,7 @@ class EmployeeController extends Controller
 
         $tenantId = session('active_tenant_id');
 
-        $user = User::findOrFail($id);
+        $user = User::with('positions')->findOrFail($id);
 
         $permissions = Permission::where('guard_name', "web")->get();
 
@@ -230,10 +230,23 @@ class EmployeeController extends Controller
             return redirect()->route('employees.index');
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'assignedPermissions' => 'array',
             'assignedPermissions.*' => 'integer|exists:permissions,id',
+            'position' => 'nullable|string|max:255',
         ]);
+
+        if ($validated['position'] == null) {
+            $validated['position'] = "employee";
+        }
+
+        $position = Position::firstOrCreate(
+            ['name' => $validated['position'], 'tenant_id' => tenant()->id]
+        );
+
+        $user = User::findOrFail($id);
+
+        $user->positions()->sync([$position->id]);
 
         $tenantId = session('active_tenant_id');
         $roleId = $id;
@@ -256,6 +269,67 @@ class EmployeeController extends Controller
         }
 
         return redirect()->back()->with('success', 'Permissions updated successfully.');
+    }
+
+    public function deleteUserFromTenant($id) {
+        if (!checkAuthority(config('employee.permissions')['permissions']['edit'])) {
+            return redirect()->route('employees.index');
+        }
+
+        if (auth()->user()->id == $id) {
+            return redirect()->route('employees.index');
+        }
+
+        $tenantId = session('active_tenant_id');
+
+        $this->revokeAllUserPermissions($tenantId, $id);
+
+        DB::table('tenant_user')
+            ->where('user_id', $id)
+            ->where('tenant_id', $tenantId)
+            ->delete();
+
+        return redirect()->route('employees.index')->with('success', 'User Deleted Successfully.');
+    }
+
+    public function revokeAllPermissions($id)
+    {
+        if (!checkAuthority(config('employee.permissions')['permissions']['edit'])) {
+            return redirect()->route('employees.index');
+        }
+
+        if (auth()->user()->id == $id) {
+            return redirect()->route('employees.index');
+        }
+
+        $tenantId = session('active_tenant_id');
+
+        $this->revokeAllUserPermissions($tenantId, $id);
+
+        return redirect()->back()->with('success', 'All permissions revoked successfully.');
+    }
+
+    private function revokeAllUserPermissions($tenantId, $id) {
+        $user = User::findOrFail($id);
+
+        DB::table('role_has_permissions')
+            ->where('role_id', $id)
+            ->where('tenant_id', $tenantId)
+            ->delete();
+
+        $user->positions()->detach();
+    }
+
+
+    public function showCreateEmployeeForm()
+    {
+        return Inertia::render('Employee/EmployeesCreate');
+    }
+
+    public function storeEmployee(CreateEmployeeRequest $request)
+    {
+        $this->employeeService->createNewEmployee($request);
+        return redirect()->route('employees.index')->with('success', 'Employee added successfully.');
     }
 
 

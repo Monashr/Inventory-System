@@ -1,10 +1,10 @@
 import React from "react";
 
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
-import { UserCog, Pencil, ChevronLeft } from "lucide-react";
+import { UserCog, Pencil, ChevronLeft, Ban, Trash2 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@components/ui/button";
@@ -31,6 +31,15 @@ import {
     TableCell,
 } from "@components/ui/table";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTrigger,
+    DialogTitle,
+} from "@components/ui/dialog";
+
 function EmployeesPermission({ employee, rolePermissions, permissions }) {
     return (
         <div>
@@ -44,18 +53,95 @@ function EmployeesPermission({ employee, rolePermissions, permissions }) {
 
                         <div className="flex gap-2 justify-center items-center">
                             {permissions.includes("edit employees") && (
-                                <Link
-                                    href={`/dashboard/employees/permissions/${employee.id}`}
-                                >
-                                    <Button
-                                        variant="outline"
-                                        data-modal-trigger="add-employee"
-                                        className="cursor-pointer"
+                                <>
+                                    {rolePermissions.data.length > 0 && (
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button
+                                                    variant="destructive"
+                                                    className="cursor-pointer"
+                                                >
+                                                    <Ban />
+                                                    Revoke All Permissions
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                    <DialogTitle>
+                                                        Revoke All Permission
+                                                    </DialogTitle>
+                                                    <DialogDescription>
+                                                        Are you sure want to
+                                                        revoke all the
+                                                        permissions on this
+                                                        user?
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                                <div className="flex justify-end items-center">
+                                                    <Button
+                                                        variant="destructive"
+                                                        onClick={() =>
+                                                            router.post(
+                                                                `/dashboard/employees/revoke/${employee.id}`
+                                                            )
+                                                        }
+                                                        className="cursor-pointer"
+                                                    >
+                                                        <Ban />
+                                                        Revoke All Permission
+                                                    </Button>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
+                                    )}
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button
+                                                variant="destructive"
+                                                className="cursor-pointer"
+                                            >
+                                                <Trash2 />
+                                                Delete User
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-[425px]">
+                                            <DialogHeader>
+                                                <DialogTitle>
+                                                    Delete User
+                                                </DialogTitle>
+                                                <DialogDescription>
+                                                    Are you sure want to delete
+                                                    this user?
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="flex justify-end items-center">
+                                                <Button
+                                                    variant="destructive"
+                                                    onClick={() =>
+                                                        router.post(
+                                                            `/dashboard/employees/delete/${employee.id}`
+                                                        )
+                                                    }
+                                                    className="cursor-pointer"
+                                                >
+                                                    <Trash2 />
+                                                    Delete User
+                                                </Button>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                    <Link
+                                        href={`/dashboard/employees/permissions/${employee.id}`}
                                     >
-                                        <Pencil />
-                                        Edit User Permissions
-                                    </Button>
-                                </Link>
+                                        <Button
+                                            variant="outline"
+                                            className="cursor-pointer"
+                                        >
+                                            <Pencil />
+                                            Edit User Permissions
+                                        </Button>
+                                    </Link>
+                                </>
                             )}
                             <Link href="/dashboard/employees">
                                 <Button

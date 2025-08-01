@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-
 function Concept() {
     const { assets, users } = usePage().props;
 
@@ -63,7 +62,6 @@ function Concept() {
             asset_type_id: item.asset_type_id,
             loaned_date: item.date,
         }));
-        console.log(formattedAssets);
 
         router.post(
             "/dashboard/loans",
@@ -79,7 +77,7 @@ function Concept() {
                     setSelectedUser(null);
                 },
                 onError: (e) => {
-                    console.log(e);
+                    
                 },
             }
         );
@@ -165,16 +163,28 @@ function Concept() {
                                                             </span>
                                                         </span>
                                                     </div>
-                                                    <Button
-                                                        className="w-full cursor-pointer"
-                                                        onClick={() =>
-                                                            handleAddToCart(
-                                                                asset
-                                                            )
-                                                        }
-                                                    >
-                                                        Add
-                                                    </Button>
+                                                    {cart.some(
+                                                        (item) =>
+                                                            item.id === asset.id
+                                                    ) ? (
+                                                        <Button
+                                                            className="w-full bg-green-200 text-green-800 cursor-default hover:bg-green-200"
+                                                            disabled
+                                                        >
+                                                            Added
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            className="w-full cursor-pointer"
+                                                            onClick={() =>
+                                                                handleAddToCart(
+                                                                    asset
+                                                                )
+                                                            }
+                                                        >
+                                                            Add
+                                                        </Button>
+                                                    )}
                                                 </CardContent>
                                             </Card>
                                         ))

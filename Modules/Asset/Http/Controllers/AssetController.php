@@ -33,8 +33,17 @@ class AssetController extends Controller
 
         $perPage = $request->input('per_page', 10);
 
+        $asset = null;
+        
+        if (checkAuthority(config('asset.permissions')['permissions']['manage'])) {
+            $asset = $this->assetService->getAllAssetPagination($request, $perPage);
+        } else {
+            $asset = $this->assetService->getAssetPagination($request, $perPage);
+        }
+
+
         return Inertia::render('Asset/AssetsIndex', [
-            'assets' => $this->assetService->getAssetPagination($request, $perPage),
+            'assets' => $asset,
             'filters' => [
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,

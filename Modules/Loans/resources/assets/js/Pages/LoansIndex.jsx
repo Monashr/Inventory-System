@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { usePage, router, Link } from "@inertiajs/react";
 
@@ -37,9 +37,10 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@components/ui/card";
+import { toast } from "sonner";
 
 function LoansIndex() {
-    const { loans, permissions, filters } = usePage().props;
+    const { loans, permissions, filters, flash } = usePage().props;
     const [search, setSearch] = React.useState(filters.search || "");
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";
@@ -75,6 +76,15 @@ function LoansIndex() {
             return "-";
         }
     };
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success);
+        }
+        if (flash?.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
 
     return (
         <div>

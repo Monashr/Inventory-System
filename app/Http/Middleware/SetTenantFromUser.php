@@ -19,7 +19,7 @@ class SetTenantFromUser
         if (auth()->check()) {
             $activeTenantId = session('active_tenant_id');
 
-            
+
             if (!$activeTenantId) {
                 $tenant = auth()->user()->tenants()->first();
                 if ($tenant) {
@@ -27,24 +27,24 @@ class SetTenantFromUser
                     $activeTenantId = $tenant->id;
                 }
             }
-            
-            
+
+
             if ($activeTenantId) {
                 $user = auth()->user();
-                
+
                 if ($user->tenants()->where('tenants.id', $activeTenantId)->exists()) {
                     $tenant = Tenant::find($activeTenantId);
-                    
-                    if ($tenant) {
-                        $tenant->forgetCurrent();
-                        $tenant->makeCurrent();
-                    }
+
                 } else {
-                    abort(403, 'Unauthorized tenant access');
+                    $tenant = Tenant::find(auth()->user()->tenants()->first()->id);
+                }
+                if ($tenant) {
+                    $tenant->forgetCurrent();
+                    $tenant->makeCurrent();
                 }
             }
         }
-        
+
         return $next($request);
     }
 

@@ -5,6 +5,9 @@ namespace Modules\Loans\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Modules\Asset\Http\Services\AssetLogService;
 use Modules\Asset\Http\Services\AssetService;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
 use Modules\Asset\Models\AssetType;
 use Illuminate\Support\Facades\DB;
 use Modules\Asset\Models\Asset;
@@ -241,8 +244,70 @@ class LoansController extends Controller
 
         $this->assetLogService->userReturnAsset($asset);
 
-        return back()->with('success', 'Asset marked as returned.');
+        return back()->with('success', 'Asset returned.');
     }
+
+    public function uploadEvident(Request $request, Loan $loan)
+    {
+        $validated = $request->validate([
+            'file' => 'required|image|mimes:jpg,jpeg,png,hvec|max:2048',
+        ]);
+
+        if ($request->hasFile('file')) {
+            if ($loan->evident && Storage::disk('public')->exists($loan->evident)) {
+                Storage::disk('public')->delete($loan->evident);
+            }
+
+            $manager = new ImageManager(new Driver());
+
+            $image = $manager->read($request->file('file')->getRealPath());
+
+            $image->cover(500, 500);
+
+            $filename = uniqid('evident_') . '.jpg';
+            $path = 'evident/' . $filename;
+
+            Storage::disk('public')->put($path, (string) $image->toJpeg());
+
+            $loan->update([
+                'evident' => $path,
+            ]);
+
+            return back()->with('success', 'upload evident success.');
+        }
+
+        return back()->with('error', 'upload evident not success.');
+    }
+
+    public function uploadDocument(Request $request, Loan $loan)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf|max:2048',
+        ]);
+
+
+        if ($request->hasFile('file')) {
+            if ($loan->document && Storage::disk('public')->exists($loan->document)) {
+                Storage::disk('public')->delete($loan->document);
+            }
+
+            $extension = $request->file('file')->getClientOriginalExtension();
+
+            $filename = uniqid('loan_document_') . '.' . $extension;
+            $path = 'loan_document/' . $filename;
+
+            $request->file('file')->storeAs('loan_document', $filename, 'public');
+
+            $validated['document'] = $path;
+            $loan->update($validated);
+
+            return back()->with('success', 'upload evident success.');
+        }
+
+        return back()->with('error', 'upload evident not success.');
+
+    }
+
 
 
 }

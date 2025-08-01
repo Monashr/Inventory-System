@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\Asset\Models\Asset;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 // use Modules\Items\Database\Factories\LoanFactory;
 
@@ -18,13 +19,14 @@ class Loan extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['user_id', 'name', 'description', 'status'];
+    protected $fillable = ['user_id', 'name', 'description', 'status', 'evident', 'document'];
 
     public function assets(): BelongsToMany
     {
         return $this->belongsToMany(Asset::class)
             ->withPivot('loaned_date', 'return_date', 'loaned_condition', 'return_condition', 'loaned_status')
             ->with('assetType')
+            ->withTrashed()
             ->withTimestamps();
     }
 

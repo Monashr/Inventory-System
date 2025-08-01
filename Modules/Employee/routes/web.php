@@ -10,6 +10,13 @@ Route::middleware(['auth', 'tenant'])->prefix('dashboard/employees')->name('empl
     Route::get('/permission/{id}', [EmployeeController::class, 'showPermission'])->name('permission');
     Route::get('/permissions/{id}', [EmployeeController::class, 'showAddPermissionForm'])->name('permission.edit');
     Route::post('/permissions/{id}', [EmployeeController::class, 'assignPermissions'])->name('permission.assign');
+
+    Route::get('/create', [EmployeeController::class, 'showCreateEmployeeForm'])->name('createEmployee');
+    Route::post('/create', [EmployeeController::class, 'storeEmployee'])->name('storeEmployee');
+
+    
+    Route::post('/revoke/{id}', [EmployeeController::class, 'revokeAllPermissions'])->name('permission.revoke');
+    Route::post('/delete/{id}', [EmployeeController::class, 'deleteUserFromTenant'])->name('deleteEmployee');
 });
 
 Route::middleware(['auth', 'tenant'])->prefix('dashboard/inbox')->name('inbox.')->group(function () {

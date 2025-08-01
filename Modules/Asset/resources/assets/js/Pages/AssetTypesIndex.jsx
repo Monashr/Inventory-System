@@ -44,10 +44,7 @@ import {
 
 function AssetTypesIndex() {
     const { assetTypes, permissions, filters, flash } = usePage().props;
-
-    console.log(flash);
-
-    const [open, setOpen] = React.useState(false);
+    
     const [search, setSearch] = React.useState(filters.search || "");
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";

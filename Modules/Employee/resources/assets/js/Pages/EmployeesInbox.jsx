@@ -40,7 +40,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
 
 function EmployeesInbox() {
-    const { inboxes, filters } = usePage().props;
+    const { user, inboxes, filters } = usePage().props;
     const [search, setSearch] = React.useState(filters.search || "");
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";
@@ -158,6 +158,23 @@ function EmployeesInbox() {
                                     <TableHead>
                                         <Button
                                             variant={
+                                                filters.sort_by ===
+                                                "receiver_name"
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                            className="cursor-pointer"
+                                            onClick={() =>
+                                                handleSort("receiver_name")
+                                            }
+                                        >
+                                            Receiver
+                                            <ArrowUpDown className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </TableHead>
+                                    <TableHead>
+                                        <Button
+                                            variant={
                                                 filters.sort_by === "tenant"
                                                     ? "default"
                                                     : "ghost"
@@ -206,13 +223,16 @@ function EmployeesInbox() {
                                                 {inbox.sender.name}
                                             </TableCell>
                                             <TableCell>
+                                                {inbox.receiver.name}
+                                            </TableCell>
+                                            <TableCell>
                                                 {inbox.tenant.name}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 {formatDate(inbox.created_at)}
                                             </TableCell>
                                             <TableCell className="text-right space-x-2 pr-8">
-                                                {inbox.status === "pending" ? (
+                                                {inbox.status === "pending" && inbox.receiver.name == user.name ? (
                                                     <div className="flex justify-end items-center gap-2">
                                                         <Button
                                                             size="sm"

@@ -20,8 +20,6 @@ function AssetTypesAdd() {
         asset: "",
     });
 
-    console.log(data);
-
     const handleSubmit = (e) => {
         e.preventDefault();
         post("/dashboard/assettypes/add", {

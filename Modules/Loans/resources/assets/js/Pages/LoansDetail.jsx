@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { Link, usePage, router } from "@inertiajs/react";
 
@@ -13,15 +13,12 @@ import {
     Pencil,
     Plus,
     Check,
+    FileImage,
+    Image,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import Calendar08 from "@components/calendar-08";
 import { Button } from "@components/ui/button";
 import { Separator } from "@components/ui/separator";
@@ -32,10 +29,25 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogDescription,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Input } from "@components/ui/input";
 
 function LoansDetail() {
-    const { loan } = usePage().props;
+    const { loan, flash } = usePage().props;
 
+    const evidentInputRef = useRef(null);
+    const documentInputRef = useRef(null);
+
+    const [openDialogIndex, setOpenDialogIndex] = useState(null);
     const [returnDates, setReturnDates] = useState([]);
     const [returnConditions, setReturnConditions] = useState([]);
 
@@ -52,10 +64,47 @@ function LoansDetail() {
         }
     };
 
+    useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success);
+        }
+        if (flash?.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
+
     const isAnyAssetUnavailable = loan.assets.some(
         (asset) =>
             asset.avaibility === "loaned" || asset.avaibility === "defect"
     );
+
+    function handleEvidentChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            router.post(`/dashboard/loans/${loan.id}/evident`, formData, {
+                forceFormData: true,
+                onSuccess: () => {},
+                onError: () => {},
+            });
+        }
+    }
+
+    function handleDocumentChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            router.post(`/dashboard/loans/${loan.id}/document`, formData, {
+                forceFormData: true,
+                onSuccess: () => {},
+                onError: () => {},
+            });
+        }
+    }
 
     return (
         <div>
@@ -92,16 +141,24 @@ function LoansDetail() {
                                 Loaner {loan.user.name}
                             </div>
                             <div>
-                                <Link href="/dashboard/loans">
-                                    <Button
-                                        variant="outline"
-                                        data-modal-trigger="add-product"
-                                        className="cursor-pointer h-full"
-                                    >
-                                        Upload Evident
-                                        <Plus />
-                                    </Button>
-                                </Link>
+                                <input
+                                    type="file"
+                                    accept=".pdf"
+                                    ref={documentInputRef}
+                                    onChange={handleDocumentChange}
+                                    className="hidden"
+                                />
+                                <Button
+                                    variant="outline"
+                                    data-modal-trigger="upload-evident"
+                                    onClick={() =>
+                                        documentInputRef.current?.click()
+                                    }
+                                    className="cursor-pointer w-full h-full py-2 px-4"
+                                >
+                                    <Plus />
+                                    Upload Document
+                                </Button>
                             </div>
                             <div>
                                 <Link href={`/dashboard/loans/${loan.id}/edit`}>
@@ -179,27 +236,57 @@ function LoansDetail() {
                                                         Defective
                                                     </span>
                                                 )}
+                                                {entry.deleted_at && (
+                                                    <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">
+                                                        Asset Deleted
+                                                    </span>
+                                                )}
                                             </div>
                                             <div className="flex gap-2 justify-center items-center">
                                                 {loan.status === "accepted" &&
                                                     entry.pivot
                                                         .loaned_status ===
                                                         "loaned" && (
-                                                        <Popover>
-                                                            <PopoverTrigger
+                                                        <Dialog
+                                                            open={
+                                                                openDialogIndex ===
+                                                                index
+                                                            }
+                                                            onOpenChange={(
+                                                                open
+                                                            ) =>
+                                                                setOpenDialogIndex(
+                                                                    open
+                                                                        ? index
+                                                                        : null
+                                                                )
+                                                            }
+                                                        >
+                                                            <DialogTrigger
                                                                 asChild
                                                             >
                                                                 <Button
                                                                     variant="outline"
                                                                     className="text-sm cursor-pointer"
+                                                                    onClick={() =>
+                                                                        setOpenDialogIndex(
+                                                                            index
+                                                                        )
+                                                                    }
                                                                 >
                                                                     Return Asset
                                                                 </Button>
-                                                            </PopoverTrigger>
+                                                            </DialogTrigger>
 
-                                                            <PopoverContent className="w-fit space-y-4">
+                                                            <DialogContent className="space-y-6">
+                                                                <DialogHeader>
+                                                                    <DialogTitle>
+                                                                        Return
+                                                                        Asset
+                                                                    </DialogTitle>
+                                                                </DialogHeader>
+
                                                                 <div className="flex flex-col md:flex-row md:items-start gap-6">
-                                                                    {/* Calendar */}
                                                                     <div className="flex flex-col space-y-2 min-w-[220px]">
                                                                         <Label className="text-sm">
                                                                             Return
@@ -230,7 +317,6 @@ function LoansDetail() {
                                                                         />
                                                                     </div>
 
-                                                                    {/* Condition */}
                                                                     <div className="flex flex-col space-y-2 min-w-[160px]">
                                                                         <Label className="text-sm">
                                                                             Condition
@@ -258,27 +344,44 @@ function LoansDetail() {
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            <SelectTrigger>
+                                                                            <SelectTrigger className="cursor-pointer">
                                                                                 <SelectValue placeholder="Select Condition" />
                                                                             </SelectTrigger>
                                                                             <SelectContent>
-                                                                                <SelectItem value="good">
+                                                                                <SelectItem
+                                                                                    value="good"
+                                                                                    className="cursor-pointer"
+                                                                                >
                                                                                     Good
                                                                                 </SelectItem>
-                                                                                <SelectItem value="used">
+                                                                                <SelectItem
+                                                                                    value="used"
+                                                                                    className="cursor-pointer"
+                                                                                >
                                                                                     Used
                                                                                 </SelectItem>
-                                                                                <SelectItem value="defect">
+                                                                                <SelectItem
+                                                                                    value="defect"
+                                                                                    className="cursor-pointer"
+                                                                                >
                                                                                     Defect
                                                                                 </SelectItem>
                                                                             </SelectContent>
                                                                         </Select>
                                                                     </div>
                                                                 </div>
+                                                                <DialogDescription>
+                                                                    Please,
+                                                                    Select the
+                                                                    date asset
+                                                                    returned and
+                                                                    asset
+                                                                    condition
+                                                                </DialogDescription>
 
-                                                                <div>
+                                                                <DialogFooter>
                                                                     <Button
-                                                                        className="w-full"
+                                                                        className="w-full cursor-pointer"
                                                                         onClick={() =>
                                                                             router.post(
                                                                                 `/dashboard/loans/${loan.id}/return`,
@@ -300,19 +403,21 @@ function LoansDetail() {
                                                                         Submit
                                                                         Return
                                                                     </Button>
-                                                                </div>
-                                                            </PopoverContent>
-                                                        </Popover>
+                                                                </DialogFooter>
+                                                            </DialogContent>
+                                                        </Dialog>
                                                     )}
 
-                                                <Link
-                                                    href={`/dashboard/assets/${entry.pivot?.asset_id}/details`}
-                                                >
-                                                    <Button className="cursor-pointer">
-                                                        Asset Details{" "}
-                                                        <ChevronRight />
-                                                    </Button>
-                                                </Link>
+                                                {!entry.deleted_at && (
+                                                    <Link
+                                                        href={`/dashboard/assets/${entry.pivot?.asset_id}/details`}
+                                                    >
+                                                        <Button className="cursor-pointer">
+                                                            Asset Details{" "}
+                                                            <ChevronRight />
+                                                        </Button>
+                                                    </Link>
+                                                )}
                                             </div>
                                         </CardTitle>
                                     </CardHeader>
@@ -404,53 +509,98 @@ function LoansDetail() {
                             ))
                         )}
                     </div>
+                    <Separator />
+
+                    {!loan.evident ? (
+                        <div className="w-full">
+                            <Button
+                                variant="outline"
+                                data-modal-trigger="upload-evident"
+                                onClick={() => evidentInputRef.current?.click()}
+                                className="cursor-pointer w-full h-32"
+                            >
+                                <Image />
+                                Upload Evident
+                            </Button>
+                            <input
+                                type="file"
+                                accept=".png,.jpeg,.jpg,.hvec"
+                                ref={evidentInputRef}
+                                onChange={handleEvidentChange}
+                                className="hidden"
+                            />
+                        </div>
+                    ) : (
+                        <>
+                            <div className="w-full flex flex-col justify-center items-center p-2 gap-4">
+                                <img
+                                    src={`/storage/${loan.evident}`}
+                                    alt="evident"
+                                />
+                                <Button
+                                    variant="outline"
+                                    data-modal-trigger="upload-evident"
+                                    onClick={() =>
+                                        evidentInputRef.current?.click()
+                                    }
+                                    className="cursor-pointer"
+                                >
+                                    <Pencil />
+                                    Change Evident Image
+                                </Button>
+                                <input
+                                    type="file"
+                                    accept=".png,.jpeg,.jpg,.hvec"
+                                    ref={evidentInputRef}
+                                    onChange={handleEvidentChange}
+                                    className="hidden"
+                                />
+                            </div>
+                            <Separator />
+                        </>
+                    )}
 
                     {!["cancelled", "rejected", "accepted"].includes(
                         loan.status
                     ) && (
-                        <>
-                            <Separator />
-                            <div className="flex justify-end items-center gap-2">
-                                <div className="flex justify-start items-center gap-2">
-                                    <Button
-                                        className="cursor-pointer"
-                                        variant="outline"
-                                        onClick={() =>
-                                            router.post(
-                                                `/dashboard/loans/${loan.id}/cancel`
-                                            )
-                                        }
-                                    >
-                                        Cancel
-                                        <CircleSlash />
-                                    </Button>
-                                    <Button
-                                        className="cursor-pointer"
-                                        variant="destructive"
-                                        onClick={() =>
-                                            router.post(
-                                                `/dashboard/loans/${loan.id}/reject`
-                                            )
-                                        }
-                                    >
-                                        Reject
-                                        <Ban />
-                                    </Button>
-                                    <Button
-                                        className="cursor-pointer"
-                                        disabled={isAnyAssetUnavailable}
-                                        onClick={() =>
-                                            router.post(
-                                                `/dashboard/loans/${loan.id}/accept`
-                                            )
-                                        }
-                                    >
-                                        Accept
-                                        <Check />
-                                    </Button>
-                                </div>
-                            </div>
-                        </>
+                        <div className="flex justify-end items-center gap-2">
+                            <Button
+                                className="cursor-pointer"
+                                variant="outline"
+                                onClick={() =>
+                                    router.post(
+                                        `/dashboard/loans/${loan.id}/cancel`
+                                    )
+                                }
+                            >
+                                Cancel
+                                <CircleSlash />
+                            </Button>
+                            <Button
+                                className="cursor-pointer"
+                                variant="destructive"
+                                onClick={() =>
+                                    router.post(
+                                        `/dashboard/loans/${loan.id}/reject`
+                                    )
+                                }
+                            >
+                                Reject
+                                <Ban />
+                            </Button>
+                            <Button
+                                className="cursor-pointer"
+                                disabled={isAnyAssetUnavailable}
+                                onClick={() =>
+                                    router.post(
+                                        `/dashboard/loans/${loan.id}/accept`
+                                    )
+                                }
+                            >
+                                Accept
+                                <Check />
+                            </Button>
+                        </div>
                     )}
                 </CardContent>
             </Card>

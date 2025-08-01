@@ -13,6 +13,8 @@ return new class extends Migration {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
             $table->text('description');
+            $table->text('evident')->nullable();
+            $table->text('document')->nullable();
             $table->foreignId('user_id')->constrained()->nullOnDelete();
             $table->foreignId('tenant_id')->constrained()->nullOnDelete();
             $table->enum('status', ['accepted', 'pending', 'rejected', 'cancelled'])->default('pending')->nullable();

@@ -1,11 +1,11 @@
 import React from "react";
 
-import { usePage, router } from "@inertiajs/react";
+import { usePage, router, Link } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 import AddEmployeeForm from "./EmployeesAdd";
 
-import { UserRound, Plus, Filter, SearchIcon, ArrowUpDown } from "lucide-react";
+import { UserRound, Plus, Filter, SearchIcon, ArrowUpDown, Mail } from "lucide-react";
 
 import { Button } from "@components/ui/button";
 import { Card } from "@components/ui/card";
@@ -91,27 +91,35 @@ function EmployeesIndex() {
                             Employees
                         </h1>
                         {permissions.includes("edit employees") && (
-                            <Dialog open={open} onOpenChange={setOpen}>
-                                <DialogTrigger
-                                    className="cursor-pointer"
-                                    asChild
-                                >
-                                    <Button>
+                            <div className="flex justify-center items-center gap-2">
+                                <Dialog open={open} onOpenChange={setOpen}>
+                                    <DialogTrigger
+                                        className="cursor-pointer"
+                                        asChild
+                                    >
+                                        <Button>
+                                            <Mail className="mr-2 h-4 w-4" />
+                                            Invite New Employee
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-md">
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                Invite New Employee
+                                            </DialogTitle>
+                                        </DialogHeader>
+                                        <AddEmployeeForm
+                                            onClose={() => setOpen(false)}
+                                        />
+                                    </DialogContent>
+                                </Dialog>
+                                <Link href="/dashboard/employees/create">
+                                    <Button className="cursor-pointer">
                                         <Plus className="mr-2 h-4 w-4" />
-                                        Add Employee
+                                        Create New Employee
                                     </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-md">
-                                    <DialogHeader>
-                                        <DialogTitle>
-                                            Add New Employee
-                                        </DialogTitle>
-                                    </DialogHeader>
-                                    <AddEmployeeForm
-                                        onClose={() => setOpen(false)}
-                                    />
-                                </DialogContent>
-                            </Dialog>
+                                </Link>
+                            </div>
                         )}
                     </div>
                     <Card>
@@ -168,7 +176,7 @@ function EmployeesIndex() {
                                             <ArrowUpDown className="w-4 h-4 ml-2" />
                                         </Button>
                                     </TableHead>
-                                    {/* <TableHead className="text-right">
+                                    <TableHead className="text-right">
                                         <Button
                                             variant={
                                                 filters.sort_by === "position"
@@ -183,7 +191,7 @@ function EmployeesIndex() {
                                             Position
                                             <ArrowUpDown className="w-4 h-4 ml-2" />
                                         </Button>
-                                    </TableHead> */}
+                                    </TableHead>
                                     <TableHead className="text-right">
                                         <Button
                                             variant={
@@ -287,10 +295,10 @@ function EmployeesIndex() {
                                                         employee.id && " (you)"}
                                                 </span>
                                             </TableCell>
-                                            {/* <TableCell className="text-right font-medium">
+                                            <TableCell className="text-right font-medium">
                                                 {employee.positions[0]?.name ??
                                                     "-"}
-                                            </TableCell> */}
+                                            </TableCell>
                                             <TableCell className="text-right font-medium">
                                                 {employee.email ?? "-"}
                                             </TableCell>
@@ -349,9 +357,24 @@ function EmployeesIndex() {
                                     <SelectValue placeholder="Per Page" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="10" className="cursor-pointer">10</SelectItem>
-                                    <SelectItem value="25" className="cursor-pointer">25</SelectItem>
-                                    <SelectItem value="50" className="cursor-pointer">50</SelectItem>
+                                    <SelectItem
+                                        value="10"
+                                        className="cursor-pointer"
+                                    >
+                                        10
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="25"
+                                        className="cursor-pointer"
+                                    >
+                                        25
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="50"
+                                        className="cursor-pointer"
+                                    >
+                                        50
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

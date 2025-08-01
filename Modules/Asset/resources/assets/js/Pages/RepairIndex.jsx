@@ -244,7 +244,6 @@ function RepairIndex() {
                                                 )
                                             }
                                         >
-                                            {console.log(repair)}
                                             <TableCell className="pl-10 flex items-center gap-4">
                                                 <span>
                                                     {repair.asset?.serial_code}

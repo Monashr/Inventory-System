@@ -77,6 +77,6 @@ class AuthController extends Controller
             return redirect()->back()->with('success', 'Tenant switched.');
         }
 
-        abort(403, "Unauthorized tenant");
+        abort(403, "Unauthorized tenant, from auth");
     }
 }
