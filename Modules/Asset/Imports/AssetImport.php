@@ -4,6 +4,7 @@ namespace Modules\Asset\Imports;
 
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Modules\Asset\Http\Services\AssetLogService;
+use Modules\Asset\Http\Services\LocationService;
 use Modules\Asset\Models\Asset;
 use Maatwebsite\Excel\Concerns\ToModel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -15,10 +16,12 @@ use Modules\Asset\Models\AssetType;
 class AssetImport implements ToModel, WithHeadingRow
 {
     protected $assetLogService;
+    protected $locationService;
 
     public function __construct()
     {
         $this->assetLogService = new AssetLogService();
+        $this->locationService = new LocationService();
     }
 
     public function model(array $row)
@@ -61,6 +64,7 @@ class AssetImport implements ToModel, WithHeadingRow
             'initial_condition' => $row['initial_condition'],
             'condition' => $row['condition'],
             'avaibility' => 'available',
+            'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,
         ]);
 
         $asset->save();

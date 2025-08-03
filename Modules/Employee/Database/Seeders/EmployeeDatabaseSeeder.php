@@ -17,8 +17,10 @@ class EmployeeDatabaseSeeder extends Seeder
 
         $permissions = [
             'view employees',
-            'edit employees',
-            'delete employees',
+            'invite employees',
+            'make employees',
+            'permission employees',
+            'delete employees'
         ];
 
         foreach ($permissions as $permission) {

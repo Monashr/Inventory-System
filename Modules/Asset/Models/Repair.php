@@ -4,6 +4,7 @@ namespace Modules\Asset\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,11 +16,16 @@ class Repair extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['asset_id', 'tenant_id', 'repair_start_date', 'repair_completion_date', 'defect_description', 'corrective_action', 'repair_cost', 'vendor', 'status', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['asset_id', 'tenant_id', 'repair_start_date', 'repair_completion_date', 'defect_description', 'corrective_action', 'repair_cost', 'vendor', 'location_id','status', 'created_by', 'updated_by', 'deleted_by'];
 
-    public function  asset(): BelongsTo
+    public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class)->withTrashed();
+    }
+
+    public function Location(): HasMany
+    {
+        return $this->hasMany(Location::class);
     }
 
     protected static function booted()

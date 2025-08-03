@@ -95,7 +95,7 @@ function LoansIndex() {
                             <PackageOpen className="w-8 h-8 md:w-10 md:h-10 mr-2" />
                             Loans
                         </h1>
-                        {permissions.includes("edit loans") && (
+                        {permissions.includes("make and manage own loan") && (
                             <Link href="/dashboard/loans/add">
                                 <Button className="cursor-pointer">
                                     <Plus className="mr-2 h-4 w-4" />
@@ -141,7 +141,7 @@ function LoansIndex() {
                         </div>
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-slate-200">
+                                <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
                                     <TableHead className="text-left pl-6">
                                         <Button
                                             variant={

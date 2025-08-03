@@ -7,6 +7,13 @@ use Modules\Asset\Models\Asset;
 class AssetService
 {
 
+    protected $locationService;
+
+    public function __construct(LocationService $locationService)
+    {
+        $this->locationService = $locationService;
+    }
+
     public function getPaginatedAssetsByAssetType($request, $assetTypeId, $perPage = 10)
     {
         $query = Asset::query()->where('asset_type_id', $assetTypeId);
@@ -137,7 +144,7 @@ class AssetService
 
     public function findAssetWithDetails($asset)
     {
-        return Asset::with('assetType', 'loans')->findOrFail($asset);
+        return Asset::with('assetType', 'location')->findOrFail($asset);
     }
 
     public function getAvailableAssetsByAssetType($assetType, $loanId = null)
@@ -214,6 +221,7 @@ class AssetService
             'avaibility' => $validated['avaibility'],
             'created_by' => $user_id,
             'updated_by' => $user_id,
+            'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,
             'tenant_id' => auth()->user()->tenant_id,
             'created_at' => now(),
             'updated_at' => now(),

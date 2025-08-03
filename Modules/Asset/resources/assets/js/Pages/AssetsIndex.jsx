@@ -207,18 +207,14 @@ function AssetsIndex() {
                                 <PopoverContent className="w-80">
                                     <div className="grid gap-4">
                                         <div className="space-y-2">
-                                            <h4 className="leading-none font-medium">
-                                                Dimensions
-                                            </h4>
-                                            <p className="text-muted-foreground text-sm">
-                                                Set the dimensions for the
-                                                layer.
-                                            </p>
+                                            <h1 className="leading-none font-medium">
+                                                Filter
+                                            </h1>
                                         </div>
                                         <div className="grid gap-2">
                                             <div className="grid grid-cols-3 items-center gap-4">
                                                 <Label htmlFor="width">
-                                                    Width
+                                                    Brand
                                                 </Label>
                                                 <Input
                                                     id="width"
@@ -228,7 +224,7 @@ function AssetsIndex() {
                                             </div>
                                             <div className="grid grid-cols-3 items-center gap-4">
                                                 <Label htmlFor="maxWidth">
-                                                    Max. width
+                                                    Condition
                                                 </Label>
                                                 <Input
                                                     id="maxWidth"
@@ -238,21 +234,11 @@ function AssetsIndex() {
                                             </div>
                                             <div className="grid grid-cols-3 items-center gap-4">
                                                 <Label htmlFor="height">
-                                                    Height
+                                                    availability
                                                 </Label>
                                                 <Input
                                                     id="height"
                                                     defaultValue="25px"
-                                                    className="col-span-2 h-8"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-3 items-center gap-4">
-                                                <Label htmlFor="maxHeight">
-                                                    Max. height
-                                                </Label>
-                                                <Input
-                                                    id="maxHeight"
-                                                    defaultValue="none"
                                                     className="col-span-2 h-8"
                                                 />
                                             </div>
@@ -290,7 +276,7 @@ function AssetsIndex() {
                         </div>
                         <Table className="border-b">
                             <TableHeader>
-                                <TableRow className="bg-slate-200 hover:bg-slate-200">
+                                <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
                                     <TableHead className="pl-7">
                                         <Button
                                             variant={
@@ -377,7 +363,7 @@ function AssetsIndex() {
                                     assets.data.map((asset) => (
                                         <TableRow
                                             key={asset.id}
-                                            className="group relative hover:bg-muted/50 cursor-pointer"
+                                            className="group relative hover:bg-muted cursor-pointer"
                                             onClick={() =>
                                                 router.visit(
                                                     `/dashboard/assets/${asset.id}/details`
@@ -444,7 +430,7 @@ function AssetsIndex() {
 
                                             <TableCell className="text-right font-medium pr-8">
                                                 {formatDate(asset.created_at)}
-                                                <div className="absolute bg-[#F2F2F3] right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
+                                                <div className="absolute bg-[#f9f9f9] dark:bg-[#26282d] right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6 pl-2 rounded-4xl">
                                                     {permissions.includes(
                                                         "manage assets"
                                                     ) ? (
@@ -522,6 +508,7 @@ function AssetsIndex() {
                             <Button variant="outline">
                                 {assets.from}-{assets.to} of {assets.total}
                             </Button>
+
                             <Select
                                 defaultValue={String(assets.per_page)}
                                 onValueChange={(value) => {

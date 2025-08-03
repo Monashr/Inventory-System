@@ -35,7 +35,7 @@ function EmployeesCreate() {
                             Create new employee account
                         </h1>
 
-                        <Link href="/dashboard">
+                        <Link href="/dashboard/employees">
                             <Button
                                 data-modal-trigger="inbox"
                                 className="cursor-pointer"
@@ -58,7 +58,7 @@ function EmployeesCreate() {
                                         onChange={(e) =>
                                             setData("name", e.target.value)
                                         }
-                                        placeholder="Your name"
+                                        placeholder="Enter employee name"
                                     />
                                     {errors.name && (
                                         <span className="text-sm text-red-500">
@@ -76,7 +76,7 @@ function EmployeesCreate() {
                                         onChange={(e) =>
                                             setData("email", e.target.value)
                                         }
-                                        placeholder="your@email.com"
+                                        placeholder="employee@email.com"
                                     />
                                     {errors.email && (
                                         <span className="text-sm text-red-500">

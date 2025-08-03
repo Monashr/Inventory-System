@@ -16,9 +16,9 @@ class LoansDatabaseSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [
-            'view loans',
-            'edit loans',
-            'delete loans',
+            'make and manage own loan',
+            'make and manage all loan',
+            'making loan decision',
         ];
 
         foreach ($permissions as $permission) {

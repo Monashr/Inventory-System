@@ -29,6 +29,7 @@ return new class extends Migration {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('asset_type_id')->constrained()->nullOnDelete();
+            $table->foreignId('location_id')->constrained()->nullOnDelete();
             $table->foreignId('tenant_id')->constrained()->nullOnDelete();
             $table->string('serial_code')->unique();
             $table->string('brand')->nullable();

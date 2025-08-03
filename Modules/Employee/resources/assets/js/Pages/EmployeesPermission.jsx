@@ -52,7 +52,7 @@ function EmployeesPermission({ employee, rolePermissions, permissions }) {
                         </h1>
 
                         <div className="flex gap-2 justify-center items-center">
-                            {permissions.includes("edit employees") && (
+                            {permissions.includes("permission employees") && (
                                 <>
                                     {rolePermissions.data.length > 0 && (
                                         <Dialog>
@@ -94,42 +94,47 @@ function EmployeesPermission({ employee, rolePermissions, permissions }) {
                                             </DialogContent>
                                         </Dialog>
                                     )}
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button
-                                                variant="destructive"
-                                                className="cursor-pointer"
-                                            >
-                                                <Trash2 />
-                                                Delete User
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="sm:max-w-[425px]">
-                                            <DialogHeader>
-                                                <DialogTitle>
-                                                    Delete User
-                                                </DialogTitle>
-                                                <DialogDescription>
-                                                    Are you sure want to delete
-                                                    this user?
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                            <div className="flex justify-end items-center">
+                                    {permissions.includes(
+                                        "delete employees"
+                                    ) && (
+                                        <Dialog>
+                                            <DialogTrigger asChild>
                                                 <Button
                                                     variant="destructive"
-                                                    onClick={() =>
-                                                        router.post(
-                                                            `/dashboard/employees/delete/${employee.id}`
-                                                        )
-                                                    }
                                                     className="cursor-pointer"
                                                 >
                                                     <Trash2 />
                                                     Delete User
                                                 </Button>
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                    <DialogTitle>
+                                                        Delete User
+                                                    </DialogTitle>
+                                                    <DialogDescription>
+                                                        Are you sure want to
+                                                        delete this user?
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                                <div className="flex justify-end items-center">
+                                                    <Button
+                                                        variant="destructive"
+                                                        onClick={() =>
+                                                            router.post(
+                                                                `/dashboard/employees/delete/${employee.id}`
+                                                            )
+                                                        }
+                                                        className="cursor-pointer"
+                                                    >
+                                                        <Trash2 />
+                                                        Delete User
+                                                    </Button>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
+                                    )}
+
                                     <Link
                                         href={`/dashboard/employees/permissions/${employee.id}`}
                                     >
@@ -157,7 +162,7 @@ function EmployeesPermission({ employee, rolePermissions, permissions }) {
                     <Card>
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-slate-200 hover:bg-slate-200">
+                                <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
                                     <TableHead className="text-left px-6">
                                         Permission
                                     </TableHead>

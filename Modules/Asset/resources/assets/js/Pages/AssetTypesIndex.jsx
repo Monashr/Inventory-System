@@ -44,7 +44,7 @@ import {
 
 function AssetTypesIndex() {
     const { assetTypes, permissions, filters, flash } = usePage().props;
-    
+
     const [search, setSearch] = React.useState(filters.search || "");
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";
@@ -143,7 +143,7 @@ function AssetTypesIndex() {
                         </div>
                         <Table className="border-b">
                             <TableHeader>
-                                <TableRow className="bg-slate-200 hover:bg-slate-200">
+                                <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
                                     <TableHead className="pl-7">
                                         <Button
                                             variant={
@@ -212,7 +212,7 @@ function AssetTypesIndex() {
                                                 {formatDateNoHour(
                                                     assetType.created_at
                                                 )}
-                                                <div className="absolute bg-[#F2F2F3] right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6">
+                                                <div className="absolute bg-[#f9f9f9] dark:bg-[#26282d] right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex gap-2 pr-6 pl-2 rounded-4xl">
                                                     {permissions.includes(
                                                         "manage assets"
                                                     ) ? (

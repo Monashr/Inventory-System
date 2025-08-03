@@ -18,9 +18,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { ComboBoxInput } from "@components/custom/ComboBoxInput";
 
 function RepairAdd() {
-    const { assetTypes } = usePage().props;
+    const { assetTypes, vendors } = usePage().props;
 
     const { data, setData, post, processing, errors, reset } = useForm({
         asset_id: "",
@@ -95,7 +96,7 @@ function RepairAdd() {
                         <div className="space-y-2">
                             <Label htmlFor="asset_type_id">Asset Type</Label>
                             <Select onValueChange={handleAssetTypeChange}>
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger className="w-full cursor-pointer">
                                     <SelectValue placeholder="Select Asset Type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -103,6 +104,7 @@ function RepairAdd() {
                                         <SelectItem
                                             key={type.id}
                                             value={String(type.id)}
+                                            className="cursor-pointer"
                                         >
                                             {type.name}
                                         </SelectItem>
@@ -124,7 +126,7 @@ function RepairAdd() {
                                     setData("asset_id", value)
                                 }
                             >
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger className="w-full cursor-pointer">
                                     <SelectValue placeholder="Select Asset" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -132,6 +134,7 @@ function RepairAdd() {
                                         <SelectItem
                                             key={asset.id}
                                             value={String(asset.id)}
+                                            className="cursor-pointer"
                                         >
                                             {asset.serial_code ||
                                                 `Asset ${asset.id}`}
@@ -147,12 +150,43 @@ function RepairAdd() {
                         </div>
 
                         <div className="space-y-2">
+                            <Label htmlFor="vendor">Vendor</Label>
+
+                            <ComboBoxInput
+                                id="vendor"
+                                options={vendors.map((vendor) => vendor.name)}
+                                value={data.vendor}
+                                onChange={(value) => {
+                                    setData("vendor", value);
+
+                                    const selected = vendors.find(
+                                        (v) => v.name === value
+                                    );
+                                    if (selected) {
+                                        setData(
+                                            "vendor_address",
+                                            selected.address || ""
+                                        );
+                                    }
+                                }}
+                                placeholder=""
+                            />
+
+                            {errors.vendor && (
+                                <p className="text-sm text-red-500">
+                                    {errors.vendor}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
                             <Label htmlFor="repair_start_date">
                                 Repair Start Date
                             </Label>
                             <Input
                                 type="date"
                                 id="repair_start_date"
+                                className="cursor-pointer"
                                 value={data.repair_start_date}
                                 onChange={(e) =>
                                     setData("repair_start_date", e.target.value)
@@ -165,19 +199,20 @@ function RepairAdd() {
                             )}
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="vendor">Vendor</Label>
-                            <Input
-                                type="text"
-                                id="vendor"
-                                value={data.vendor}
+                        <div className="sm:col-span-2 space-y-2">
+                            <Label htmlFor="vendor_address">
+                                Vendor Address
+                            </Label>
+                            <Textarea
+                                id="vendor_address"
+                                value={data.vendor_address}
                                 onChange={(e) =>
-                                    setData("vendor", e.target.value)
+                                    setData("vendor_address", e.target.value)
                                 }
                             />
-                            {errors.vendor && (
+                            {errors.vendor_address && (
                                 <p className="text-sm text-red-500">
-                                    {errors.vendor}
+                                    {errors.vendor_address}
                                 </p>
                             )}
                         </div>

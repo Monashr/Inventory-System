@@ -137,7 +137,7 @@ function EmployeesInbox() {
                         </div>
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-slate-200">
+                                <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
                                     <TableHead className="pl-6">
                                         <Button
                                             variant={
@@ -281,7 +281,7 @@ function EmployeesInbox() {
                                 ) : (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={4}
+                                            colSpan={5}
                                             className="text-center py-12 px-6"
                                         >
                                             <div className="flex flex-col gap-4">

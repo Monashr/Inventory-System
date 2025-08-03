@@ -40,7 +40,6 @@ import {
     PaginationNext,
 } from "@components/ui/pagination";
 
-
 function AssetDetail() {
     const { asset, permissions, log } = usePage().props;
 
@@ -159,6 +158,7 @@ function AssetDetail() {
                         label="Purchase Date"
                         value={formatDateNoHour(asset.purchase_date)}
                     />
+                    <Detail label="Location" value={asset.location.address} />
                 </div>
             </Card>
             {permissions.includes("audit assets") ? (
@@ -182,7 +182,7 @@ function AssetDetail() {
                             <Card>
                                 <Table className="border-b">
                                     <TableHeader>
-                                        <TableRow className="bg-slate-200 hover:bg-slate-200">
+                                        <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
                                             <TableHead className="pl-7">
                                                 <Button
                                                     variant="ghost"

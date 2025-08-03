@@ -26,7 +26,7 @@ export default function RegisterForm({ errors }) {
     return (
         <>
             <Head title="Register" />
-            <div className="flex justify-center items-center m-auto h-screen p-12">
+            <div className="flex justify-center items-center m-auto h-screen p-24 bg-radial from-secondary to-bg-card">
                 <div className="flex flex-col gap-6 w-full">
                     <Card className="overflow-hidden p-0">
                         <CardContent className="grid p-0 md:grid-cols-2">
@@ -34,9 +34,9 @@ export default function RegisterForm({ errors }) {
                                 onSubmit={handleSubmit}
                                 className="p-6 md:p-8"
                             >
-                                <div className="flex flex-col gap-6">
+                                <div className="flex flex-col gap-4">
                                     <div className="flex flex-col items-center text-center">
-                                        <h1 className="text-2xl font-bold">
+                                        <h1 className="text-4xl font-bold">
                                             Create a new account
                                         </h1>
                                         <p className="text-muted-foreground text-balance">
@@ -61,7 +61,7 @@ export default function RegisterForm({ errors }) {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="grid gap-3">
+                                    <div className="grid gap-2">
                                         {error && (
                                             <div className="text-red-600 text-sm bg-red-100 p-2 rounded">
                                                 {error}
@@ -84,7 +84,7 @@ export default function RegisterForm({ errors }) {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="grid gap-3">
+                                    <div className="grid gap-2">
                                         <div className="flex items-center">
                                             <Label htmlFor="password">
                                                 Password
@@ -109,28 +109,30 @@ export default function RegisterForm({ errors }) {
                                             </span>
                                         )}
                                     </div>
-                                    <Button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="w-full mt-4 cursor-pointer hover:bg-[#0a639e]"
-                                    >
-                                        {processing ? (
-                                            <>
-                                                <Loader2 className="animate-spin mr-2" />
-                                                Please wait
-                                            </>
-                                        ) : (
-                                            "Login"
-                                        )}
-                                    </Button>
-                                    <div className="text-center text-sm">
-                                        Already have account?{" "}
-                                        <Link
-                                            href="/login"
-                                            className="underline underline-offset-4"
+                                    <div className="grid gap-2">
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                            className="w-full mt-4 cursor-pointer hover:bg-[#0a639e]"
                                         >
-                                            Sign in
-                                        </Link>
+                                            {processing ? (
+                                                <>
+                                                    <Loader2 className="animate-spin mr-2" />
+                                                    Please wait
+                                                </>
+                                            ) : (
+                                                "Login"
+                                            )}
+                                        </Button>
+                                        <div className="text-center text-sm">
+                                            Already have account?{" "}
+                                            <Link
+                                                href="/login"
+                                                className="underline underline-offset-4"
+                                            >
+                                                Sign in
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
                             </form>

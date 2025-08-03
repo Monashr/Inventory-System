@@ -5,6 +5,6 @@ return [
         'title' => 'Loans',
         'icon' => 'PackageOpenIcon',
         'route' => '/dashboard/loans',
-        'permission' => 'view loans',
+        'permission' => 'make and manage own loan',
     ]
 ];

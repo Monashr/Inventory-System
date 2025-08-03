@@ -2,20 +2,21 @@
 
 namespace Modules\Asset\Http\Services;
 
-use Modules\Asset\Models\AssetType;
+use Modules\Asset\Models\Location;
 use Modules\Asset\Models\Repair;
-use Modules\Asset\Models\Asset;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class RepairService
 {
     protected $assetLogService;
+    protected $assetService;
+    protected $locationService;
 
-    public function __construct(AssetLogService $assetLogService)
+    public function __construct(AssetLogService $assetLogService, AssetService $assetService, LocationService $locationService)
     {
         $this->assetLogService = $assetLogService;
+        $this->assetService = $assetService;
+        $this->locationService = $locationService;
     }
 
     public function getAllRepairsPaginated($request, $perPage)
@@ -62,9 +63,11 @@ class RepairService
     {
         $user_id = auth()->user()->id;
 
-        $asset = $this->getAsset($validated['asset_id']);
+        $location = $this->locationService->getLocationByVendor($validated['vendor'], $validated['vendor_address']);
 
-        $asset->update(['avaibility' => 'repair']);
+        $asset = $this->assetService->findAsset($validated['asset_id']);
+
+        $asset->update(['avaibility' => 'repair', 'location_id' => $location->id]);
 
         $repair = Repair::create([
             'asset_id' => $validated['asset_id'],
@@ -75,6 +78,7 @@ class RepairService
             'repair_cost' => $validated['repair_cost'],
             'vendor' => $validated['vendor'],
             'status' => "progress",
+            'location_id' => $location->id,
 
             'created_by' => $user_id,
             'updated_by' => $user_id,
@@ -103,7 +107,7 @@ class RepairService
         $repair->update(['status' => 'cancelled', 'updated_by' => auth()->user()->id]);
 
         if ($repair->asset) {
-            $repair->asset->update(['avaibility' => 'available', 'updated_by' => auth()->user()->id]);
+            $repair->asset->update(['avaibility' => 'available', 'updated_by' => auth()->user()->id, 'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,]);
         }
 
         $repair->save();
@@ -126,6 +130,7 @@ class RepairService
                 'avaibility' => 'available',
                 'condition' => 'good',
                 'updated_by' => auth()->user()->id,
+                'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,
             ]);
         }
 
@@ -134,10 +139,8 @@ class RepairService
         $this->assetLogService->userCompleteRepairAsset($repair->asset);
     }
 
-    private function getAsset($asset)
+    public function getAllVendor()
     {
-        return Asset::findOrFail($asset);
+        return $this->locationService->getAllLocationNoDefault();
     }
-
-
 }

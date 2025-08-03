@@ -29,9 +29,22 @@ class LoansController extends Controller
     }
     public function index(Request $request)
     {
+        if (
+            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
+                checkAuthority(config('loans.permissions')['permissions']['all loans']))
+        ) {
+            return redirect()->route('dashboard.index');
+        }
+
         $perPage = $request->input('per_page', 10);
 
-        $loans = Loan::with('user')->paginate($perPage);
+        if (checkAuthority(config('loans.permissions')['permissions']['all loans'])) {
+            $loans = Loan::with('user')->paginate($perPage);
+        } else {
+            $loans = $loans = Loan::with('user')
+                ->where('user_id', auth()->id())
+                ->paginate($perPage);
+        }
 
         return Inertia::render('Loans/LoansIndex', [
             'loans' => $loans,
@@ -46,8 +59,20 @@ class LoansController extends Controller
 
     public function showAddLoans(Request $request)
     {
+        if (
+            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
+                checkAuthority(config('loans.permissions')['permissions']['all loans']))
+        ) {
+            return redirect()->route('dashboard.index');
+        }
+
+        if (checkAuthority(config('loans.permissions')['permissions']['all loans'])) {
+            $users = auth()->user()->usersFromSameTenant();
+        } else {
+            $users = [auth()->user()];
+        }
+
         $perPage = 10;
-        $users = auth()->user()->usersFromSameTenant();
 
         return Inertia::render('Loans/LoansAdd', [
             'assets' => $this->assetService->getAvailableAssetPagination($request, $perPage),
@@ -58,6 +83,17 @@ class LoansController extends Controller
 
     public function store(Request $request)
     {
+        if (
+            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
+                checkAuthority(config('loans.permissions')['permissions']['all loans']))
+        ) {
+            return redirect()->route('dashboard.index');
+        }
+
+        if (!checkAuthority(config('loans.permissions')['permissions']['all loans']) && $request['loaner'] != auth()->user()->id) {
+            return back()->withErrors(['error' => 'Error occurred while creating loan.']);
+        }
+
         $validated = $request->validate([
             'loaner' => 'required|numeric',
             'description' => 'nullable|string|max:1000',
@@ -90,23 +126,46 @@ class LoansController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             report($e);
-            dd($e);
             return back()->withErrors(['error' => 'Error occurred while creating loan.']);
         }
     }
 
     public function showLoanDetails($loanId)
     {
+        if (
+            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
+                checkAuthority(config('loans.permissions')['permissions']['all loans']))
+        ) {
+            return redirect()->route('dashboard.index');
+        }
+
         $loan = Loan::with(['assets.assetType', 'user'])->findOrFail($loanId);
+
+        if (!(checkAuthority(config('loans.permissions')['permissions']['all loans']) || (checkAuthority(config('loans.permissions')['permissions']['own loans']) && $loan->user_id === auth()->id()))) {
+            return redirect()->route('dashboard')->withErrors('You are not authorized to view this loan.');
+        }
 
         return Inertia::render('Loans/LoansDetail', [
             'loan' => $loan,
+            'permissions' => auth()->user()->getTenantPermission(),
         ]);
     }
 
     public function edit($id)
     {
+        if (
+            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
+                checkAuthority(config('loans.permissions')['permissions']['all loans']))
+        ) {
+            return redirect()->route('dashboard.index');
+        }
+
         $loan = Loan::with(['assets.assetType', 'user'])->findOrFail($id);
+
+        if (!(checkAuthority(config('loans.permissions')['permissions']['all loans']) || (checkAuthority(config('loans.permissions')['permissions']['own loans']) && $loan->user_id === auth()->id()))) {
+            return redirect()->route('dashboard')->withErrors('You are not authorized to view this loan.');
+        }
+
         $assetTypes = AssetType::with('assets')->get();
         $users = auth()->user()->usersFromSameTenant();
 
@@ -119,6 +178,13 @@ class LoansController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (
+            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
+                checkAuthority(config('loans.permissions')['permissions']['all loans']))
+        ) {
+            return redirect()->route('dashboard.index');
+        }
+
         $request->validate([
             'loaner' => 'required|exists:users,id',
             'description' => 'nullable|string',
@@ -128,7 +194,11 @@ class LoansController extends Controller
             'assets.*.loaned_date' => 'required|date',
         ]);
 
-        $loan = Loan::findOrFail($id);
+        $loan = Loan::with(['user'])->findOrFail($id);
+
+        if (!(checkAuthority(config('loans.permissions')['permissions']['all loans']) || (checkAuthority(config('loans.permissions')['permissions']['own loans']) && $loan->user_id === auth()->id()))) {
+            return redirect()->route('dashboard')->withErrors('You are not authorized to view this loan.');
+        }
 
         $oldAssetIds = $loan->assets()->pluck('assets.id')->toArray();
 
@@ -161,6 +231,12 @@ class LoansController extends Controller
 
     public function acceptLoan(Loan $loan)
     {
+        if (
+            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+        ) {
+            return redirect()->route('dashboard');
+        }
+
         $loan->load('assets');
 
         $unavailableAssets = $loan->assets->filter(function ($asset) {
@@ -189,6 +265,12 @@ class LoansController extends Controller
 
     public function rejectLoan(Loan $loan)
     {
+        if (
+            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+        ) {
+            return redirect()->route('dashboard');
+        }
+
         $loan->load('assets.assetType');
 
         foreach ($loan->assets as $asset) {
@@ -202,6 +284,11 @@ class LoansController extends Controller
 
     public function cancelLoan(Loan $loan)
     {
+        if (
+            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+        ) {
+            return redirect()->route('dashboard');
+        }
 
         $loan->load('assets.assetType');
 
@@ -216,6 +303,12 @@ class LoansController extends Controller
 
     public function returnAsset(Request $request, Loan $loan)
     {
+        if (
+            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+        ) {
+            return redirect()->route('dashboard');
+        }
+
         $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'return_date' => 'required|date',
@@ -249,6 +342,12 @@ class LoansController extends Controller
 
     public function uploadEvident(Request $request, Loan $loan)
     {
+        if (
+            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+        ) {
+            return redirect()->route('dashboard');
+        }
+
         $validated = $request->validate([
             'file' => 'required|image|mimes:jpg,jpeg,png,hvec|max:2048',
         ]);
@@ -281,6 +380,12 @@ class LoansController extends Controller
 
     public function uploadDocument(Request $request, Loan $loan)
     {
+        if (
+            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+        ) {
+            return redirect()->route('dashboard');
+        }
+
         $request->validate([
             'file' => 'required|file|mimes:pdf|max:2048',
         ]);
@@ -304,10 +409,7 @@ class LoansController extends Controller
             return back()->with('success', 'upload evident success.');
         }
 
-        return back()->with('error', 'upload evident not success.');
+        return back()->with('error', 'upload evident not success.E');
 
     }
-
-
-
 }

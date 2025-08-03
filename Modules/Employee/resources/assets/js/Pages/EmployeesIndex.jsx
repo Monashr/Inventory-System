@@ -5,7 +5,14 @@ import { usePage, router, Link } from "@inertiajs/react";
 import Dashboard from "@components/layout/Dashboard";
 import AddEmployeeForm from "./EmployeesAdd";
 
-import { UserRound, Plus, Filter, SearchIcon, ArrowUpDown, Mail } from "lucide-react";
+import {
+    UserRound,
+    Plus,
+    Filter,
+    SearchIcon,
+    ArrowUpDown,
+    Mail,
+} from "lucide-react";
 
 import { Button } from "@components/ui/button";
 import { Card } from "@components/ui/card";
@@ -90,14 +97,14 @@ function EmployeesIndex() {
                             <UserRound className="w-8 h-8 md:w-10 md:h-10 mr-2" />
                             Employees
                         </h1>
-                        {permissions.includes("edit employees") && (
-                            <div className="flex justify-center items-center gap-2">
+                        <div className="flex justify-center items-center gap-2">
+                            {permissions.includes("invite employees") && (
                                 <Dialog open={open} onOpenChange={setOpen}>
                                     <DialogTrigger
                                         className="cursor-pointer"
                                         asChild
                                     >
-                                        <Button>
+                                        <Button variant="outline">
                                             <Mail className="mr-2 h-4 w-4" />
                                             Invite New Employee
                                         </Button>
@@ -113,14 +120,17 @@ function EmployeesIndex() {
                                         />
                                     </DialogContent>
                                 </Dialog>
+                            )}
+
+                            {permissions.includes("make employees") && (
                                 <Link href="/dashboard/employees/create">
                                     <Button className="cursor-pointer">
                                         <Plus className="mr-2 h-4 w-4" />
                                         Create New Employee
                                     </Button>
                                 </Link>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                     <Card>
                         <div className="flex justify-between px-6">
@@ -161,7 +171,7 @@ function EmployeesIndex() {
                         </div>
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-slate-200">
+                                <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
                                     <TableHead className="text-left pl-6">
                                         <Button
                                             variant={

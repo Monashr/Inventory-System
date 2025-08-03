@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-
 import { Link, usePage, router } from "@inertiajs/react";
-
 import Dashboard from "@components/layout/Dashboard";
-
 import {
     Ban,
     ChevronLeft,
@@ -11,17 +8,25 @@ import {
     CircleSlash,
     PackageOpen,
     Pencil,
-    Plus,
     Check,
     FileImage,
-    Image,
+    ImageIcon,
+    Calendar,
+    User,
+    FileText,
+    Upload,
+    AlertCircle,
+    CheckCircle2,
+    Clock,
+    XCircle,
+    FileIcon,
 } from "lucide-react";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import Calendar08 from "@components/calendar-08";
 import { Button } from "@components/ui/button";
 import { Separator } from "@components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
     Select,
     SelectTrigger,
@@ -38,18 +43,17 @@ import {
     DialogFooter,
     DialogDescription,
 } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Input } from "@components/ui/input";
 
 function LoansDetail() {
-    const { loan, flash } = usePage().props;
-
+    const { loan, permissions, flash } = usePage().props;
     const evidentInputRef = useRef(null);
     const documentInputRef = useRef(null);
-
     const [openDialogIndex, setOpenDialogIndex] = useState(null);
     const [returnDates, setReturnDates] = useState([]);
     const [returnConditions, setReturnConditions] = useState([]);
+    const [isUploading, setIsUploading] = useState(false);
 
     const formatDateNoHour = (dateString) => {
         if (!dateString) return "-";
@@ -78,16 +82,53 @@ function LoansDetail() {
             asset.avaibility === "loaned" || asset.avaibility === "defect"
     );
 
+    const getStatusConfig = (status) => {
+        const configs = {
+            accepted: {
+                color: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
+                icon: CheckCircle2,
+            },
+            pending: {
+                color: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800",
+                icon: Clock,
+            },
+            cancelled: {
+                color: "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-950 dark:text-gray-300 dark:border-gray-800",
+                icon: XCircle,
+            },
+            rejected: {
+                color: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
+                icon: XCircle,
+            },
+        };
+        return configs[status] || configs.pending;
+    };
+
+    const getConditionConfig = (condition) => {
+        const configs = {
+            good: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300",
+            used: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300",
+            defect: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300",
+        };
+        return configs[condition] || "bg-gray-50 text-gray-700 border-gray-200";
+    };
+
     function handleEvidentChange(event) {
         const file = event.target.files[0];
         if (file) {
+            setIsUploading(true);
             const formData = new FormData();
             formData.append("file", file);
-
             router.post(`/dashboard/loans/${loan.id}/evident`, formData, {
                 forceFormData: true,
-                onSuccess: () => {},
-                onError: () => {},
+                onSuccess: () => {
+                    setIsUploading(false);
+                    toast.success("Evidence uploaded successfully");
+                },
+                onError: () => {
+                    setIsUploading(false);
+                    toast.error("Failed to upload evidence");
+                },
             });
         }
     }
@@ -95,52 +136,74 @@ function LoansDetail() {
     function handleDocumentChange(event) {
         const file = event.target.files[0];
         if (file) {
+            setIsUploading(true);
             const formData = new FormData();
             formData.append("file", file);
-
             router.post(`/dashboard/loans/${loan.id}/document`, formData, {
                 forceFormData: true,
-                onSuccess: () => {},
-                onError: () => {},
+                onSuccess: () => {
+                    setIsUploading(false);
+                    toast.success("Document uploaded successfully");
+                },
+                onError: () => {
+                    setIsUploading(false);
+                    toast.error("Failed to upload document");
+                },
             });
         }
     }
 
+    const statusConfig = getStatusConfig(loan.status);
+    const StatusIcon = statusConfig.icon;
+
     return (
-        <div>
-            <Card className="w-full mx-auto border border-gray-200 shadow-md rounded-2xl bg-white">
-                <CardContent className="px-12 py-6 space-y-10">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                        <div className="space-y-1">
-                            <h1 className="flex items-center text-3xl font-extrabold text-gray-900">
-                                <PackageOpen className="w-10 h-10 mr-3" />
+        <div className="space-y-6">
+            <div className="px-6 py-2">
+                <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
+                                <PackageOpen className="w-8 h-8 md:w-10 md:h-10 mr-2" />
                                 Loan Details
                             </h1>
-                            <p className="text-sm text-gray-500">
-                                Review details and assets associated with this
-                                loan.
-                            </p>
                         </div>
-                        <div className="flex gap-2">
-                            <div
-                                className={`inline-flex items-center px-4 py-2 rounded-md text-base font-semibold ${
-                                    loan.status === "accepted"
-                                        ? "bg-green-100 text-green-800"
-                                        : loan.status === "pending"
-                                        ? "bg-yellow-100 text-yellow-800"
-                                        : loan.status === "cancelled"
-                                        ? "bg-slate-100 text-slate-800"
-                                        : "bg-red-100 text-red-800"
-                                }`}
+
+                        <div className="flex flex-wrap items-center gap-3">
+                            <Badge
+                                variant="outline"
+                                className={`${statusConfig.color} border px-3 py-1`}
                             >
+                                <StatusIcon className="w-3 h-3 mr-1" />
                                 {loan.status.charAt(0).toUpperCase() +
                                     loan.status.slice(1)}
-                            </div>
+                            </Badge>
 
-                            <div className=" bg-gray-100 border border-gray-200 text-gray-800 px-4 py-2 rounded-md text-base font-semibold">
-                                Loaner {loan.user.name}
-                            </div>
-                            <div>
+                            <Badge variant="secondary" className="px-3 py-1">
+                                <User className="w-3 h-3 mr-1" />
+                                {loan.user.name}
+                            </Badge>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        <Link href="/dashboard/loans">
+                            <Button variant="outline" size="sm">
+                                <ChevronLeft className="w-4 h-4 mr-1" />
+                                Back to Loans
+                            </Button>
+                        </Link>
+
+                        {loan.status === "pending" && (
+                            <Link href={`/dashboard/loans/${loan.id}/edit`}>
+                                <Button variant="outline" size="sm">
+                                    <Pencil className="w-4 h-4 mr-1" />
+                                    Edit Loan
+                                </Button>
+                            </Link>
+                        )}
+
+                        {permissions.includes("making loan decision") && (
+                            <div className="flex gap-2">
                                 <input
                                     type="file"
                                     accept=".pdf"
@@ -150,460 +213,537 @@ function LoansDetail() {
                                 />
                                 <Button
                                     variant="outline"
-                                    data-modal-trigger="upload-evident"
+                                    size="sm"
                                     onClick={() =>
                                         documentInputRef.current?.click()
                                     }
-                                    className="cursor-pointer w-full h-full py-2 px-4"
+                                    disabled={isUploading}
                                 >
-                                    <Plus />
-                                    Upload Document
+                                    <Upload className="w-4 h-4 mr-1" />
+                                    {isUploading
+                                        ? "Uploading..."
+                                        : "Upload Document"}
                                 </Button>
                             </div>
-                            <div>
-                                <Link href={`/dashboard/loans/${loan.id}/edit`}>
-                                    <Button
-                                        variant="outline"
-                                        data-modal-trigger="add-product"
-                                        className="cursor-pointer h-full"
-                                    >
-                                        <Pencil />
-                                        Edit Loan
-                                    </Button>
-                                </Link>
-                            </div>
-                            <div>
-                                <Link href="/dashboard/loans">
-                                    <Button
-                                        data-modal-trigger="add-product"
-                                        className="cursor-pointer h-full"
-                                    >
-                                        <ChevronLeft />
-                                        Back
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
+                        )}
                     </div>
+                </div>
+            </div>
 
-                    <div>
-                        <div>
-                            <Label className="text-sm text-gray-600">
-                                Description
-                            </Label>
-                            <div className="mt-2 bg-gray-50 border border-gray-200 text-gray-700 p-4 rounded-md leading-relaxed min-h-[80px]">
-                                {loan.description}
-                            </div>
-                        </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="w-5 h-5" />
+                        Description
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="bg-gray-50 dark:bg-gray-900 border rounded-lg p-4 min-h-[100px]">
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {loan.description || "No description provided."}
+                        </p>
                     </div>
+                </CardContent>
+            </Card>
 
-                    <div className="space-y-6">
-                        <h2 className="text-2xl font-bold text-gray-900 border-b pb-2">
-                            Loaned Assets
-                        </h2>
-
-                        {loan.assets.length === 0 ? (
-                            <p className="text-muted-foreground text-sm italic">
-                                No units recorded for this loan.
-                            </p>
-                        ) : (
-                            loan.assets.map((entry, index) => (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <PackageOpen className="w-5 h-5" />
+                        Loaned Assets ({loan.assets.length})
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {loan.assets.length === 0 ? (
+                        <Alert>
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>
+                                No assets have been recorded for this loan.
+                            </AlertDescription>
+                        </Alert>
+                    ) : (
+                        <div className="grid gap-4">
+                            {loan.assets.map((entry, index) => (
                                 <Card
                                     key={entry.id}
-                                    className="border border-gray-200 shadow-sm rounded-xl bg-white"
+                                    className="border border-gray-200 dark:border-gray-800"
                                 >
-                                    <CardHeader className="px-6 py-4 rounded-t-xl border-b">
-                                        <CardTitle className="flex justify-between items-center text-lg font-bold text-gray-900">
-                                            <div className="flex items-center gap-2">
-                                                {index + 1}.{" "}
-                                                {entry.asset_type?.name} (
-                                                {entry.serial_code})
-                                                {entry.pivot.loaned_status ===
-                                                "loaned" ? (
-                                                    <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">
-                                                        Loaned
-                                                    </span>
-                                                ) : entry.pivot
-                                                      .loaned_status ===
-                                                  "returned" ? (
-                                                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">
-                                                        Returned
-                                                    </span>
-                                                ) : null}
-                                                {entry.avaibility ===
-                                                    "defect" && (
-                                                    <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">
-                                                        Defective
-                                                    </span>
-                                                )}
-                                                {entry.deleted_at && (
-                                                    <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">
-                                                        Asset Deleted
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <div className="flex gap-2 justify-center items-center">
-                                                {loan.status === "accepted" &&
-                                                    entry.pivot
-                                                        .loaned_status ===
-                                                        "loaned" && (
-                                                        <Dialog
-                                                            open={
-                                                                openDialogIndex ===
-                                                                index
-                                                            }
-                                                            onOpenChange={(
-                                                                open
-                                                            ) =>
-                                                                setOpenDialogIndex(
-                                                                    open
-                                                                        ? index
-                                                                        : null
-                                                                )
-                                                            }
-                                                        >
-                                                            <DialogTrigger
-                                                                asChild
-                                                            >
-                                                                <Button
-                                                                    variant="outline"
-                                                                    className="text-sm cursor-pointer"
-                                                                    onClick={() =>
-                                                                        setOpenDialogIndex(
-                                                                            index
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Return Asset
-                                                                </Button>
-                                                            </DialogTrigger>
-
-                                                            <DialogContent className="space-y-6">
-                                                                <DialogHeader>
-                                                                    <DialogTitle>
-                                                                        Return
-                                                                        Asset
-                                                                    </DialogTitle>
-                                                                </DialogHeader>
-
-                                                                <div className="flex flex-col md:flex-row md:items-start gap-6">
-                                                                    <div className="flex flex-col space-y-2 min-w-[220px]">
-                                                                        <Label className="text-sm">
-                                                                            Return
-                                                                            Date
-                                                                        </Label>
-                                                                        <Calendar08
-                                                                            value={
-                                                                                returnDates[
-                                                                                    index
-                                                                                ] ||
-                                                                                null
-                                                                            }
-                                                                            onChange={(
-                                                                                val
-                                                                            ) => {
-                                                                                const updated =
-                                                                                    [
-                                                                                        ...returnDates,
-                                                                                    ];
-                                                                                updated[
-                                                                                    index
-                                                                                ] =
-                                                                                    val;
-                                                                                setReturnDates(
-                                                                                    updated
-                                                                                );
-                                                                            }}
-                                                                        />
-                                                                    </div>
-
-                                                                    <div className="flex flex-col space-y-2 min-w-[160px]">
-                                                                        <Label className="text-sm">
-                                                                            Condition
-                                                                        </Label>
-                                                                        <Select
-                                                                            value={
-                                                                                returnConditions[
-                                                                                    index
-                                                                                ] ||
-                                                                                ""
-                                                                            }
-                                                                            onValueChange={(
-                                                                                val
-                                                                            ) => {
-                                                                                const updated =
-                                                                                    [
-                                                                                        ...returnConditions,
-                                                                                    ];
-                                                                                updated[
-                                                                                    index
-                                                                                ] =
-                                                                                    val;
-                                                                                setReturnConditions(
-                                                                                    updated
-                                                                                );
-                                                                            }}
-                                                                        >
-                                                                            <SelectTrigger className="cursor-pointer">
-                                                                                <SelectValue placeholder="Select Condition" />
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                <SelectItem
-                                                                                    value="good"
-                                                                                    className="cursor-pointer"
-                                                                                >
-                                                                                    Good
-                                                                                </SelectItem>
-                                                                                <SelectItem
-                                                                                    value="used"
-                                                                                    className="cursor-pointer"
-                                                                                >
-                                                                                    Used
-                                                                                </SelectItem>
-                                                                                <SelectItem
-                                                                                    value="defect"
-                                                                                    className="cursor-pointer"
-                                                                                >
-                                                                                    Defect
-                                                                                </SelectItem>
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                    </div>
-                                                                </div>
-                                                                <DialogDescription>
-                                                                    Please,
-                                                                    Select the
-                                                                    date asset
-                                                                    returned and
-                                                                    asset
-                                                                    condition
-                                                                </DialogDescription>
-
-                                                                <DialogFooter>
-                                                                    <Button
-                                                                        className="w-full cursor-pointer"
-                                                                        onClick={() =>
-                                                                            router.post(
-                                                                                `/dashboard/loans/${loan.id}/return`,
-                                                                                {
-                                                                                    asset_id:
-                                                                                        entry.id,
-                                                                                    return_date:
-                                                                                        returnDates[
-                                                                                            index
-                                                                                        ],
-                                                                                    return_condition:
-                                                                                        returnConditions[
-                                                                                            index
-                                                                                        ],
-                                                                                }
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Submit
-                                                                        Return
-                                                                    </Button>
-                                                                </DialogFooter>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    )}
-
-                                                {!entry.deleted_at && (
-                                                    <Link
-                                                        href={`/dashboard/assets/${entry.pivot?.asset_id}/details`}
-                                                    >
-                                                        <Button className="cursor-pointer">
-                                                            Asset Details{" "}
-                                                            <ChevronRight />
-                                                        </Button>
-                                                    </Link>
-                                                )}
-                                            </div>
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-6 space-y-4">
-                                        <div className="grid md:grid-cols-2 gap-6">
-                                            <div>
-                                                <Label className="text-xs text-gray-500 uppercase tracking-wide">
-                                                    Loaned Date
-                                                </Label>
-                                                <div className="mt-1 bg-gray-100 border border-gray-200 p-2 rounded text-sm text-gray-700">
-                                                    {formatDateNoHour(
-                                                        entry.pivot.loaned_date
-                                                    ) || "N/A"}
+                                    <CardHeader className="pb-3">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-semibold text-primary">
+                                                    {index + 1}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                                                        {entry.asset_type?.name}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                        Serial:{" "}
+                                                        {entry.serial_code}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <Label className="text-xs text-gray-500 uppercase tracking-wide">
+
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                {entry.pivot.loaned_status ===
+                                                    "loaned" && (
+                                                    <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                        <Clock className="w-3 h-3 mr-1" />
+                                                        Loaned
+                                                    </Badge>
+                                                )}
+
+                                                {entry.pivot.loaned_status ===
+                                                    "returned" && (
+                                                    <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                        <CheckCircle2 className="w-3 h-3 mr-1" />
+                                                        Returned
+                                                    </Badge>
+                                                )}
+
+                                                {entry.avaibility ===
+                                                    "defect" && (
+                                                    <Badge variant="destructive">
+                                                        <AlertCircle className="w-3 h-3 mr-1" />
+                                                        Defective
+                                                    </Badge>
+                                                )}
+
+                                                {entry.deleted_at && (
+                                                    <Badge variant="destructive">
+                                                        <XCircle className="w-3 h-3 mr-1" />
+                                                        Deleted
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+
+                                    <CardContent className="space-y-4">
+                                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                                    Loaned Date
+                                                </Label>
+                                                <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-900 rounded-md">
+                                                    <Calendar className="w-4 h-4 text-gray-400" />
+                                                    <span className="text-sm">
+                                                        {formatDateNoHour(
+                                                            entry.pivot
+                                                                .loaned_date
+                                                        ) || "N/A"}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                                                     Loaned Condition
                                                 </Label>
                                                 <div
-                                                    className={`mt-1 border p-2 rounded text-sm ${
+                                                    className={`p-2 rounded-md border text-sm font-medium ${getConditionConfig(
                                                         entry.pivot
-                                                            .loaned_condition ===
-                                                        "good"
-                                                            ? "bg-green-50 border-green-200 text-green-600 font-semibold"
-                                                            : entry.pivot
-                                                                  .loaned_condition ===
-                                                              "used"
-                                                            ? "bg-yellow-50 border-yellow-200 text-yellow-600 font-semibold"
-                                                            : entry.pivot
-                                                                  .loaned_condition ===
-                                                              "defect"
-                                                            ? "bg-red-50 border-red-200 text-red-600 font-semibold"
-                                                            : "bg-red-50 border-red-200 text-red-600 font-semibold"
-                                                    }`}
+                                                            .loaned_condition
+                                                    )}`}
                                                 >
                                                     {entry.pivot.loaned_condition
-                                                        .charAt(0)
+                                                        ?.charAt(0)
                                                         .toUpperCase() +
-                                                        entry.pivot.loaned_condition.slice(
+                                                        entry.pivot.loaned_condition?.slice(
                                                             1
                                                         ) || "N/A"}
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div className="grid md:grid-cols-2 gap-6">
-                                            <div>
-                                                <Label className="text-xs text-gray-500 uppercase tracking-wide">
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                                                     Return Date
                                                 </Label>
                                                 <div
-                                                    className={`mt-1 p-2 rounded text-sm border ${
+                                                    className={`flex items-center gap-2 p-2 rounded-md ${
                                                         entry.pivot.return_date
-                                                            ? "bg-gray-100 border-gray-200 text-gray-700"
-                                                            : "bg-red-50 border-red-200 text-red-600 font-semibold"
+                                                            ? "bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300"
+                                                            : "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"
                                                     }`}
                                                 >
-                                                    {formatDateNoHour(
-                                                        entry.pivot.return_date
-                                                    ) === "-"
-                                                        ? "Not Returned Yet"
-                                                        : formatDateNoHour(
-                                                              entry.pivot
-                                                                  .return_date
-                                                          )}
+                                                    <Calendar className="w-4 h-4 text-gray-400" />
+                                                    <span className="text-sm">
+                                                        {formatDateNoHour(
+                                                            entry.pivot
+                                                                .return_date
+                                                        ) === "-"
+                                                            ? "Not returned"
+                                                            : formatDateNoHour(
+                                                                  entry.pivot
+                                                                      .return_date
+                                                              )}
+                                                    </span>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <Label className="text-xs text-gray-500 uppercase tracking-wide">
+
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
                                                     Return Condition
                                                 </Label>
                                                 <div
-                                                    className={`mt-1 p-2 rounded text-sm border ${
+                                                    className={`p-2 rounded-md text-sm ${
                                                         entry.pivot
                                                             .return_condition
-                                                            ? "bg-gray-100 border-gray-200 text-gray-700"
-                                                            : "bg-red-50 border-red-200 text-red-600 font-semibold"
+                                                            ? `${getConditionConfig(
+                                                                  entry.pivot
+                                                                      .return_condition
+                                                              )} border font-medium`
+                                                            : "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"
                                                     }`}
                                                 >
                                                     {entry.pivot
                                                         .return_condition ||
-                                                        "Not Returned Yet"}
+                                                        "Not returned"}
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div className="flex flex-wrap gap-2 pt-2">
+                                            {loan.status === "accepted" &&
+                                                entry.pivot.loaned_status ===
+                                                    "loaned" && (
+                                                    <Dialog
+                                                        open={
+                                                            openDialogIndex ===
+                                                            index
+                                                        }
+                                                        onOpenChange={(open) =>
+                                                            setOpenDialogIndex(
+                                                                open
+                                                                    ? index
+                                                                    : null
+                                                            )
+                                                        }
+                                                    >
+                                                        <DialogTrigger asChild>
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline"
+                                                            >
+                                                                <CheckCircle2 className="w-4 h-4 mr-1" />
+                                                                Return Asset
+                                                            </Button>
+                                                        </DialogTrigger>
+                                                        <DialogContent className="max-w-md">
+                                                            <DialogHeader>
+                                                                <DialogTitle>
+                                                                    Return Asset
+                                                                </DialogTitle>
+                                                                <DialogDescription>
+                                                                    Select the
+                                                                    return date
+                                                                    and
+                                                                    condition
+                                                                    for this
+                                                                    asset.
+                                                                </DialogDescription>
+                                                            </DialogHeader>
+
+                                                            <div className="space-y-4">
+                                                                <div className="space-y-2">
+                                                                    <Label>
+                                                                        Return
+                                                                        Date
+                                                                    </Label>
+                                                                    <Calendar08
+                                                                        value={
+                                                                            returnDates[
+                                                                                index
+                                                                            ] ||
+                                                                            null
+                                                                        }
+                                                                        onChange={(
+                                                                            val
+                                                                        ) => {
+                                                                            const updated =
+                                                                                [
+                                                                                    ...returnDates,
+                                                                                ];
+                                                                            updated[
+                                                                                index
+                                                                            ] =
+                                                                                val;
+                                                                            setReturnDates(
+                                                                                updated
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </div>
+
+                                                                <div className="space-y-2">
+                                                                    <Label>
+                                                                        Condition
+                                                                    </Label>
+                                                                    <Select
+                                                                        value={
+                                                                            returnConditions[
+                                                                                index
+                                                                            ] ||
+                                                                            ""
+                                                                        }
+                                                                        onValueChange={(
+                                                                            val
+                                                                        ) => {
+                                                                            const updated =
+                                                                                [
+                                                                                    ...returnConditions,
+                                                                                ];
+                                                                            updated[
+                                                                                index
+                                                                            ] =
+                                                                                val;
+                                                                            setReturnConditions(
+                                                                                updated
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        <SelectTrigger>
+                                                                            <SelectValue placeholder="Select condition" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            <SelectItem value="good">
+                                                                                Good
+                                                                            </SelectItem>
+                                                                            <SelectItem value="used">
+                                                                                Used
+                                                                            </SelectItem>
+                                                                            <SelectItem value="defect">
+                                                                                Defect
+                                                                            </SelectItem>
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                </div>
+                                                            </div>
+
+                                                            <DialogFooter>
+                                                                <Button
+                                                                    onClick={() =>
+                                                                        router.post(
+                                                                            `/dashboard/loans/${loan.id}/return`,
+                                                                            {
+                                                                                asset_id:
+                                                                                    entry.id,
+                                                                                return_date:
+                                                                                    returnDates[
+                                                                                        index
+                                                                                    ],
+                                                                                return_condition:
+                                                                                    returnConditions[
+                                                                                        index
+                                                                                    ],
+                                                                            }
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        !returnDates[
+                                                                            index
+                                                                        ] ||
+                                                                        !returnConditions[
+                                                                            index
+                                                                        ]
+                                                                    }
+                                                                    className="w-full"
+                                                                >
+                                                                    Submit
+                                                                    Return
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </DialogContent>
+                                                    </Dialog>
+                                                )}
+
+                                            {!entry.deleted_at && (
+                                                <Link
+                                                    href={`/dashboard/assets/${entry.pivot?.asset_id}/details`}
+                                                >
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                    >
+                                                        View Details
+                                                        <ChevronRight className="w-4 h-4 ml-1" />
+                                                    </Button>
+                                                </Link>
+                                            )}
+                                        </div>
                                     </CardContent>
                                 </Card>
-                            ))
-                        )}
-                    </div>
-                    <Separator />
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
 
-                    {!loan.evident ? (
-                        <div className="w-full">
-                            <Button
-                                variant="outline"
-                                data-modal-trigger="upload-evident"
-                                onClick={() => evidentInputRef.current?.click()}
-                                className="cursor-pointer w-full h-32"
-                            >
-                                <Image />
-                                Upload Evident
-                            </Button>
+            {permissions.includes("making loan decision") && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <FileImage className="w-5 h-5" />
+                            Evidence
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-4">
+                            <Label className="text-sm font-medium">
+                                Evidence Photo
+                            </Label>
+                            {!loan.evident ? (
+                                <div
+                                    className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center hover:border-gray-400 dark:hover:border-gray-600 transition-colors cursor-pointer"
+                                    onClick={() =>
+                                        evidentInputRef.current?.click()
+                                    }
+                                >
+                                    <ImageIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                        Click to upload evidence photo
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        PNG, JPEG, JPG up to 10MB
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col justify-center items-center gap-2">
+                                    <div>
+                                        <img
+                                            src={`/storage/${loan.evident}`}
+                                            alt="Evidence"
+                                            className="max-w-full h-auto max-h-64 rounded-lg border"
+                                        />
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            evidentInputRef.current?.click()
+                                        }
+                                        disabled={isUploading}
+                                    >
+                                        <Pencil className="w-4 h-4 mr-1" />
+                                        {isUploading
+                                            ? "Uploading..."
+                                            : "Change Evidence"}
+                                    </Button>
+                                </div>
+                            )}
                             <input
                                 type="file"
-                                accept=".png,.jpeg,.jpg,.hvec"
+                                accept=".png,.jpeg,.jpg,.heic"
                                 ref={evidentInputRef}
                                 onChange={handleEvidentChange}
                                 className="hidden"
                             />
                         </div>
-                    ) : (
-                        <>
-                            <div className="w-full flex flex-col justify-center items-center p-2 gap-4">
-                                <img
-                                    src={`/storage/${loan.evident}`}
-                                    alt="evident"
-                                />
-                                <Button
-                                    variant="outline"
-                                    data-modal-trigger="upload-evident"
-                                    onClick={() =>
-                                        evidentInputRef.current?.click()
-                                    }
-                                    className="cursor-pointer"
-                                >
-                                    <Pencil />
-                                    Change Evident Image
-                                </Button>
-                                <input
-                                    type="file"
-                                    accept=".png,.jpeg,.jpg,.hvec"
-                                    ref={evidentInputRef}
-                                    onChange={handleEvidentChange}
-                                    className="hidden"
-                                />
-                            </div>
-                            <Separator />
-                        </>
-                    )}
 
-                    {!["cancelled", "rejected", "accepted"].includes(
-                        loan.status
-                    ) && (
-                        <div className="flex justify-end items-center gap-2">
-                            <Button
-                                className="cursor-pointer"
-                                variant="outline"
-                                onClick={() =>
-                                    router.post(
-                                        `/dashboard/loans/${loan.id}/cancel`
-                                    )
-                                }
-                            >
-                                Cancel
-                                <CircleSlash />
-                            </Button>
-                            <Button
-                                className="cursor-pointer"
-                                variant="destructive"
-                                onClick={() =>
-                                    router.post(
-                                        `/dashboard/loans/${loan.id}/reject`
-                                    )
-                                }
-                            >
-                                Reject
-                                <Ban />
-                            </Button>
-                            <Button
-                                className="cursor-pointer"
-                                disabled={isAnyAssetUnavailable}
-                                onClick={() =>
-                                    router.post(
-                                        `/dashboard/loans/${loan.id}/accept`
-                                    )
-                                }
-                            >
-                                Accept
-                                <Check />
-                            </Button>
+                        <div className="space-y-4">
+                            <Label className="text-sm font-medium">
+                                Document {console.log(loan.document)}
+                            </Label>
+                            {!loan.document &&
+                            permissions.includes("making loan decision") ? (
+                                <div
+                                    className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center hover:border-gray-400 dark:hover:border-gray-600 transition-colors cursor-pointer"
+                                    onClick={() =>
+                                        documentInputRef.current?.click()
+                                    }
+                                >
+                                    <ImageIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                        Click to upload document
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        PNG, JPEG, JPG up to 10MB
+                                    </p>
+                                </div>
+                            ) : (
+                                <a href={`/storage/${loan.document}`}>
+                                    <div className="border-2 border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center hover:border-gray-400 dark:hover:border-gray-600 transition-colors cursor-pointer">
+                                        <FileIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                            Click to download document
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            {loan.document}
+                                        </p>
+                                    </div>
+                                </a>
+                            )}
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                ref={documentInputRef}
+                                onChange={handleDocumentChange}
+                                className="hidden"
+                            />
                         </div>
-                    )}
-                </CardContent>
-            </Card>
+
+                        {!["cancelled", "rejected", "accepted"].includes(
+                            loan.status
+                        ) && (
+                            <>
+                                <Separator />
+                                <div className="space-y-4">
+                                    <Label className="text-sm font-medium">
+                                        Loan Decision
+                                    </Label>
+                                    {isAnyAssetUnavailable && (
+                                        <Alert>
+                                            <AlertCircle className="h-4 w-4" />
+                                            <AlertDescription>
+                                                Some assets are unavailable.
+                                                Please resolve asset
+                                                availability before accepting
+                                                this loan.
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
+                                    <div className="flex flex-wrap gap-3">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                                router.post(
+                                                    `/dashboard/loans/${loan.id}/cancel`
+                                                )
+                                            }
+                                        >
+                                            <CircleSlash className="w-4 h-4 mr-1" />
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            onClick={() =>
+                                                router.post(
+                                                    `/dashboard/loans/${loan.id}/reject`
+                                                )
+                                            }
+                                        >
+                                            <Ban className="w-4 h-4 mr-1" />
+                                            Reject
+                                        </Button>
+                                        <Button
+                                            disabled={isAnyAssetUnavailable}
+                                            onClick={() =>
+                                                router.post(
+                                                    `/dashboard/loans/${loan.id}/accept`
+                                                )
+                                            }
+                                        >
+                                            <Check className="w-4 h-4 mr-1" />
+                                            Accept
+                                        </Button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }

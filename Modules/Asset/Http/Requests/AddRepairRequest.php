@@ -28,6 +28,7 @@ class AddRepairRequest extends FormRequest
             'corrective_action' => ['required', 'string', 'max:1000'],
             'repair_cost' => ['nullable', 'numeric', 'min:0'],
             'vendor' => ['required', 'string', 'max:255'],
+            'vendor_address' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

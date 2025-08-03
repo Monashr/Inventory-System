@@ -25,7 +25,7 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
 
-        $permission = config('employee.permissions')['permissions']['view'];
+        $permission = config('employee.permissions')['permissions']['view employees'];
 
         if (!checkAuthority($permission)) {
             return redirect()->route('dashboard.index');
@@ -49,7 +49,7 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        $permission = config('employee.permissions')['permissions']['edit'];
+        $permission = config('employee.permissions')['permissions']['make employees'];
 
         if (!checkAuthority($permission)) {
             return redirect()->route('employees.index');
@@ -142,7 +142,7 @@ class EmployeeController extends Controller
 
     public function showPermission(Request $request, $id)
     {
-        $permission = config('employee.permissions')['permissions']['edit'];
+        $permission = config('employee.permissions')['permissions']['permission employees'];
 
         if (!checkAuthority($permission)) {
             return redirect()->route('employees.index');
@@ -179,7 +179,7 @@ class EmployeeController extends Controller
 
     public function showAddPermissionForm($id)
     {
-        $permission = config('employee.permissions')['permissions']['edit'];
+        $permission = config('employee.permissions')['permissions']['permission employees'];
 
         if (!checkAuthority($permission)) {
             return redirect()->route('employees.index');
@@ -220,7 +220,7 @@ class EmployeeController extends Controller
 
     public function assignPermissions(Request $request, $id)
     {
-        $permission = config('employee.permissions')['permissions']['edit'];
+        $permission = config('employee.permissions')['permissions']['permission employees'];
 
         if (!checkAuthority($permission)) {
             return redirect()->route('employees.index');
@@ -271,8 +271,9 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'Permissions updated successfully.');
     }
 
-    public function deleteUserFromTenant($id) {
-        if (!checkAuthority(config('employee.permissions')['permissions']['edit'])) {
+    public function deleteUserFromTenant($id)
+    {
+        if (!checkAuthority(config('employee.permissions')['permissions']['delete employees'])) {
             return redirect()->route('employees.index');
         }
 
@@ -294,7 +295,7 @@ class EmployeeController extends Controller
 
     public function revokeAllPermissions($id)
     {
-        if (!checkAuthority(config('employee.permissions')['permissions']['edit'])) {
+        if (!checkAuthority(config('employee.permissions')['permissions']['permission employees'])) {
             return redirect()->route('employees.index');
         }
 
@@ -309,7 +310,8 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'All permissions revoked successfully.');
     }
 
-    private function revokeAllUserPermissions($tenantId, $id) {
+    private function revokeAllUserPermissions($tenantId, $id)
+    {
         $user = User::findOrFail($id);
 
         DB::table('role_has_permissions')

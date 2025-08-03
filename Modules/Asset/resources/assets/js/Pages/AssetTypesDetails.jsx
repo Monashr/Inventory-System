@@ -205,7 +205,7 @@ function AssetsIndex() {
                                 </div>
                             </TableHead>
                         </TableRow>
-                        <TableRow className="bg-slate-200 hover:bg-slate-200">
+                        <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
                             <TableHead className="text-left pl-8">
                                 <Button
                                     variant={

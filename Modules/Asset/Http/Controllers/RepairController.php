@@ -61,8 +61,12 @@ class RepairController extends Controller
         if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
             return redirect()->route('dashboard.index');
         }
+
+        // dd($this->repairService->getAllVendor());
+
         return Inertia::render('Asset/RepairAdd', [
             'assetTypes' => $this->assetTypeService->getAllAssetTypes(),
+            'vendors' => $this->repairService->getAllVendor(),
         ]);
     }
 
@@ -71,6 +75,7 @@ class RepairController extends Controller
         if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
             return redirect()->route('dashboard.index');
         }
+
         $validated = $request->validated();
 
         $this->repairService->createRepair($validated);
