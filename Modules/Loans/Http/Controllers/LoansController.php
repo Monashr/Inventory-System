@@ -167,7 +167,13 @@ class LoansController extends Controller
         }
 
         $assetTypes = AssetType::with('assets')->get();
-        $users = auth()->user()->usersFromSameTenant();
+
+        if ((checkAuthority(config('loans.permissions')['permissions']['all loans']))) {
+            $users = auth()->user()->usersFromSameTenant();
+        } else {
+            $users = auth()->user();
+        }
+
 
         return Inertia::render('Loans/LoansEdit', [
             'loan' => $loan,

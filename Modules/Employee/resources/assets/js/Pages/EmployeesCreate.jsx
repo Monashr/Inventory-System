@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
@@ -26,7 +26,8 @@ function EmployeesCreate() {
     };
 
     return (
-        <div>
+        <>
+            <Head title="Create Employee" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-6 py-2">
@@ -125,7 +126,7 @@ function EmployeesCreate() {
                     </Card>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

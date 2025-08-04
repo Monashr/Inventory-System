@@ -45,7 +45,17 @@ class TenantService
         session(['active_tenant_id' => $tenant_id]);
     }
 
-    public function changeDefaultAddress($string) {
-       $this->locationService->changeDefaultLocationAddress($string);
+    public function changeDefaultAddress($string)
+    {
+        $this->locationService->changeDefaultLocationAddress($string);
+    }
+
+    public function getRecentUsersInTenant($tenant_id)
+    {
+        return Tenant::find($tenant_id)
+            ->users()
+            ->orderByPivot('created_at', 'desc')
+            ->take(5)
+            ->get();
     }
 }

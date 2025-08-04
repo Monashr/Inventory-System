@@ -88,7 +88,7 @@ function AssetTypesIndex() {
 
     return (
         <div>
-            <Head title="New Page Title" />
+            <Head title="Asset Types" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-6 py-2">
@@ -287,7 +287,7 @@ function AssetTypesIndex() {
                     </Card>
 
                     <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-2 bg-card p-2 rounded-3xl shadow">
                             <Button variant="outline">
                                 {assetTypes.from}-{assetTypes.to} of{" "}
                                 {assetTypes.total}
@@ -335,7 +335,7 @@ function AssetTypesIndex() {
                         <Pagination className="justify-end items-center">
                             <PaginationContent>
                                 {assetTypes.prev_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationPrevious
                                             href={assetTypes.prev_page_url}
                                             onClick={(e) => {
@@ -349,7 +349,7 @@ function AssetTypesIndex() {
                                 )}
 
                                 {assetTypes.next_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationNext
                                             href={assetTypes.next_page_url}
                                             onClick={(e) => {

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { router, Link, usePage } from "@inertiajs/react";
+import { router, Link, usePage, Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
@@ -79,7 +79,8 @@ function EmployeesInbox() {
     };
 
     return (
-        <div>
+        <>
+            <Head title="Inbox" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-6 py-2">
@@ -232,7 +233,9 @@ function EmployeesInbox() {
                                                 {formatDate(inbox.created_at)}
                                             </TableCell>
                                             <TableCell className="text-right space-x-2 pr-8">
-                                                {inbox.status === "pending" && inbox.receiver.name == user.name ? (
+                                                {inbox.status === "pending" &&
+                                                inbox.receiver.name ==
+                                                    user.name ? (
                                                     <div className="flex justify-end items-center gap-2">
                                                         <Button
                                                             size="sm"
@@ -302,48 +305,51 @@ function EmployeesInbox() {
                             </TableBody>
                         </Table>
                     </Card>
-                    <div className="flex gap-2">
-                        <Button variant="outline">
-                            {inboxes.from}-{inboxes.to} of {inboxes.total}
-                        </Button>
-                        <Select
-                            defaultValue={String(inboxes.per_page)}
-                            onValueChange={(value) => {
-                                router.get(
-                                    "/dashboard/employees",
-                                    { per_page: value },
-                                    { preserveScroll: true }
-                                );
-                            }}
-                        >
-                            <SelectTrigger className="w-[180px] cursor-pointer">
-                                <SelectValue placeholder="Select a value" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem
-                                    value="10"
-                                    className="cursor-pointer"
-                                >
-                                    10
-                                </SelectItem>
-                                <SelectItem
-                                    value="25"
-                                    className="cursor-pointer"
-                                >
-                                    25
-                                </SelectItem>
-                                <SelectItem
-                                    value="50"
-                                    className="cursor-pointer"
-                                >
-                                    50
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <div className="flex justify-between items-center gap-2">
+                        <div className="flex justify-center items-center gap-2 bg-card p-2 rounded-3xl shadow">
+                            <Button variant="outline">
+                                {inboxes.from}-{inboxes.to} of {inboxes.total}
+                            </Button>
+                            <Select
+                                defaultValue={String(inboxes.per_page)}
+                                onValueChange={(value) => {
+                                    router.get(
+                                        "/dashboard/employees",
+                                        { per_page: value },
+                                        { preserveScroll: true }
+                                    );
+                                }}
+                            >
+                                <SelectTrigger className="w-[180px] cursor-pointer">
+                                    <SelectValue placeholder="Select a value" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem
+                                        value="10"
+                                        className="cursor-pointer"
+                                    >
+                                        10
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="25"
+                                        className="cursor-pointer"
+                                    >
+                                        25
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="50"
+                                        className="cursor-pointer"
+                                    >
+                                        50
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
                         <Pagination className="justify-end items-center">
                             <PaginationContent>
                                 {inboxes.prev_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationPrevious
                                             href={inboxes.prev_page_url}
                                             onClick={(e) => {
@@ -357,7 +363,7 @@ function EmployeesInbox() {
                                 )}
 
                                 {inboxes.next_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationNext
                                             href={inboxes.next_page_url}
                                             onClick={(e) => {
@@ -374,7 +380,7 @@ function EmployeesInbox() {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

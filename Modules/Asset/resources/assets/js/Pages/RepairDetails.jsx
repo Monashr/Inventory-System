@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Link, usePage, useForm } from "@inertiajs/react";
+import { Link, usePage, useForm, Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
@@ -35,6 +35,8 @@ function RepairDetails() {
     };
 
     return (
+        <>
+        <Head title={repair.asset.serial_code || "Repair"} />
         <div className="space-y-4">
             <div className="flex items-center justify-between px-6 py-2">
                 <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
@@ -148,6 +150,7 @@ function RepairDetails() {
                 </div>
             </Card>
         </div>
+        </>
     );
 }
 

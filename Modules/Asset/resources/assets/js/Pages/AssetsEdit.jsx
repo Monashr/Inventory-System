@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useForm, Link, usePage } from "@inertiajs/react";
+import { Head, useForm, Link, usePage } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 import { ComboBoxInput } from "@components/custom/ComboBoxInput";
@@ -41,6 +41,8 @@ function AssetsEdit() {
     };
 
     return (
+        <>
+        <Head title="Edit Asset" />
         <div className="space-y-4">
             <div className="flex items-center justify-between px-6 py-2">
                 <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p-0">
@@ -240,6 +242,7 @@ function AssetsEdit() {
                 </form>
             </Card>
         </div>
+        </>
     );
 }
 

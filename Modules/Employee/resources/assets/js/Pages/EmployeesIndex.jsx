@@ -1,6 +1,6 @@
 import React from "react";
 
-import { usePage, router, Link } from "@inertiajs/react";
+import { usePage, router, Link, Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 import AddEmployeeForm from "./EmployeesAdd";
@@ -89,7 +89,8 @@ function EmployeesIndex() {
     };
 
     return (
-        <div>
+        <>
+            <Head title="Employees" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-6 py-2">
@@ -343,7 +344,7 @@ function EmployeesIndex() {
                     </Card>
 
                     <div className="flex justify-between items-center gap-2">
-                        <div className="flex gap-2 justify-center items-center">
+                        <div className="flex gap-2 justify-center items-center bg-card p-2 rounded-3xl shadow">
                             <Button variant="outline">
                                 {employees.from}-{employees.to} of{" "}
                                 {employees.total}
@@ -392,7 +393,7 @@ function EmployeesIndex() {
                         <Pagination>
                             <PaginationContent>
                                 {employees.prev_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationPrevious
                                             href={employees.prev_page_url}
                                             onClick={(e) => {
@@ -405,7 +406,7 @@ function EmployeesIndex() {
                                     </PaginationItem>
                                 )}
                                 {employees.next_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationNext
                                             href={employees.next_page_url}
                                             onClick={(e) => {
@@ -422,7 +423,7 @@ function EmployeesIndex() {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

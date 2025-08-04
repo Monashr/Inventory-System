@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import { usePage, router, Link } from "@inertiajs/react";
+import { usePage, router, Link, Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
@@ -87,7 +87,8 @@ function LoansIndex() {
     }, [flash]);
 
     return (
-        <div>
+        <>
+            <Head title="Loans" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-6 py-2">
@@ -280,33 +281,50 @@ function LoansIndex() {
                             </TableBody>
                         </Table>
                     </Card>
-                    <div className="flex gap-2">
-                        <Button variant="outline">
-                            {loans.from}-{loans.to} of {loans.total}
-                        </Button>
-                        <Select
-                            defaultValue={String(loans.per_page)}
-                            onValueChange={(value) => {
-                                router.get(
-                                    "/dashboard/loans",
-                                    { per_page: value },
-                                    { preserveScroll: true }
-                                );
-                            }}
-                        >
-                            <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Per Page" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="10">10</SelectItem>
-                                <SelectItem value="25">25</SelectItem>
-                                <SelectItem value="50">50</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <div className="flex justify-between items-center gap-2">
+                        <div className="flex justify-center items-center gap-2 bg-card p-2 rounded-3xl shadow">
+                            <Button variant="outline">
+                                {loans.from}-{loans.to} of {loans.total}
+                            </Button>
+                            <Select
+                                defaultValue={String(loans.per_page)}
+                                onValueChange={(value) => {
+                                    router.get(
+                                        "/dashboard/loans",
+                                        { per_page: value },
+                                        { preserveScroll: true }
+                                    );
+                                }}
+                            >
+                                <SelectTrigger className="w-[180px] cursor-pointer">
+                                    <SelectValue placeholder="Per Page" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem
+                                        value="10"
+                                        className="cursor-pointer"
+                                    >
+                                        10
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="25"
+                                        className="cursor-pointer"
+                                    >
+                                        25
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="50"
+                                        className="cursor-pointer"
+                                    >
+                                        50
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <Pagination className="justify-end items-center">
                             <PaginationContent>
                                 {loans.prev_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationPrevious
                                             href={loans.prev_page_url}
                                             onClick={(e) => {
@@ -319,7 +337,7 @@ function LoansIndex() {
                                     </PaginationItem>
                                 )}
                                 {loans.next_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationNext
                                             href={loans.next_page_url}
                                             onClick={(e) => {
@@ -336,7 +354,7 @@ function LoansIndex() {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Link, router } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
@@ -42,7 +42,8 @@ import {
 
 function EmployeesPermission({ employee, rolePermissions, permissions }) {
     return (
-        <div>
+        <>
+            <Head title="Employee Permissions" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-6 py-2">
@@ -268,7 +269,7 @@ function EmployeesPermission({ employee, rolePermissions, permissions }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

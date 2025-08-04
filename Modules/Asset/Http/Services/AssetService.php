@@ -54,6 +54,15 @@ class AssetService
         return Asset::where('avaibility', 'available')->count();
     }
 
+    public function getTotalAssets($assetType = null)
+    {
+        if ($assetType) {
+            return Asset::where('asset_type_id', $assetType)->count();
+        }
+
+        return Asset::count();
+    }
+
     public function getTotalLoanedAssets($assetType = null)
     {
         if ($assetType) {
@@ -74,6 +83,27 @@ class AssetService
         }
 
         return Asset::where('avaibility', 'defect')->count();
+    }
+
+    public function getTotalAssetsInRepair($assetType = null)
+    {
+        if ($assetType) {
+            return Asset::with(['repairs'])->where('asset_type_id', $assetType)
+                ->where('avaibility', 'repair')
+                ->count();
+        }
+
+        return Asset::where('avaibility', 'repair')->count();
+    }
+
+    public function getRecentAssetsInRepair()
+    {
+        return Asset::with(['loans'])->where('avaibility', 'repair')->orderBy('updated_at', 'desc')->take(5)->get();
+    }
+
+    public function getRecentLoanedAssets()
+    {
+        return Asset::with(['loans'])->where('avaibility', 'loaned')->orderBy('updated_at', 'desc')->take(5)->get();
     }
 
     public function getAssetPagination($request, $perPage)
@@ -135,7 +165,6 @@ class AssetService
 
         return $query->paginate($perPage)->withQueryString();
     }
-
 
     public function findAsset($asset)
     {

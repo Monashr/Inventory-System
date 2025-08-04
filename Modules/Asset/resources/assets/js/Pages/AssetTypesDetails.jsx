@@ -1,6 +1,6 @@
 import React from "react";
 
-import { usePage, router, Link } from "@inertiajs/react";
+import { usePage, router, Link, Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
@@ -79,7 +79,9 @@ function AssetsIndex() {
     };
 
     return (
-        <div>
+        <>
+            <Head title={assetType.name} />
+
             <div className="space-y-6">
                 <Card>
                     <div className="flex justify-between flex-wrap gap-4 w-full px-6 py-4">
@@ -470,7 +472,7 @@ function AssetsIndex() {
                     </Pagination>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

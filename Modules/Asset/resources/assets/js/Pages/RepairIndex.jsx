@@ -1,14 +1,8 @@
 import React from "react";
 
-import { usePage, router, Link } from "@inertiajs/react";
+import { usePage, router, Link, Head } from "@inertiajs/react";
 
-import {
-    Hammer,
-    Filter,
-    Plus,
-    SearchIcon,
-    ArrowUpDown,
-} from "lucide-react";
+import { Hammer, Filter, Plus, SearchIcon, ArrowUpDown } from "lucide-react";
 
 import Dashboard from "@components/layout/Dashboard";
 
@@ -78,7 +72,8 @@ function RepairIndex() {
     };
 
     return (
-        <div>
+        <>
+            <Head title="Repairs" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-6 py-2">
@@ -327,7 +322,7 @@ function RepairIndex() {
                         </Table>
                     </Card>
                     <div className="flex justify-between items-center gap-2">
-                        <div className="flex justify-center items-center gap-2">
+                        <div className="flex justify-center items-center gap-2 bg-card p-2 rounded-3xl shadow">
                             <Button variant="outline">
                                 {repairs.from}-{repairs.to} of {repairs.total}
                             </Button>
@@ -378,7 +373,7 @@ function RepairIndex() {
                     <Pagination className="justify-end items-center">
                         <PaginationContent>
                             {repairs.prev_page_url && (
-                                <PaginationItem>
+                                <PaginationItem className="bg-card shadow rounded-3xl">
                                     <PaginationPrevious
                                         href={repairs.prev_page_url}
                                         onClick={(e) => {
@@ -390,7 +385,7 @@ function RepairIndex() {
                             )}
 
                             {repairs.next_page_url && (
-                                <PaginationItem>
+                                <PaginationItem className="bg-card shadow rounded-3xl">
                                     <PaginationNext
                                         href={repairs.next_page_url}
                                         onClick={(e) => {
@@ -404,7 +399,7 @@ function RepairIndex() {
                     </Pagination>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

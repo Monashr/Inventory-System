@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 
-import { usePage, router, Link } from "@inertiajs/react";
+import { Head, usePage, router, Link } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
@@ -116,7 +116,8 @@ function AssetsIndex() {
     }, [flash]);
 
     return (
-        <div>
+        <>
+            <Head title="Assets" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-6 py-2">
@@ -504,7 +505,7 @@ function AssetsIndex() {
                         </Table>
                     </Card>
                     <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-2 bg-card p-2 rounded-3xl shadow">
                             <Button variant="outline">
                                 {assets.from}-{assets.to} of {assets.total}
                             </Button>
@@ -554,7 +555,7 @@ function AssetsIndex() {
                         <Pagination className="justify-end items-center">
                             <PaginationContent>
                                 {assets.prev_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationPrevious
                                             href={assets.prev_page_url}
                                             onClick={(e) => {
@@ -568,7 +569,7 @@ function AssetsIndex() {
                                 )}
 
                                 {assets.next_page_url && (
-                                    <PaginationItem>
+                                    <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationNext
                                             href={assets.next_page_url}
                                             onClick={(e) => {
@@ -585,7 +586,7 @@ function AssetsIndex() {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 
