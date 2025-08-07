@@ -110,6 +110,18 @@ class AssetService
     {
         $query = Asset::query();
 
+        if ($request->filled('brand')) {
+            $query->where('brand', 'LIKE', '%' . $request->brand . '%');
+        }
+
+        if ($request->filled('condition')) {
+            $query->where('condition', $request->condition);
+        }
+
+        if ($request->filled('avaibility')) {
+            $query->where('avaibility', $request->avaibility);
+        }
+
         $query->where('avaibility', 'available');
 
         $allowedSorts = ['serial_code', 'brand', 'condition', 'avaibility', 'created_at'];
@@ -140,6 +152,19 @@ class AssetService
     public function getAllAssetPagination($request, $perPage)
     {
         $query = Asset::query();
+
+        if ($request->filled('brand')) {
+            $query->where('brand', 'LIKE', '%' . $request->brand . '%');
+        }
+
+        if ($request->filled('condition')) {
+            $query->where('condition', $request->condition);
+        }
+
+        if ($request->filled('avaibility')) {
+            $query->where('avaibility', $request->avaibility);
+        }
+
 
         $allowedSorts = ['serial_code', 'brand', 'condition', 'avaibility', 'created_at'];
 

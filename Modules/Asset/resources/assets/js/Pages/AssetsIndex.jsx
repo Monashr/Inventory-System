@@ -55,6 +55,12 @@ function AssetsIndex() {
     const { assets, permissions, filters, flash } = usePage().props;
 
     const [search, setSearch] = React.useState(filters.search || "");
+    const [brand, setBrand] = React.useState(filters.brand || "");
+    const [condition, setCondition] = React.useState(filters.condition || "");
+    const [availability, setAvailability] = React.useState(
+        filters.avaibility || ""
+    );
+
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";
     const fileInputRef = useRef(null);
@@ -218,8 +224,11 @@ function AssetsIndex() {
                                                     Brand
                                                 </Label>
                                                 <Input
-                                                    id="width"
-                                                    defaultValue="100%"
+                                                    id="brand"
+                                                    value={brand}
+                                                    onChange={(e) =>
+                                                        setBrand(e.target.value)
+                                                    }
                                                     className="col-span-2 h-8"
                                                 />
                                             </div>
@@ -228,8 +237,13 @@ function AssetsIndex() {
                                                     Condition
                                                 </Label>
                                                 <Input
-                                                    id="maxWidth"
-                                                    defaultValue="300px"
+                                                    id="condition"
+                                                    value={condition}
+                                                    onChange={(e) =>
+                                                        setCondition(
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     className="col-span-2 h-8"
                                                 />
                                             </div>
@@ -238,11 +252,38 @@ function AssetsIndex() {
                                                     availability
                                                 </Label>
                                                 <Input
-                                                    id="height"
-                                                    defaultValue="25px"
+                                                    id="availability"
+                                                    value={availability}
+                                                    onChange={(e) =>
+                                                        setAvailability(
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     className="col-span-2 h-8"
                                                 />
                                             </div>
+                                            <Button
+                                                onClick={() =>
+                                                    router.get(
+                                                        "/dashboard/assets",
+                                                        {
+                                                            per_page:
+                                                                assets.per_page,
+                                                            search,
+                                                            sort_by: sortBy,
+                                                            sort_direction:
+                                                                sortDirection,
+                                                            brand,
+                                                            condition,
+                                                            avaibility:
+                                                                availability,
+                                                        },
+                                                        { preserveScroll: true }
+                                                    )
+                                                }
+                                            >
+                                                Apply Filters
+                                            </Button>
                                         </div>
                                     </div>
                                 </PopoverContent>

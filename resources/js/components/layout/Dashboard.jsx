@@ -13,7 +13,6 @@ import {
     ChevronDown,
     Sun,
     Moon,
-    Settings,
 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
 import { Toaster } from "@components/ui/sonner";
@@ -61,8 +60,11 @@ const iconMap = {
 
 export default function Dashboard({ children }) {
     const { moduleMenus, tenants, currentTenantId, user } = usePage().props;
+
     const { url } = usePage();
+
     const currentPath = url;
+    
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {

@@ -34,7 +34,7 @@ class AssetController extends Controller
         $perPage = $request->input('per_page', 10);
 
         $asset = null;
-        
+
         if (checkAuthority(config('asset.permissions')['permissions']['manage'])) {
             $asset = $this->assetService->getAllAssetPagination($request, $perPage);
         } else {
@@ -48,6 +48,9 @@ class AssetController extends Controller
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,
                 'sort_direction' => $request->sort_direction,
+                'brand' => $request->brand,
+                'condition' => $request->condition,
+                'avaibility' => $request->avaibility,
             ],
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
