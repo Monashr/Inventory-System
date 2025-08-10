@@ -47,11 +47,11 @@ class AssetService
     {
         if ($assetType) {
             return Asset::where('asset_type_id', $assetType)
-                ->where('avaibility', 'available')
+                ->where('availability', 'available')
                 ->count();
         }
 
-        return Asset::where('avaibility', 'available')->count();
+        return Asset::where('availability', 'available')->count();
     }
 
     public function getTotalAssets($assetType = null)
@@ -67,43 +67,43 @@ class AssetService
     {
         if ($assetType) {
             return Asset::where('asset_type_id', $assetType)
-                ->where('avaibility', 'loaned')
+                ->where('availability', 'loaned')
                 ->count();
         }
 
-        return Asset::where('avaibility', 'loaned')->count();
+        return Asset::where('availability', 'loaned')->count();
     }
 
     public function getTotalDefectAssets($assetType = null)
     {
         if ($assetType) {
             return Asset::where('asset_type_id', $assetType)
-                ->where('avaibility', 'defect')
+                ->where('availability', 'defect')
                 ->count();
         }
 
-        return Asset::where('avaibility', 'defect')->count();
+        return Asset::where('availability', 'defect')->count();
     }
 
     public function getTotalAssetsInRepair($assetType = null)
     {
         if ($assetType) {
             return Asset::with(['repairs'])->where('asset_type_id', $assetType)
-                ->where('avaibility', 'repair')
+                ->where('availability', 'repair')
                 ->count();
         }
 
-        return Asset::where('avaibility', 'repair')->count();
+        return Asset::where('availability', 'repair')->count();
     }
 
     public function getRecentAssetsInRepair()
     {
-        return Asset::with(['loans'])->where('avaibility', 'repair')->orderBy('updated_at', 'desc')->take(5)->get();
+        return Asset::with(['loans'])->where('availability', 'repair')->orderBy('updated_at', 'desc')->take(5)->get();
     }
 
     public function getRecentLoanedAssets()
     {
-        return Asset::with(['loans'])->where('avaibility', 'loaned')->orderBy('updated_at', 'desc')->take(5)->get();
+        return Asset::with(['loans'])->where('availability', 'loaned')->orderBy('updated_at', 'desc')->take(5)->get();
     }
 
     public function getAssetPagination($request, $perPage)
@@ -118,13 +118,13 @@ class AssetService
             $query->where('condition', $request->condition);
         }
 
-        if ($request->filled('avaibility')) {
-            $query->where('avaibility', $request->avaibility);
+        if ($request->filled('availability')) {
+            $query->where('availability', $request->availability);
         }
 
-        $query->where('avaibility', 'available');
+        $query->where('availability', 'available');
 
-        $allowedSorts = ['serial_code', 'brand', 'condition', 'avaibility', 'created_at'];
+        $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
 
         $sortBy = $request->get('sort_by');
         if (!in_array($sortBy, $allowedSorts)) {
@@ -161,12 +161,11 @@ class AssetService
             $query->where('condition', $request->condition);
         }
 
-        if ($request->filled('avaibility')) {
-            $query->where('avaibility', $request->avaibility);
+        if ($request->filled('availability')) {
+            $query->where('availability', $request->availability);
         }
 
-
-        $allowedSorts = ['serial_code', 'brand', 'condition', 'avaibility', 'created_at'];
+        $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
 
         $sortBy = $request->get('sort_by');
         if (!in_array($sortBy, $allowedSorts)) {
@@ -206,7 +205,7 @@ class AssetService
         return Asset::where('asset_type_id', $assetType)
             ->where(function ($query) use ($loanId) {
                 $query->where(function ($q) {
-                    $q->where('avaibility', 'available')
+                    $q->where('availability', 'available')
                         ->where('condition', '!=', 'defect');
                 });
 
@@ -221,9 +220,9 @@ class AssetService
 
     public function getAvailableAssetPagination($request, $perPage)
     {
-        $query = Asset::query()->where('avaibility', 'available')->where('condition', '!=', 'defect');
+        $query = Asset::query()->where('availability', 'available')->where('condition', '!=', 'defect');
 
-        $allowedSorts = ['serial_code', 'brand', 'condition', 'avaibility', 'created_at'];
+        $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
 
         $sortBy = $request->get('sort_by');
         if (!in_array($sortBy, $allowedSorts)) {
@@ -259,6 +258,40 @@ class AssetService
             ->pluck('brand');
     }
 
+    public function getAllAssetConditions()
+    {
+        return Asset::select('condition')
+            ->distinct()
+            ->whereNotNull('condition')
+            ->where('condition', '!=', '')
+            ->orderBy('condition')
+            ->get()
+            ->pluck('condition');
+    }
+
+    public function getAllAssetTypes()
+    {
+        return Asset::withoutGlobalScope('tenant')
+            ->join('asset_types', 'assets.asset_type_id', '=', 'asset_types.id')
+            ->whereNotNull('asset_types.name')
+            ->where('asset_types.name', '!=', '')
+            ->where('assets.tenant_id', tenant()->id)
+            ->select('asset_types.name')
+            ->distinct()
+            ->orderBy('asset_types.name')
+            ->pluck('asset_types.name');
+    }
+
+    public function getAllAssetFilters()
+    {
+        return [
+            'type' => $this->getAllAssetTypes(),
+            'brand' => $this->getAllAssetBrands(),
+            'condition' => $this->getAllAssetConditions(),
+        ];
+    }
+
+
     public function createAsset($validated, $assetType)
     {
         $user_id = auth()->user()->id;
@@ -272,7 +305,7 @@ class AssetService
             'purchase_price' => $validated['purchase_price'],
             'initial_condition' => $validated['initial_condition'],
             'condition' => $validated['condition'],
-            'avaibility' => $validated['avaibility'],
+            'availability' => $validated['availability'],
             'created_by' => $user_id,
             'updated_by' => $user_id,
             'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,

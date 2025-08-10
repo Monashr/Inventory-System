@@ -141,9 +141,9 @@ function AssetDetail() {
                                     : "-"
                             }
                         />
-                        <DetailBadgeAvaibility
+                        <DetailBadgeavailability
                             label="Availability"
-                            value={asset.avaibility}
+                            value={asset.availability}
                         />
                         <DetailBadgeCondition
                             label="Current Condition"
@@ -340,7 +340,7 @@ const Detail = ({ label, value }) => (
     </div>
 );
 
-const DetailBadgeAvaibility = ({ label, value }) => (
+const DetailBadgeavailability = ({ label, value }) => (
     <div className="space-y-1">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
         <p className="font-semibold text-foreground">

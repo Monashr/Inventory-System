@@ -72,7 +72,7 @@ class LoansController extends Controller
             $users = [auth()->user()];
         }
 
-        $perPage = 10;
+        $perPage = $request->input('per_page', 10);
 
         return Inertia::render('Loans/LoansAdd', [
             'assets' => $this->assetService->getAvailableAssetPagination($request, $perPage),

@@ -31,7 +31,7 @@ function AssetCreate() {
         purchase_price: "",
         initial_condition: "new",
         condition: "good",
-        avaibility: "available",
+        availability: "available",
     });
 
     const handleSubmit = (e) => {
@@ -296,12 +296,12 @@ function AssetCreate() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="avaibility">Availability</Label>
+                                <Label htmlFor="availability">Availability</Label>
                                 <Select
-                                    value={data.avaibility}
+                                    value={data.availability}
                                     disabled
                                     onValueChange={(value) =>
-                                        setData("avaibility", value)
+                                        setData("availability", value)
                                     }
                                 >
                                     <SelectTrigger className="w-full">

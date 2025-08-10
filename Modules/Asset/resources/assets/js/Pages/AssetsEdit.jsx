@@ -32,7 +32,7 @@ function AssetsEdit() {
         purchase_price: asset.purchase_price || "",
         initial_condition: asset.initial_condition || "new",
         condition: asset.condition || "good",
-        avaibility: asset.avaibility || "available",
+        availability: asset.availability || "available",
     });
 
     const handleSubmit = (e) => {
@@ -214,10 +214,10 @@ function AssetsEdit() {
                     <div className="space-y-2">
                         <Label>Availability</Label>
                         <Select
-                            value={data.avaibility}
+                            value={data.availability}
                             disabled
                             onValueChange={(value) =>
-                                setData("avaibility", value)
+                                setData("availability", value)
                             }
                         >
                             <SelectTrigger className="w-full">

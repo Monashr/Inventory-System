@@ -30,7 +30,7 @@ class AddAssetRequest extends FormRequest
             'purchase_price' => 'nullable|numeric',
             'initial_condition' => 'required|in:new,used,defect',
             'condition' => 'required|in:good,used,defect',
-            'avaibility' => 'required|in:available,loaned,repair',
+            'availability' => 'required|in:available,loaned,repair',
         ];
     }
 }

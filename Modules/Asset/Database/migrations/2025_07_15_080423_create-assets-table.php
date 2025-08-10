@@ -38,7 +38,7 @@ return new class extends Migration {
             $table->decimal('purchase_price')->nullable();
             $table->enum('initial_condition', ['new', 'used', 'defect'])->default('new');
             $table->enum('condition', ['good', 'used', 'defect'])->default('good');
-            $table->enum('avaibility', ['available', 'pending', 'loaned', 'repair'])->default('available');
+            $table->enum('availability', ['available', 'pending', 'loaned', 'repair'])->default('available');
             $table->foreignId('created_by')->nullable();
             $table->foreignId('updated_by')->nullable();
             $table->foreignId('deleted_by')->nullable();

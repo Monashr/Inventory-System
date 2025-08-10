@@ -14,7 +14,7 @@ use Modules\Loans\Models\Loan;
 class Asset extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['asset_type_id', 'brand', 'serial_code', 'specification', 'purchase_date', 'purchase_price', 'initial_condition', 'condition', 'avaibility', 'location_id','created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['asset_type_id', 'brand', 'serial_code', 'specification', 'purchase_date', 'purchase_price', 'initial_condition', 'condition', 'availability', 'location_id','created_by', 'updated_by', 'deleted_by'];
 
     public function assetType(): BelongsTo
     {

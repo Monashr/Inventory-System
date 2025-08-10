@@ -67,7 +67,7 @@ class RepairService
 
         $asset = $this->assetService->findAsset($validated['asset_id']);
 
-        $asset->update(['avaibility' => 'repair', 'location_id' => $location->id]);
+        $asset->update(['availability' => 'repair', 'location_id' => $location->id]);
 
         $repair = Repair::create([
             'asset_id' => $validated['asset_id'],
@@ -107,7 +107,7 @@ class RepairService
         $repair->update(['status' => 'cancelled', 'updated_by' => auth()->user()->id]);
 
         if ($repair->asset) {
-            $repair->asset->update(['avaibility' => 'available', 'updated_by' => auth()->user()->id, 'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,]);
+            $repair->asset->update(['availability' => 'available', 'updated_by' => auth()->user()->id, 'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,]);
         }
 
         $repair->save();
@@ -127,7 +127,7 @@ class RepairService
 
         if ($repair->asset) {
             $repair->asset->update([
-                'avaibility' => 'available',
+                'availability' => 'available',
                 'condition' => 'good',
                 'updated_by' => auth()->user()->id,
                 'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,

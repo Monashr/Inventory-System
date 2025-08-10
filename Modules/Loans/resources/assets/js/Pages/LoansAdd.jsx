@@ -32,6 +32,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import CustomPagination from "@components/custom/CustomPagination";
 
 function LoansAdd() {
     const { assets, users } = usePage().props;
@@ -40,6 +41,19 @@ function LoansAdd() {
     const [cart, setCart] = useState([]);
     const [conditionFilter, setConditionFilter] = useState("all");
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const onPaginationChange = (value) => {
+        router.get(
+            `/dashboard/loans/add`,
+            {
+                per_page: value,
+                search,
+            },
+            {
+                preserveScroll: true,
+            }
+        );
+    };
 
     const handleAddToCart = (asset) => {
         if (!cart.find((item) => item.id === asset.id)) {
@@ -281,6 +295,9 @@ function LoansAdd() {
                                 )}
                             </ScrollArea>
                         </CardContent>
+                        <div className="px-6">
+                        <CustomPagination data={assets} onPaginationChange={onPaginationChange} />
+                        </div>
                     </Card>
 
                     <Card className="flex flex-col min-h-0">
