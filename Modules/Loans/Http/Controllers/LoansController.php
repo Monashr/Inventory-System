@@ -11,6 +11,7 @@ use Intervention\Image\ImageManager;
 use Modules\Asset\Models\AssetType;
 use Illuminate\Support\Facades\DB;
 use Modules\Asset\Models\Asset;
+use Modules\Loans\Http\Services\LoanService;
 use Modules\Loans\Models\Loan;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,11 +22,13 @@ class LoansController extends Controller
 
     protected $assetService;
     protected $assetLogService;
+    protected $loanService;
 
-    public function __construct(AssetService $assetService, AssetLogService $assetLogService)
+    public function __construct(AssetService $assetService, AssetLogService $assetLogService, LoanService $loanService)
     {
         $this->assetService = $assetService;
         $this->assetLogService = $assetLogService;
+        $this->loanService = $loanService;
     }
     public function index(Request $request)
     {
@@ -38,13 +41,17 @@ class LoansController extends Controller
 
         $perPage = $request->input('per_page', 10);
 
-        if (checkAuthority(config('loans.permissions')['permissions']['all loans'])) {
-            $loans = Loan::with('user')->paginate($perPage);
-        } else {
-            $loans = $loans = Loan::with('user')
-                ->where('user_id', auth()->id())
-                ->paginate($perPage);
-        }
+        $loans = $this->loanService->getAllLoanPagination($request, $perPage);
+
+        // if (checkAuthority(config('loans.permissions')['permissions']['all loans'])) {
+        //     $loans = Loan::select('loans.*', 'users.name as user_name')
+        //         ->join('users', 'users.id', '=', 'loans.user_id')
+        //         ->paginate($perPage);
+        // } else {
+        //     $loans = $loans = Loan::with('user')
+        //         ->where('user_id', auth()->id())
+        //         ->paginate($perPage);
+        // }
 
         return Inertia::render('Loans/LoansIndex', [
             'loans' => $loans,
@@ -52,7 +59,9 @@ class LoansController extends Controller
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,
                 'sort_direction' => $request->sort_direction,
+                'status' => $request->status,
             ],
+            'filterValues' => $this->loanService->getAllLoanFilters(),
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
     }
@@ -117,7 +126,7 @@ class LoansController extends Controller
                     'loaned_date' => $assetData['loaned_date'],
                 ]);
 
-                Asset::where('id', $assetData['asset_id'])->update(['avaibility' => 'pending']);
+                Asset::where('id', $assetData['asset_id'])->update(['availability' => 'pending']);
             }
 
             DB::commit();
@@ -228,8 +237,8 @@ class LoansController extends Controller
         $removedAssetIds = array_diff($oldAssetIds, $newAssetIds);
         $addedAssetIds = array_diff($newAssetIds, $oldAssetIds);
 
-        Asset::whereIn('id', $removedAssetIds)->update(['avaibility' => 'available']);
-        Asset::whereIn('id', $addedAssetIds)->update(['avaibility' => 'loaned']);
+        Asset::whereIn('id', $removedAssetIds)->update(['availability' => 'available']);
+        Asset::whereIn('id', $addedAssetIds)->update(['availability' => 'loaned']);
 
         return redirect()->route('loans.index')->with('success', 'Loan updated.');
     }
@@ -246,7 +255,7 @@ class LoansController extends Controller
         $loan->load('assets');
 
         $unavailableAssets = $loan->assets->filter(function ($asset) {
-            return in_array($asset->avaibility, ['loaned', 'defect']);
+            return in_array($asset->availability, ['loaned', 'defect']);
         });
 
         if ($unavailableAssets->isNotEmpty()) {
@@ -257,7 +266,7 @@ class LoansController extends Controller
         $loan->update(['status' => 'accepted']);
 
         foreach ($loan->assets as $asset) {
-            $asset->update(['avaibility' => 'loaned']);
+            $asset->update(['availability' => 'loaned']);
             $this->assetLogService->userLoanAsset($asset);
 
             $loan->assets()->updateExistingPivot($asset->id, [
@@ -280,7 +289,7 @@ class LoansController extends Controller
         $loan->load('assets.assetType');
 
         foreach ($loan->assets as $asset) {
-            $asset->update(['avaibility' => 'available']);
+            $asset->update(['availability' => 'available']);
         }
 
         $loan->update(['status' => 'rejected']);
@@ -299,7 +308,7 @@ class LoansController extends Controller
         $loan->load('assets.assetType');
 
         foreach ($loan->assets as $asset) {
-            $asset->update(['avaibility' => 'available']);
+            $asset->update(['availability' => 'available']);
         }
 
         $loan->update(['status' => 'cancelled']);
@@ -337,7 +346,7 @@ class LoansController extends Controller
 
         $asset = Asset::findOrFail($assetId);
         $asset->update([
-            'avaibility' => 'available',
+            'availability' => 'available',
             'condition' => $request->return_condition,
         ]);
 

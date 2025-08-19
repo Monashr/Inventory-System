@@ -22,12 +22,12 @@ function CustomTableFilterButton({
     setCurrentFilters,
     applyFilters,
 }) {
+
     return (
         <Popover>
             <PopoverTrigger asChild>
                 <Button variant="outline" className="cursor-pointer">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
+                    <Filter />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">

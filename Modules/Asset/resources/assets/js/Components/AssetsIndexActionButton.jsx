@@ -25,9 +25,9 @@ function AssetsIndexActionButton({
                         <PopoverTrigger asChild>
                             <Button
                                 variant="outline"
-                                className="cursor-pointer"
+                                className="cursor-pointer h-full"
                             >
-                                <FileDown className="mr-2 w-4 h-4" />
+                                <FileDown />
                                 Import Assets
                             </Button>
                         </PopoverTrigger>
@@ -41,7 +41,7 @@ function AssetsIndexActionButton({
                                     variant="outline"
                                     className="w-full cursor-pointer justify-start"
                                 >
-                                    <FileDown className="mr-2 w-4 h-4" />
+                                    <FileDown />
                                     Download Template
                                 </Button>
                             </a>
@@ -51,7 +51,7 @@ function AssetsIndexActionButton({
                                 className="cursor-pointer w-full justify-start"
                                 onClick={() => fileInputRef.current?.click()}
                             >
-                                <FileDown className="mr-2 w-4 h-4" />
+                                <FileDown className="w-3.5 h-3.5" />
                                 Import File
                             </Button>
                             <input
@@ -68,15 +68,15 @@ function AssetsIndexActionButton({
                         href="/dashboard/assets/export"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center border border-input rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition"
+                        className="bg-background inline-flex items-center justify-center border border-input rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition"
                     >
                         <FileUp className="mr-2 w-4 h-4" />
                         Export Assets
                     </a>
 
                     <Link href="/dashboard/assets/add">
-                        <Button className="cursor-pointer">
-                            <Plus />
+                        <Button className="cursor-pointer w-full h-full">
+                            <Plus className="w-4 h-4" />
                             Add Asset
                         </Button>
                     </Link>

@@ -43,20 +43,78 @@ class AssetLogService
         $this->createLog($asset, 'Asset Imported', $ActivityDescription);
     }
 
-    public function getAssetLogs(Asset $asset)
+    public function getAllAssetLogFilters($assetId)
     {
-        return $asset->logs()->with('user')->paginate(10);
+        return [
+            'user' => $this->getAllAssetLogUserNames($assetId),
+            'activity_type' => $this->getAllAssetLogActivityType($assetId),
+        ];
     }
 
-    public function userEditRepair(Asset $asset, string $ActivityDescription = null) {
+    public function getAllAssetLogUserNames($assetId)
+    {
+        return AssetLog::where('asset_id', $assetId)
+            ->whereNotNull('created_by')
+            ->with('user:id,name')
+            ->get()
+            ->pluck('user.name')
+            ->unique()
+            ->values();
+    }
+
+    public function getAllAssetLogActivityType($assetId)
+    {
+        return AssetLog::where('asset_id', $assetId)
+            ->whereNotNull('created_by')
+            ->get()
+            ->pluck('activity_type')
+            ->unique()
+            ->values();
+    }
+
+    public function getAssetLogs(Asset $asset, $request, $perpage = 10)
+    {
+        $query = $asset->logs()
+            ->select('asset_logs.*', 'users.name as user')
+            ->leftJoin('users', 'asset_logs.created_by', '=', 'users.id');
+
+        if ($request->filled('activity_type')) {
+            $query->where('activity_type', $request->activity_type);
+        }
+
+        if ($request->filled('user')) {
+            $query->where('users.name', 'LIKE', '%' . $request->user . '%');
+        }
+
+        $allowedSorts = ['user', 'activity_type'];
+
+        $sortBy = $request->get('sort_by');
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'activity_date';
+        }
+
+        $sortDirection = strtolower($request->get('sort_direction', 'asc'));
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $query->orderBy($sortBy, $sortDirection);
+
+        return $query->paginate($perpage);
+    }
+
+    public function userEditRepair(Asset $asset, string $ActivityDescription = null)
+    {
         $this->createLog($asset, 'edit repair', $ActivityDescription);
     }
 
-    public function userLoanAsset(Asset $asset, string $ActivityDescription = null) {
+    public function userLoanAsset(Asset $asset, string $ActivityDescription = null)
+    {
         $this->createLog($asset, 'Loaned', $ActivityDescription);
     }
 
-    public function userReturnAsset(Asset $asset, string $ActivityDescription = null) {
+    public function userReturnAsset(Asset $asset, string $ActivityDescription = null)
+    {
         $this->createLog($asset, 'Returned', $ActivityDescription);
     }
 
@@ -72,7 +130,6 @@ class AssetLogService
             'updated_by' => auth()->user()->id,
         ]);
     }
-
 
     private function createDescriptionByTemplate(Asset $asset, string $activityType)
     {

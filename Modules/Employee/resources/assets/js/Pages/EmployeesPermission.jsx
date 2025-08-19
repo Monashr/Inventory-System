@@ -46,120 +46,126 @@ function EmployeesPermission({ employee, rolePermissions, permissions }) {
             <Head title="Employee Permissions" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between px-6 py-2">
-                        <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                            <UserCog className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                            Permissions for {employee.name}
-                        </h1>
+                    <Card>
+                        <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                            <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                                <UserCog className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                                Create Employee
+                            </h1>
 
-                        <div className="flex gap-2 justify-center items-center">
-                            {permissions.includes("permission employees") && (
-                                <>
-                                    {rolePermissions.data.length > 0 && (
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button
-                                                    variant="destructive"
-                                                    className="cursor-pointer"
-                                                >
-                                                    <Ban />
-                                                    Revoke All Permissions
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px]">
-                                                <DialogHeader>
-                                                    <DialogTitle>
-                                                        Revoke All Permission
-                                                    </DialogTitle>
-                                                    <DialogDescription>
-                                                        Are you sure want to
-                                                        revoke all the
-                                                        permissions on this
-                                                        user?
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <div className="flex justify-end items-center">
+                            <div className="flex gap-2 justify-center items-center">
+                                {permissions.includes(
+                                    "permission employees"
+                                ) && (
+                                    <>
+                                        {rolePermissions.data.length > 0 && (
+                                            <Dialog>
+                                                <DialogTrigger asChild>
                                                     <Button
                                                         variant="destructive"
-                                                        onClick={() =>
-                                                            router.post(
-                                                                `/dashboard/employees/revoke/${employee.id}`
-                                                            )
-                                                        }
                                                         className="cursor-pointer"
                                                     >
                                                         <Ban />
-                                                        Revoke All Permission
+                                                        Revoke All Permissions
                                                     </Button>
-                                                </div>
-                                            </DialogContent>
-                                        </Dialog>
-                                    )}
-                                    {permissions.includes(
-                                        "delete employees"
-                                    ) && (
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button
-                                                    variant="destructive"
-                                                    className="cursor-pointer"
-                                                >
-                                                    <Trash2 />
-                                                    Delete User
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px]">
-                                                <DialogHeader>
-                                                    <DialogTitle>
-                                                        Delete User
-                                                    </DialogTitle>
-                                                    <DialogDescription>
-                                                        Are you sure want to
-                                                        delete this user?
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <div className="flex justify-end items-center">
+                                                </DialogTrigger>
+                                                <DialogContent className="sm:max-w-[425px]">
+                                                    <DialogHeader>
+                                                        <DialogTitle>
+                                                            Revoke All
+                                                            Permission
+                                                        </DialogTitle>
+                                                        <DialogDescription>
+                                                            Are you sure want to
+                                                            revoke all the
+                                                            permissions on this
+                                                            user?
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="flex justify-end items-center">
+                                                        <Button
+                                                            variant="destructive"
+                                                            onClick={() =>
+                                                                router.post(
+                                                                    `/dashboard/employees/revoke/${employee.id}`
+                                                                )
+                                                            }
+                                                            className="cursor-pointer"
+                                                        >
+                                                            <Ban />
+                                                            Revoke All
+                                                            Permission
+                                                        </Button>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
+                                        )}
+                                        {permissions.includes(
+                                            "delete employees"
+                                        ) && (
+                                            <Dialog>
+                                                <DialogTrigger asChild>
                                                     <Button
                                                         variant="destructive"
-                                                        onClick={() =>
-                                                            router.post(
-                                                                `/dashboard/employees/delete/${employee.id}`
-                                                            )
-                                                        }
                                                         className="cursor-pointer"
                                                     >
                                                         <Trash2 />
                                                         Delete User
                                                     </Button>
-                                                </div>
-                                            </DialogContent>
-                                        </Dialog>
-                                    )}
+                                                </DialogTrigger>
+                                                <DialogContent className="sm:max-w-[425px]">
+                                                    <DialogHeader>
+                                                        <DialogTitle>
+                                                            Delete User
+                                                        </DialogTitle>
+                                                        <DialogDescription>
+                                                            Are you sure want to
+                                                            delete this user?
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="flex justify-end items-center">
+                                                        <Button
+                                                            variant="destructive"
+                                                            onClick={() =>
+                                                                router.post(
+                                                                    `/dashboard/employees/delete/${employee.id}`
+                                                                )
+                                                            }
+                                                            className="cursor-pointer"
+                                                        >
+                                                            <Trash2 />
+                                                            Delete User
+                                                        </Button>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
+                                        )}
 
-                                    <Link
-                                        href={`/dashboard/employees/permissions/${employee.id}`}
-                                    >
-                                        <Button
-                                            variant="outline"
-                                            className="cursor-pointer"
+                                        <Link
+                                            href={`/dashboard/employees/permissions/${employee.id}`}
                                         >
-                                            <Pencil />
-                                            Edit User Permissions
-                                        </Button>
-                                    </Link>
-                                </>
-                            )}
-                            <Link href="/dashboard/employees">
-                                <Button
-                                    data-modal-trigger="inbox"
-                                    className="cursor-pointer"
-                                >
-                                    <ChevronLeft />
-                                    Back
-                                </Button>
-                            </Link>
+                                            <Button
+                                                variant="outline"
+                                                className="cursor-pointer"
+                                            >
+                                                <Pencil />
+                                                Edit User Permissions
+                                            </Button>
+                                        </Link>
+                                    </>
+                                )}
+                                <Link href="/dashboard/employees">
+                                    <Button
+                                        data-modal-trigger="inbox"
+                                        className="cursor-pointer"
+                                    >
+                                        <ChevronLeft />
+                                        Back
+                                    </Button>
+                                </Link>
+                            </div>
                         </div>
-                    </div>
+                    </Card>
                     <Card>
                         <Table>
                             <TableHeader>
@@ -196,77 +202,6 @@ function EmployeesPermission({ employee, rolePermissions, permissions }) {
                             </TableBody>
                         </Table>
                     </Card>
-                    <div className="flex gap-2">
-                        <Button variant="outline">
-                            {rolePermissions.from}-{rolePermissions.to} of{" "}
-                            {rolePermissions.total}
-                        </Button>
-                        <Select
-                            defaultValue={String(rolePermissions.per_page)}
-                            onValueChange={(value) => {
-                                router.get(
-                                    "/dashboard/employees",
-                                    { per_page: value },
-                                    { preserveScroll: true }
-                                );
-                            }}
-                        >
-                            <SelectTrigger className="w-[180px] cursor-pointer">
-                                <SelectValue placeholder="Select a value" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem
-                                    value="10"
-                                    className="cursor-pointer"
-                                >
-                                    10
-                                </SelectItem>
-                                <SelectItem
-                                    value="25"
-                                    className="cursor-pointer"
-                                >
-                                    25
-                                </SelectItem>
-                                <SelectItem
-                                    value="50"
-                                    className="cursor-pointer"
-                                >
-                                    50
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <Pagination className="justify-end items-center">
-                            <PaginationContent>
-                                {rolePermissions.prev_page_url && (
-                                    <PaginationItem>
-                                        <PaginationPrevious
-                                            href={rolePermissions.prev_page_url}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                router.visit(
-                                                    rolePermissions.prev_page_url
-                                                );
-                                            }}
-                                        />
-                                    </PaginationItem>
-                                )}
-
-                                {rolePermissions.next_page_url && (
-                                    <PaginationItem>
-                                        <PaginationNext
-                                            href={rolePermissions.next_page_url}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                router.visit(
-                                                    rolePermissions.next_page_url
-                                                );
-                                            }}
-                                        />
-                                    </PaginationItem>
-                                )}
-                            </PaginationContent>
-                        </Pagination>
-                    </div>
                 </div>
             </div>
         </>

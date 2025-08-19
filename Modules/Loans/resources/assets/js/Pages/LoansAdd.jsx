@@ -155,20 +155,20 @@ function LoansAdd() {
         <>
             <Head title="Add Loan" />
             <div className="flex flex-col h-full space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-6 py-2">
-                    <div>
-                        <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                            <PackageOpen className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                            Create New Loans
+                <Card>
+                    <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                        <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                            <PackageOpen className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                            Add Loans
                         </h1>
+                        <Link href="/dashboard/loans">
+                            <Button className="cursor-pointer h-full w-full">
+                                <ChevronLeft className="w-4 h-4" />
+                                Back
+                            </Button>
+                        </Link>
                     </div>
-                    <Link href="/dashboard/loans">
-                        <Button className="cursor-pointer">
-                            <ChevronLeft className="w-4 h-4 mr-1" />
-                            Back
-                        </Button>
-                    </Link>
-                </div>
+                </Card>
 
                 <div className="flex-1 grid lg:grid-cols-3 gap-6 min-h-0">
                     <Card className="lg:col-span-2 flex flex-col min-h-0">
@@ -199,7 +199,7 @@ function LoansAdd() {
                         <CardContent className="flex-1 overflow-hidden p-0">
                             <ScrollArea className="h-full px-6 pb-6">
                                 {filteredAssets.length > 0 ? (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 pr-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 p-2">
                                         {filteredAssets.map((asset) => {
                                             const isInCart = cart.some(
                                                 (item) => item.id === asset.id
@@ -296,7 +296,10 @@ function LoansAdd() {
                             </ScrollArea>
                         </CardContent>
                         <div className="px-6">
-                        <CustomPagination data={assets} onPaginationChange={onPaginationChange} />
+                            <CustomPagination
+                                data={assets}
+                                onPaginationChange={onPaginationChange}
+                            />
                         </div>
                     </Card>
 
@@ -347,11 +350,11 @@ function LoansAdd() {
                                 <div className="flex-1 border rounded-lg min-h-0">
                                     <ScrollArea className="h-full p-2">
                                         {cart.length > 0 ? (
-                                            <div className="space-y-3">
+                                            <div className="space-y-3 p-2">
                                                 {cart.map((item) => (
                                                     <Card
                                                         key={item.id}
-                                                        className="border border-gray-200 dark:border-gray-800"
+                                                        className="p-2"
                                                     >
                                                         <CardContent className="p-3 space-y-3">
                                                             <div className="flex justify-between items-start">

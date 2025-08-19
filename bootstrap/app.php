@@ -1,12 +1,21 @@
 <?php
 
-use App\Http\Middleware\SetTenantFromUser;
-use Illuminate\Foundation\Application;
+use Inertia\Inertia;
+
+use symfony\Component\HttpFoundation\Response;
+
+use App\Http\Middleware\CustomEnsureValidTenantSession;
+
+use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
+
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Application;
+
+use Illuminate\Http\Request;
+
 use App\Http\Middleware\HandleInertiaRequests;
-use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
-use App\Http\Middleware\CustomEnsureValidTenantSession;
+use App\Http\Middleware\SetTenantFromUser;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,7 +33,20 @@ return Application::configure(basePath: dirname(__DIR__))
                 CustomEnsureValidTenantSession::class,
             ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
+    ->withExceptions(function (Exceptions $exceptions) {
+        // $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
+        //     if (in_array($response->getStatusCode(), [500, 503, 404, 403])) {
+        //         return Inertia::render('Error', [
+        //             'status' => $response->getStatusCode()
+        //         ])->toResponse($request)
+        //             ->setStatusCode($response->getStatusCode());
+        //     } elseif ($response->getStatusCode() === 419) {
+        //         return back()->with([
+        //             'message' => 'The page expired, please try again.',
+        //         ]);
+        //     }
+
+        //     return $response;
+        // });
     })->create();
 

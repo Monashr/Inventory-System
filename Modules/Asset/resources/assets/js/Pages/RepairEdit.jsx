@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useForm, Link, usePage } from "@inertiajs/react";
+import { useForm, Link, usePage, Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
@@ -18,9 +18,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { ComboBoxInput } from "@components/custom/ComboBoxInput";
 
 function RepairEdit() {
-    const { repair } = usePage().props;
+    const { repair, vendors } = usePage().props;
 
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -46,22 +47,25 @@ function RepairEdit() {
         <>
             <Head title="Edit Repair" />
             <div className="space-y-4">
-                <div className="flex items-center justify-between px-6 py-2">
-                    <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                        <Hammer className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                        Edit Repair
-                    </h1>
-                    <Link href="/dashboard/repairs">
-                        <Button className="cursor-pointer">
-                            <ChevronLeft className="w-4 h-4" />
-                            Back
-                        </Button>
-                    </Link>
-                </div>
+                <Card>
+                    <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                        <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                            <Hammer className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                            Edit Repair
+                        </h1>
+                        <Link href="/dashboard/repairs">
+                            <Button className="cursor-pointer w-full h-full">
+                                <ChevronLeft className="w-4 h-4" />
+                                Back
+                            </Button>
+                        </Link>
+                    </div>
+                </Card>
+
                 <Card className="px-6 py-8 space-y-2">
                     <form
                         onSubmit={handleSubmit}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                     >
                         <div className="space-y-2">
                             <Label>Asset Serial</Label>
@@ -93,13 +97,14 @@ function RepairEdit() {
 
                         <div className="space-y-2">
                             <Label htmlFor="vendor">Vendor</Label>
-                            <Input
-                                type="text"
+                            <ComboBoxInput
                                 id="vendor"
+                                options={vendors.map((vendor) => vendor.name)}
                                 value={data.vendor}
-                                onChange={(e) =>
-                                    setData("vendor", e.target.value)
-                                }
+                                onChange={(value) => {
+                                    setData("vendor", value);
+                                }}
+                                placeholder="Enter Vendor"
                             />
                             {errors.vendor && (
                                 <p className="text-sm text-red-500">
@@ -178,7 +183,7 @@ function RepairEdit() {
                             )}
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="sm:col-span-2 space-y-2">
                             <Label htmlFor="repair_cost">Repair Cost</Label>
                             <Input
                                 type="number"
@@ -196,7 +201,7 @@ function RepairEdit() {
                             )}
                         </div>
 
-                        <div className="flex items-center justify-end pt-2">
+                        <div className="sm:col-span-2 flex justify-end items-center">
                             <Button
                                 type="submit"
                                 className="cursor-pointer"

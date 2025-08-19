@@ -24,24 +24,26 @@ function AssetsIndex() {
             <Head title="Assets" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between px-6 py-2">
-                        <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                            <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                            Assets
-                        </h1>
-                        <div className="flex justify-center items-center gap-2">
-                            <AssetsIndexActionButton
-                                permissions={permissions}
-                                fileInputRef={assetIndexLogic.fileInputRef}
-                                handleFileChange={
-                                    assetIndexLogic.handleFileChange
-                                }
-                            />
+                    <Card>
+                        <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                            <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                                <Package className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                                Assets
+                            </h1>
+                            <div className="grid grid-cols-1 gap-2 sm:flex">
+                                <AssetsIndexActionButton
+                                    permissions={permissions}
+                                    fileInputRef={assetIndexLogic.fileInputRef}
+                                    handleFileChange={
+                                        assetIndexLogic.handleFileChange
+                                    }
+                                />
+                            </div>
                         </div>
-                    </div>
+                    </Card>
 
                     <Card>
-                        <div className="flex justify-between items-center gap-4 px-6">
+                        <div className="flex justify-between items-center gap-2 px-6">
                             <CustomTableFilterButton
                                 currentFilters={assetIndexLogic.currentFilters}
                                 setCurrentFilters={

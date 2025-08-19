@@ -20,6 +20,17 @@ class LocationService
         return Location::where('name', '!=', self::DEFAULT_NAME)->get();
     }
 
+    public function getAllLocationNoDefaultDistinc()
+    {
+        return Location::select('name')
+            ->distinct()
+            ->whereNotNull('name')
+            ->where('name', '!=', '')
+            ->where('name', '!=', self::DEFAULT_NAME)
+            ->orderBy('name')
+            ->get()
+            ->pluck('name');
+    }
 
     public function getLocationByVendor($name, $address)
     {
@@ -62,21 +73,5 @@ class LocationService
         }
 
         return $location;
-    }
-
-
-    public function storeLocation()
-    {
-
-    }
-
-    public function updateLocation()
-    {
-
-    }
-
-    public function getLocationByAsset()
-    {
-
     }
 }

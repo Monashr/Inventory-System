@@ -43,49 +43,54 @@ function LoansEdit() {
         <>
             <Head title="Loan Edit" />
             <div className="space-y-6">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 px-6 py-2">
-                    <div className="space-y-4 w-full">
-                        <div className="flex items-center justify-between gap-3 w-full">
-                            <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                                <PackageOpen className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                                Edit Loans
-                            </h1>
-                            <Link href="/dashboard/loans">
-                                <Button className="cursor-pointer">
-                                    <ChevronLeft className="w-4 h-4" />
-                                    Back
-                                </Button>
-                            </Link>
-                        </div>
+                <Card>
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 px-6 py-2">
+                        <div className="space-y-4 w-full">
+                            <div className="flex items-center justify-between gap-3 w-full">
+                                <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                                    <PackageOpen className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                                    Loan Edit
+                                </h1>
+                                <Link href="/dashboard/loans">
+                                    <Button className="cursor-pointer">
+                                        <ChevronLeft className="w-4 h-4" />
+                                        Back
+                                    </Button>
+                                </Link>
+                            </div>
 
-                        <div className="flex flex-wrap items-center gap-3">
-                            <Badge
-                                variant="outline"
-                                className={`${statusConfig.color} border px-3 py-1`}
-                            >
-                                {statusConfig.label}
-                            </Badge>
-
-                            {loan?.user && (
+                            <div className="flex flex-wrap items-center gap-3">
                                 <Badge
-                                    variant="secondary"
-                                    className="px-3 py-1"
+                                    variant="outline"
+                                    className={`${statusConfig.color} border px-3 py-1`}
                                 >
-                                    Assigned to: {loan.user.name}
+                                    {statusConfig.label}
                                 </Badge>
-                            )}
 
-                            {loan?.assets && (
-                                <Badge variant="outline" className="px-3 py-1">
-                                    {loan.assets.length}{" "}
-                                    {loan.assets.length === 1
-                                        ? "Asset"
-                                        : "Assets"}
-                                </Badge>
-                            )}
+                                {loan?.user && (
+                                    <Badge
+                                        variant="secondary"
+                                        className="px-3 py-1"
+                                    >
+                                        Assigned to: {loan.user.name}
+                                    </Badge>
+                                )}
+
+                                {loan?.assets && (
+                                    <Badge
+                                        variant="outline"
+                                        className="px-3 py-1"
+                                    >
+                                        {loan.assets.length}{" "}
+                                        {loan.assets.length === 1
+                                            ? "Asset"
+                                            : "Assets"}
+                                    </Badge>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
+                </Card>
 
                 {loan?.status !== "pending" && (
                     <Alert>

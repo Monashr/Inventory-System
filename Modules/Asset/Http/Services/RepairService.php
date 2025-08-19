@@ -22,20 +22,31 @@ class RepairService
     public function getAllRepairsPaginated($request, $perPage)
     {
         $query = Repair::withoutGlobalScope('tenant')
-            ->with('asset')
-            ->select('repairs.*')
+            ->select('repairs.*', 'assets.serial_code as asset_name')
+            ->join('assets', 'repairs.asset_id', '=', 'assets.id')
             ->where('repairs.tenant_id', tenant()->id);
 
-        $sortBy = $request->get('sort_by', 'repair_cost');
-        $sortDirection = $request->get('sort_direction', 'asc');
-
-        if ($sortBy === 'asset_name') {
-            $query->join('assets', 'repairs.asset_id', '=', 'assets.id')
-                ->orderBy('assets.serial_code', $sortDirection)
-                ->select('repairs.*');
-        } else {
-            $query->orderBy("repairs.{$sortBy}", $sortDirection);
+        if ($request->filled('vendor')) {
+            $query->where('vendor', 'LIKE', '%' . $request->vendor . '%');
         }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $allowedSorts = ['asset_name', 'repair_start_date', 'repair_completion_date', 'repair_cost', 'vendor', 'status'];
+
+        $sortBy = $request->get('sort_by');
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'asset_name';
+        }
+
+        $sortDirection = strtolower($request->get('sort_direction', 'asc'));
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $query->orderBy($sortBy, $sortDirection);
 
         if ($request->has('search') && $request->search) {
             $search = strtolower($request->search);
@@ -139,8 +150,32 @@ class RepairService
         $this->assetLogService->userCompleteRepairAsset($repair->asset);
     }
 
+    public function getAllVendorDistinct()
+    {
+        return $this->locationService->getAllLocationNoDefaultDistinc();
+    }
+
     public function getAllVendor()
     {
         return $this->locationService->getAllLocationNoDefault();
+    }
+
+    public function getAllStatus()
+    {
+        return Repair::select('status')
+            ->distinct()
+            ->whereNotNull('status')
+            ->where('status', '!=', '')
+            ->orderBy('status')
+            ->get()
+            ->pluck('status');
+    }
+
+    public function getAllRepairFilters()
+    {
+        return [
+            'vendor' => $this->getAllVendorDistinct(),
+            'status' => $this->getAllStatus(),
+        ];
     }
 }

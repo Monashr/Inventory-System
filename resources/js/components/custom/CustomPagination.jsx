@@ -1,6 +1,4 @@
-
 import React from "react";
-
 import { router } from "@inertiajs/react";
 
 import {
@@ -20,14 +18,29 @@ import {
 } from "@components/ui/pagination";
 
 import { Button } from "@components/ui/button";
+import {
+    Tooltip,
+    TooltipTrigger,
+    TooltipContent,
+} from "@components/ui/tooltip";
 
-function CustomPagination({data, onPaginationChange}) {
+function CustomPagination({ data, onPaginationChange }) {
     return (
         <div className="flex items-center justify-between gap-2">
             <div className="flex items-center justify-center gap-2 bg-card p-2 rounded-3xl shadow">
-                <Button variant="outline">
-                    {data.from}-{data.to} of {data.total}
-                </Button>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="outline">
+                            {data.from}-{data.to} of {data.total}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>
+                            Showing records {data.from} to {data.to} of{" "}
+                            {data.total} total
+                        </p>
+                    </TooltipContent>
+                </Tooltip>
 
                 <Select
                     defaultValue={String(data.per_page)}
@@ -49,6 +62,7 @@ function CustomPagination({data, onPaginationChange}) {
                     </SelectContent>
                 </Select>
             </div>
+
             <Pagination className="justify-end items-center">
                 <PaginationContent>
                     {data.prev_page_url && (

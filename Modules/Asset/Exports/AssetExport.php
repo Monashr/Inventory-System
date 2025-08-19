@@ -10,8 +10,8 @@ class AssetExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
-        $asset = Asset::select('serial_code', 'brand', 'condition', 'avaibility', 'created_at')->get();
-        return Asset::select('serial_code', 'brand', 'condition', 'avaibility', 'created_at')->get();
+        $asset = Asset::select('serial_code', 'brand', 'condition', 'availability', 'created_at')->get();
+        return Asset::select('serial_code', 'brand', 'condition', 'availability', 'created_at')->get();
     }
 
     public function headings(): array

@@ -118,8 +118,8 @@ class AssetService
             $query->where('condition', $request->condition);
         }
 
-        if ($request->filled('availability')) {
-            $query->where('availability', $request->availability);
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
         }
 
         $query->where('availability', 'available');
@@ -161,8 +161,10 @@ class AssetService
             $query->where('condition', $request->condition);
         }
 
-        if ($request->filled('availability')) {
-            $query->where('availability', $request->availability);
+        if ($request->filled('type')) {
+            $query->whereHas('assetType', function ($q) use ($request) {
+                $q->where('name', $request->type);
+            });
         }
 
         $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
@@ -221,6 +223,14 @@ class AssetService
     public function getAvailableAssetPagination($request, $perPage)
     {
         $query = Asset::query()->where('availability', 'available')->where('condition', '!=', 'defect');
+
+        if ($request->filled('brand')) {
+            $query->where('brand', 'LIKE', '%' . $request->brand . '%');
+        }
+
+        if ($request->filled('condition')) {
+            $query->where('condition', $request->condition);
+        }
 
         $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
 
@@ -290,7 +300,6 @@ class AssetService
             'condition' => $this->getAllAssetConditions(),
         ];
     }
-
 
     public function createAsset($validated, $assetType)
     {

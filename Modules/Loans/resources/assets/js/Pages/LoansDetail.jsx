@@ -160,58 +160,62 @@ function LoansDetail() {
         <>
             <Head title={loan.user.name + " " + "Loan"} />
             <div className="space-y-6">
-                <div className="px-6 py-2">
-                    <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                                    <PackageOpen className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                                    Loan Details
-                                </h1>
-                            </div>
+                <Card>
+                    <div className="px-6 py-2">
+                        <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                                        <PackageOpen className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                                        Loan Details
+                                    </h1>
+                                </div>
 
-                            <div className="flex flex-wrap items-center gap-3">
-                                <Badge
-                                    variant="outline"
-                                    className={`${statusConfig.color} border px-3 py-1`}
-                                >
-                                    <StatusIcon className="w-3 h-3 mr-1" />
-                                    {loan.status.charAt(0).toUpperCase() +
-                                        loan.status.slice(1)}
-                                </Badge>
-
-                                <Badge
-                                    variant="secondary"
-                                    className="px-3 py-1"
-                                >
-                                    <User className="w-3 h-3 mr-1" />
-                                    {loan.user.name}
-                                </Badge>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                            {loan.status === "pending" && (
-                                <Link href={`/dashboard/loans/${loan.id}/edit`}>
-                                    <Button
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <Badge
                                         variant="outline"
-                                        className="cursor-pointer"
+                                        className={`${statusConfig.color} border px-3 py-1`}
                                     >
-                                        <Pencil className="w-4 h-4 mr-1" />
-                                        Edit Loan
+                                        <StatusIcon className="w-3 h-3 mr-1" />
+                                        {loan.status.charAt(0).toUpperCase() +
+                                            loan.status.slice(1)}
+                                    </Badge>
+
+                                    <Badge
+                                        variant="secondary"
+                                        className="px-3 py-1"
+                                    >
+                                        <User className="w-3 h-3 mr-1" />
+                                        {loan.user.name}
+                                    </Badge>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                {loan.status === "pending" && (
+                                    <Link
+                                        href={`/dashboard/loans/${loan.id}/edit`}
+                                    >
+                                        <Button
+                                            variant="outline"
+                                            className="cursor-pointer"
+                                        >
+                                            <Pencil className="w-4 h-4 mr-1" />
+                                            Edit Loan
+                                        </Button>
+                                    </Link>
+                                )}
+
+                                <Link href="/dashboard/loans">
+                                    <Button className="cursor-pointer">
+                                        <ChevronLeft className="w-4 h-4" />
+                                        Back
                                     </Button>
                                 </Link>
-                            )}
-
-                            <Link href="/dashboard/loans">
-                                <Button className="cursor-pointer">
-                                    <ChevronLeft className="w-4 h-4" />
-                                    Back
-                                </Button>
-                            </Link>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </Card>
 
                 <Card>
                     <CardHeader>

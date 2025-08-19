@@ -146,14 +146,18 @@ class EmployeeController extends Controller
 
         if (!checkAuthority($permission)) {
             return redirect()->route('employees.index');
+
         }
 
-        if (auth()->user()->id == $id) {
+        $allowedUsers = auth()->user()->usersFromSameTenant()->pluck('id')->toArray();
+
+        if (!in_array($id, $allowedUsers) || auth()->user()->id == $id) {
             return redirect()->route('employees.index');
         }
 
-        $tenantId = session('active_tenant_id');
         $user = User::with('roles')->findOrFail($id);
+
+        $tenantId = session('active_tenant_id');
 
         $roleIds = $user->roles->pluck('id');
 

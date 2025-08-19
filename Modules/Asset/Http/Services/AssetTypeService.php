@@ -26,6 +26,14 @@ class AssetTypeService
     {
         $query = AssetType::query();
 
+        if ($request->filled('name')) {
+            $query->where('name', 'LIKE', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('model')) {
+            $query->where('model', $request->model);
+        }
+
         $allowedSorts = ['name', 'model', 'created_at'];
 
         $sortBy = $request->get('sort_by');
@@ -50,7 +58,18 @@ class AssetTypeService
         return $assetTypes;
     }
 
-        public function getAllModels()
+    public function getAllAssetTypeNames()
+    {
+        return AssetType::select('name')
+            ->distinct()
+            ->whereNotNull('name')
+            ->where('name', '!=', '')
+            ->orderBy('name')
+            ->get()
+            ->pluck('name');
+    }
+
+    public function getAllAssetTypeModels()
     {
         return AssetType::select('model')
             ->distinct()
@@ -59,6 +78,14 @@ class AssetTypeService
             ->orderBy('model')
             ->get()
             ->pluck('model');
+    }
+
+    public function getAllAssetTypeFilters()
+    {
+        return [
+            'name' => $this->getAllAssetTypeNames(),
+            'model' => $this->getAllAssetTypeModels(),
+        ];
     }
 
     public function createAssetType($validated)

@@ -19,6 +19,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { ComboBoxInput } from "@components/custom/ComboBoxInput";
+import { SearchSelect } from "@components/custom/SearchSelectInput";
 
 function RepairAdd() {
     const { assetTypes, vendors } = usePage().props;
@@ -60,18 +61,20 @@ function RepairAdd() {
         <>
             <Head title="Add Repair" />
             <div className="space-y-4">
-                <div className="flex items-center justify-between px-6 py-2">
-                    <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                        <Hammer className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                        Add Repair
-                    </h1>
-                    <Link href="/dashboard/repairs">
-                        <Button className="cursor-pointer">
-                            <ChevronLeft className="w-4 h-4" />
-                            Back
-                        </Button>
-                    </Link>
-                </div>
+                <Card>
+                    <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                        <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                            <Hammer className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                            Add Repair
+                        </h1>
+                        <Link href="/dashboard/repairs">
+                            <Button className="cursor-pointer w-full h-full">
+                                <ChevronLeft className="w-4 h-4" />
+                                Back
+                            </Button>
+                        </Link>
+                    </div>
+                </Card>
 
                 <Card className="px-6 py-8 space-y-2">
                     {!assetTypes || assetTypes.length === 0 ? (
@@ -93,28 +96,23 @@ function RepairAdd() {
                     ) : (
                         <form
                             onSubmit={handleSubmit}
-                            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+                            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                         >
                             <div className="space-y-2">
                                 <Label htmlFor="asset_type_id">
                                     Asset Type
                                 </Label>
-                                <Select onValueChange={handleAssetTypeChange}>
-                                    <SelectTrigger className="w-full cursor-pointer">
-                                        <SelectValue placeholder="Select Asset Type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {assetTypes.map((type) => (
-                                            <SelectItem
-                                                key={type.id}
-                                                value={String(type.id)}
-                                                className="cursor-pointer"
-                                            >
-                                                {type.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+
+                                <SearchSelect
+                                    options={assetTypes}
+                                    value={data.asset_type_id}
+                                    onChange={(val) =>
+                                        handleAssetTypeChange(val)
+                                    }
+                                    getOptionLabel={(type) => type.name}
+                                    getOptionValue={(type) => String(type.id)}
+                                    placeholder="Select Asset Type"
+                                />
                                 {errors.asset_type_id && (
                                     <p className="text-sm text-red-500">
                                         {errors.asset_type_id}
@@ -124,28 +122,17 @@ function RepairAdd() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="asset_id">Asset</Label>
-                                <Select
-                                    value={data.asset_id ?? ""}
-                                    onValueChange={(value) =>
-                                        setData("asset_id", value)
+                                <SearchSelect
+                                    options={assets}
+                                    value={data.asset_id}
+                                    onChange={(val) => setData("asset_id", val)}
+                                    getOptionLabel={(asset) =>
+                                        asset.serial_code || `Asset ${asset.id}`
                                     }
-                                >
-                                    <SelectTrigger className="w-full cursor-pointer">
-                                        <SelectValue placeholder="Select Asset" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {assets.map((asset) => (
-                                            <SelectItem
-                                                key={asset.id}
-                                                value={String(asset.id)}
-                                                className="cursor-pointer"
-                                            >
-                                                {asset.serial_code ||
-                                                    `Asset ${asset.id}`}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                    getOptionValue={(asset) => String(asset.id)}
+                                    placeholder="Select Asset"
+                                />
+
                                 {errors.asset_id && (
                                     <p className="text-sm text-red-500">
                                         {errors.asset_id}
@@ -175,7 +162,7 @@ function RepairAdd() {
                                             );
                                         }
                                     }}
-                                    placeholder=""
+                                    placeholder="Enter Vendor"
                                 />
 
                                 {errors.vendor && (
@@ -289,7 +276,7 @@ function RepairAdd() {
                                 )}
                             </div>
 
-                            <div className="sm:col-span-2 flex justify-end items-center pt-2">
+                            <div className="sm:col-span-2 flex justify-end items-center">
                                 <Button
                                     type="submit"
                                     className="cursor-pointer"

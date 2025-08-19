@@ -44,6 +44,12 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@components/ui/label";
 import { Card } from "@components/ui/card";
+import useAssetIndex from "../Hooks/useAssetsIndex";
+import AssetsIndexActionButton from "../Components/AssetsIndexActionButton";
+import CustomDataTable from "@components/custom/CustomDataTable";
+import CustomTableFilterButton from "@components/custom/CustomTableFilterButton";
+import CustomTableSearch from "@components/custom/CustomTableSearch";
+import CustomPagination from "@components/custom/CustomPagination";
 
 function AssetsIndex() {
     const {
@@ -78,85 +84,126 @@ function AssetsIndex() {
         );
     };
 
+    const assetIndexLogic = useAssetIndex();
+
     return (
         <>
             <Head title={assetType.name} />
 
-            <div className="space-y-6">
-                <Card>
-                    <div className="flex justify-between flex-wrap gap-4 w-full px-6 py-4">
-                        <h1 className="font-semibold text-2xl flex items-center">
-                            <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                            {assetType.name}
-                        </h1>
-                        <div className="flex gap-2 flex-wrap">
-                            <Button variant="outline">
-                                <Label htmlFor="stock">Total Assets</Label>
-                                {totalAvailableAssets +
-                                    totalDefectAssets +
-                                    totalLoanedAssets}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="border-emerald-300 hover:bg-emerald-100"
-                            >
-                                <Label htmlFor="stock">Available Assets</Label>
-                                {totalAvailableAssets}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="border-orange-300 hover:bg-orange-100"
-                            >
-                                <Label htmlFor="stock">Loaned Assets</Label>
-                                {totalLoanedAssets}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="border-red-300 hover:bg-red-100"
-                            >
-                                <Label htmlFor="stock">Defect Assets</Label>
-                                {totalDefectAssets}
-                            </Button>
-                            {permissions.includes("manage assets") ? (
-                                <Link
-                                    href={`/dashboard/assettypes/${assetType.id}/edit`}
-                                >
-                                    <Button
-                                        variant="outline"
-                                        data-modal-trigger="add-product"
-                                        className="cursor-pointer"
-                                    >
-                                        <Pen className="w-4 h-4" />
-                                        Edit
-                                    </Button>
-                                </Link>
-                            ) : null}
-                            {permissions.includes("manage assets") ? (
-                                <DeleteAlertDialog
-                                    url={`/dashboard/assettypes/${assetType.id}/delete`}
-                                >
-                                    <Button
-                                        variant="destructive"
-                                        className="cursor-pointer"
-                                    >
-                                        <Trash />
-                                        Delete
-                                    </Button>
-                                </DeleteAlertDialog>
-                            ) : null}
-                            <Link href="/dashboard/assettypes">
-                                <Button
-                                    data-modal-trigger="add-product"
-                                    className=" cursor-pointer"
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                    Back
+            <div className="w-full mx-auto">
+                <div className="space-y-4">
+                    <Card>
+                        <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                            <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                                <Package className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                                {assetType.name}
+                            </h1>
+                            <div className="flex gap-2 flex-wrap">
+                                <Button variant="outline">
+                                    <Label htmlFor="stock">Total Assets</Label>
+                                    {totalAvailableAssets +
+                                        totalDefectAssets +
+                                        totalLoanedAssets}
                                 </Button>
-                            </Link>
+                                <Button
+                                    variant="outline"
+                                    className="border-emerald-300 hover:bg-emerald-100"
+                                >
+                                    <Label htmlFor="stock">
+                                        Available Assets
+                                    </Label>
+                                    {totalAvailableAssets}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className="border-orange-300 hover:bg-orange-100"
+                                >
+                                    <Label htmlFor="stock">Loaned Assets</Label>
+                                    {totalLoanedAssets}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className="border-red-300 hover:bg-red-100"
+                                >
+                                    <Label htmlFor="stock">Defect Assets</Label>
+                                    {totalDefectAssets}
+                                </Button>
+                                <div className="flex gap-2 flex-wrap">
+                                    {permissions.includes("manage assets") ? (
+                                        <Link
+                                            href={`/dashboard/assettypes/${assetType.id}/edit`}
+                                        >
+                                            <Button
+                                                variant="outline"
+                                                data-modal-trigger="add-product"
+                                                className="cursor-pointer"
+                                            >
+                                                <Pen className="w-4 h-4" />
+                                                Edit
+                                            </Button>
+                                        </Link>
+                                    ) : null}
+                                    {permissions.includes("manage assets") ? (
+                                        <DeleteAlertDialog
+                                            url={`/dashboard/assettypes/${assetType.id}/delete`}
+                                        >
+                                            <Button
+                                                variant="destructive"
+                                                className="cursor-pointer"
+                                            >
+                                                <Trash />
+                                                Delete
+                                            </Button>
+                                        </DeleteAlertDialog>
+                                    ) : null}
+                                    <Link href="/dashboard/assettypes">
+                                        <Button
+                                            data-modal-trigger="add-product"
+                                            className=" cursor-pointer"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                            Back
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
+                    </Card>
+
+                    <div className="space-y-4">
+                        <Card>
+                            <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                                <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                                    <Boxes className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                                    Asset List
+                                </h1>
+                                <div className="grid grid-cols-1 gap-2 sm:flex">
+                                    <CustomTableSearch
+                                        search={assetIndexLogic.search}
+                                        setSearch={assetIndexLogic.setSearch}
+                                        onSearch={assetIndexLogic.onSearch}
+                                        placeholder="Search Asset"
+                                    />
+                                </div>
+                            </div>
+                            <CustomDataTable
+                                columns={assetIndexLogic.columns}
+                                data={assetIndexLogic.assets.data}
+                                onRowClick={assetIndexLogic.onRowClick}
+                                onSort={assetIndexLogic.handleSort}
+                                filters={assetIndexLogic.filters}
+                                noItem="Assets"
+                            />
+                        </Card>
+                        <CustomPagination
+                            data={assetIndexLogic.assets}
+                            onPaginationChange={
+                                assetIndexLogic.onPaginationChange
+                            }
+                        />
                     </div>
-                </Card>
-                <Table className="border">
+
+                    {/* <Table className="border bg-card">
                     <TableHeader>
                         <TableRow>
                             <TableHead colSpan={5}>
@@ -253,14 +300,14 @@ function AssetsIndex() {
                             <TableHead className="text-left">
                                 <Button
                                     variant={
-                                        filters.sort_by === "avaibility"
+                                        filters.sort_by === "availability"
                                             ? "default"
                                             : "ghost"
                                     }
                                     className="cursor-pointer"
-                                    onClick={() => handleSort("avaibility")}
+                                    onClick={() => handleSort("availability")}
                                 >
-                                    Avaibility
+                                    availability
                                     <ArrowUpDown className="w-4 h-4 ml-2" />
                                 </Button>
                             </TableHead>
@@ -293,12 +340,6 @@ function AssetsIndex() {
                                     }
                                 >
                                     <TableCell className="pl-9 flex items-center gap-4">
-                                        <Avatar>
-                                            <AvatarImage src={asset.name} />
-                                            <AvatarFallback>
-                                                {assetType.name.charAt(0)}
-                                            </AvatarFallback>
-                                        </Avatar>
                                         <span>{asset.serial_code}</span>
                                     </TableCell>
                                     <TableCell>
@@ -324,18 +365,19 @@ function AssetsIndex() {
                                     <TableCell className="font-medium">
                                         <span
                                             className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                                asset.avaibility === "available"
+                                                asset.availability ===
+                                                "available"
                                                     ? "bg-green-100 text-green-800"
-                                                    : asset.avaibility ===
+                                                    : asset.availability ===
                                                       "loaned"
                                                     ? "bg-yellow-100 text-yellow-800"
                                                     : "bg-red-100 text-red-800"
                                             }`}
                                         >
-                                            {asset.avaibility
+                                            {asset.availability
                                                 .charAt(0)
                                                 .toUpperCase() +
-                                                asset.avaibility.slice(1)}
+                                                asset.availability.slice(1)}
                                         </span>
                                     </TableCell>
 
@@ -470,6 +512,7 @@ function AssetsIndex() {
                             )}
                         </PaginationContent>
                     </Pagination>
+                </div> */}
                 </div>
             </div>
         </>

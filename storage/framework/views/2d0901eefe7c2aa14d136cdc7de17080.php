@@ -19,5 +19,4 @@
     <?php echo app('Illuminate\Foundation\Vite')('resources/js/app.jsx'); ?>
 </body>
 
-</html>
-<?php /**PATH /home/nsrlnx/Documents/php/CBN/resources/views/app.blade.php ENDPATH**/ ?>
+</html><?php /**PATH /home/nsrlnx/Documents/php/CBN/resources/views/app.blade.php ENDPATH**/ ?>

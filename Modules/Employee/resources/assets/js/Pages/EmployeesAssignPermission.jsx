@@ -66,18 +66,22 @@ export default function AssignPermissions() {
         <>
             <Head title="Assign Permissions" />
             <div className="space-y-4">
-                <div className="flex justify-between items-center px-6 py-2">
-                    <h1 className="flex items-center font-bold text-lg md:text-2xl">
-                        <UserCog className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                        Assign Permission For {user.name}
-                    </h1>
-                    <Link href={`/dashboard/employees/permission/${user.id}`}>
-                        <Button className="cursor-pointer">
-                            <ChevronLeft />
-                            Back
-                        </Button>
-                    </Link>
-                </div>
+                <Card>
+                    <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                        <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                            <UserCog className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                            Manage {user.name} Permission
+                        </h1>
+                        <Link
+                            href={`/dashboard/employees/permission/${user.id}`}
+                        >
+                            <Button className="cursor-pointer">
+                                <ChevronLeft />
+                                Back
+                            </Button>
+                        </Link>
+                    </div>
+                </Card>
 
                 <Card className="w-full mx-auto">
                     <form onSubmit={handleSubmit}>

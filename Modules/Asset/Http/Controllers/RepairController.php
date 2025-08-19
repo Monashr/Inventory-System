@@ -40,7 +40,10 @@ class RepairController extends Controller
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,
                 'sort_direction' => $request->sort_direction,
+                'vendor' => $request->vendor,
+                'status' => $request->status,
             ],
+            'filterValues' => $this->repairService->getAllRepairFilters(),
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
     }
@@ -61,8 +64,6 @@ class RepairController extends Controller
         if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
             return redirect()->route('dashboard.index');
         }
-
-        // dd($this->repairService->getAllVendor());
 
         return Inertia::render('Asset/RepairAdd', [
             'assetTypes' => $this->assetTypeService->getAllAssetTypes(),
@@ -90,6 +91,7 @@ class RepairController extends Controller
         }
         return Inertia::render('Asset/RepairEdit', [
             'repair' => $this->repairService->getRepair($repair),
+            'vendors' => $this->repairService->getAllVendor(),
         ]);
     }
 

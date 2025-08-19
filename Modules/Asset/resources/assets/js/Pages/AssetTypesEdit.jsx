@@ -29,58 +29,61 @@ function AssetTypesEdit() {
     return (
         <>
             <Head title="Asset Type Edit" />
-            <div className="w-full">
-                <Card className="w-full mx-auto">
-                    <CardContent className="space-y-2 pb-12">
-                        <CardTitle className="flex items-center justify-between w-full px-6 py-6">
-                            <h1 className="flex items-center font-bold text-lg md:text-2xl m-0 p0">
-                                <Package className="w-8 h-8 md:w-10 md:h-10 mr-2" />
-                                Edit Asset Type
-                            </h1>
+            <div className="w-full space-y-4">
+                <Card>
+                    <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
+                        <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
+                            <Package className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                            Edit Asset Type
+                        </h1>
+                        <div className="grid grid-cols-1 gap-2 sm:flex">
                             <Link
                                 href={`/dashboard/assettypes/${assetType.id}/details`}
                             >
-                                <Button className="cursor-pointer">
+                                <Button className="cursor-pointer h-full w-full">
                                     <ChevronLeft className="w-4 h-4" />
                                     Back
                                 </Button>
                             </Link>
-                        </CardTitle>
-                        <form
-                            onSubmit={handleSubmit}
-                            className="px-6 space-y-4"
-                        >
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    value={data.name}
-                                    onChange={(e) =>
-                                        setData("name", e.target.value)
-                                    }
-                                    placeholder="Enter Asset Type name"
-                                />
-                                {errors.name && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.name}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="model">Model</Label>
-                                <Input
-                                    id="model"
-                                    value={data.model}
-                                    onChange={(e) =>
-                                        setData("model", e.target.value)
-                                    }
-                                    placeholder="Enter Asset Type Model"
-                                />
-                                {errors.model && (
-                                    <p className="text-sm text-red-500">
-                                        {errors.model}
-                                    </p>
-                                )}
+                        </div>
+                    </div>
+                </Card>
+                <Card className="w-full mx-auto">
+                    <CardContent>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name">Name</Label>
+                                    <Input
+                                        id="name"
+                                        value={data.name}
+                                        onChange={(e) =>
+                                            setData("name", e.target.value)
+                                        }
+                                        placeholder="Enter Asset Type name"
+                                    />
+                                    {errors.name && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.name}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="model">Model</Label>
+                                    <Input
+                                        id="model"
+                                        value={data.model}
+                                        onChange={(e) =>
+                                            setData("model", e.target.value)
+                                        }
+                                        placeholder="Enter Asset Type Model"
+                                    />
+                                    {errors.model && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.model}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
 
                             <Button

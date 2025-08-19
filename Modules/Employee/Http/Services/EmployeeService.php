@@ -33,7 +33,7 @@ class EmployeeService
 
         $sortBy = $request->get('sort_by');
         if (!in_array($sortBy, $allowedSorts)) {
-            $sortBy = 'name';
+            $sortBy = 'created_at';
         }
 
         $sortDirection = strtolower($request->get('sort_direction', 'asc'));
@@ -48,9 +48,10 @@ class EmployeeService
 
             $query->where(function ($q) use ($search, $allowedSearch) {
                 foreach ($allowedSearch as $column) {
-                    $q->orWhereRaw("LOWER($column) LIKE ?", ["%{$search}%"]);
+                    $q->orWhere($column, 'LIKE', "%{$search}%");
                 }
             });
+
         }
 
         return $query->paginate($perPage)->withQueryString();
@@ -67,7 +68,7 @@ class EmployeeService
         $user = $this->userService->createUser($credentials);
 
         $role = $this->roleService->createRole('user', $tenant->id);
-        
+
         $user->positions()->attach($position);
 
         $user->assignRole($tenant->id, $role);

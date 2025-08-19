@@ -25,6 +25,7 @@ class UpdateRepairRequest extends FormRequest
             'vendor' => 'nullable|string|max:255',
             'defect_description' => 'nullable|string|max:255',
             'corrective_action' => 'nullable|string|max:255',
+            'repair_start_date' => 'nullable|date',
             'repair_cost' => 'nullable|numeric',
 
         ];

@@ -35,13 +35,15 @@ class AssetTypeController extends Controller
 
         return Inertia::render('Asset/AssetTypesIndex', [
             'assetTypes' => $this->assetTypeService->getAssetTypePagination($request, $perPage),
-            'models' => $this->assetTypeService->getAllModels(),
             'permissions' => auth()->user()->getTenantPermission(),
             'filters' => [
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,
                 'sort_direction' => $request->sort_direction,
+                'name' => $request->name,
+                'model' => $request->model,
             ],
+            'filterValues' => $this->assetTypeService->getAllAssetTypeFilters(),
         ]);
     }
 
@@ -52,7 +54,7 @@ class AssetTypeController extends Controller
         }
 
         return Inertia::render('Asset/AssetTypesAdd', [
-            'models' => $this->assetTypeService->getAllModels(),
+            'models' => $this->assetTypeService->getAllAssetTypeModels(),
         ]);
     }
 
@@ -61,7 +63,7 @@ class AssetTypeController extends Controller
         if (!checkAuthority(config('asset.permissions')['permissions']['view'])) {
             return redirect()->route('dashboard.index');
         }
-
+        
         $perPage = $request->input('per_page', 10);
 
         return Inertia::render('Asset/AssetTypesDetails', [

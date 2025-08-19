@@ -2,84 +2,67 @@ import { useEffect, useRef, useState } from "react";
 import { usePage, router } from "@inertiajs/react";
 import { toast } from "sonner";
 
-export default function useAssetIndex() {
-    const { assets, filters, filterValues, flash } = usePage().props;
+export default function useRepairsIndex() {
+    const { repairs, filters, filterValues, flash } = usePage().props;
 
     const columns = [
         {
-            key: "serial_code",
-            label: "Serial Code",
+            key: "asset_name",
+            label: "Asset",
             type: "text",
         },
         {
-            key: "brand",
-            label: "Brand",
-            type: "text",
-        },
-        {
-            key: "condition",
-            label: "Condition",
-            type: "badge",
-            badgeColors: {
-                good: "green",
-                used: "yellow",
-                damaged: "red",
-            },
-        },
-        {
-            key: "availability",
-            label: "Availability",
-            type: "badge",
-            badgeColors: {
-                available: "green",
-                loaned: "yellow",
-                missing: "red",
-            },
-        },
-        {
-            key: "created_at",
-            label: "Created At",
+            key: "repair_start_date",
+            label: "Repair Start",
             type: "time",
+        },
+        {
+            key: "repair_completion_date",
+            label: "Repair Completion",
+            type: "time",
+        },
+        {
+            key: "repair_cost",
+            label: "Repair Cost",
+            type: "text",
+        },
+        {
+            key: "vendor",
+            label: "Vendor",
+            type: "text",
+        },
+        {
+            key: "status",
+            label: "Status",
+            type: "badge",
+            badgeColors: {
+                completed: "green",
+                progress: "yellow",
+                cancelled: "red",
+            },
         },
     ];
 
     const [currentFilters, setCurrentFilters] = useState({
-        brand: filters.brand || "",
-        condition: filters.condition || "",
-        type: filters.type || "",
+        status: filters.status || "",
+        vendor: filters.vendor || "",
     });
 
     const [search, setSearch] = useState(filters.search || "");
 
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";
-    const fileInputRef = useRef(null);
-
-    function handleFileChange(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append("file", file);
-
-            router.post("/dashboard/assets/import", formData, {
-                forceFormData: true,
-                onSuccess: () => {},
-                onError: () => {},
-            });
-        }
-    }
 
     const onPaginationChange = (value) => {
         router.get(
-            `/dashboard/assets/`,
+            `/dashboard/repairs/`,
             {
                 per_page: value,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                brand: currentFilters.brand,
-                condition: currentFilters.condition,
-                type: currentFilters.type,
+                status: currentFilters.status,
+                vendor: currentFilters.vendor,
             },
             {
                 preserveScroll: true,
@@ -88,7 +71,7 @@ export default function useAssetIndex() {
     };
 
     const onRowClick = (item) => {
-        router.visit(`/dashboard/assets/${item.id}/details`);
+        router.visit(`/dashboard/repairs/${item.id}/details`);
     };
 
     const handleSort = (column) => {
@@ -98,15 +81,14 @@ export default function useAssetIndex() {
         }
 
         router.get(
-            "/dashboard/assets",
+            "/dashboard/repairs",
             {
-                per_page: assets.per_page,
+                per_page: repairs.per_page,
                 search,
                 sort_by: column,
                 sort_direction: direction,
-                brand: currentFilters.brand,
-                condition: currentFilters.condition,
-                type: currentFilters.type,
+                status: currentFilters.status,
+                vendor: currentFilters.vendor,
             },
             { preserveScroll: true }
         );
@@ -114,15 +96,14 @@ export default function useAssetIndex() {
 
     const onSearch = () => {
         router.get(
-            "/dashboard/assets",
+            "/dashboard/repairs",
             {
-                per_page: assets.per_page,
+                per_page: repairs.per_page,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                brand: currentFilters.brand,
-                condition: currentFilters.condition,
-                type: currentFilters.type,
+                status: currentFilters.status,
+                vendor: currentFilters.vendor,
             },
             { preserveScroll: true }
         );
@@ -130,15 +111,14 @@ export default function useAssetIndex() {
 
     const applyFilters = () => {
         router.get(
-            "/dashboard/assets",
+            "/dashboard/repairs",
             {
-                per_page: assets.per_page,
+                per_page: repairs.per_page,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                brand: currentFilters.brand,
-                condition: currentFilters.condition,
-                type: currentFilters.type,
+                status: currentFilters.status,
+                vendor: currentFilters.vendor,
             },
             { preserveScroll: true }
         );
@@ -154,7 +134,7 @@ export default function useAssetIndex() {
     }, [flash]);
 
     return {
-        assets,
+        repairs,
         columns,
         search,
         setSearch,
@@ -167,9 +147,7 @@ export default function useAssetIndex() {
         applyFilters,
         onPaginationChange,
         onRowClick,
-        fileInputRef,
         handleSort,
         onSearch,
-        handleFileChange,
     };
 }

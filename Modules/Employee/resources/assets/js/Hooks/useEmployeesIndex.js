@@ -2,84 +2,68 @@ import { useEffect, useRef, useState } from "react";
 import { usePage, router } from "@inertiajs/react";
 import { toast } from "sonner";
 
-export default function useAssetIndex() {
-    const { assets, filters, filterValues, flash } = usePage().props;
+export default function useEmployeesIndex() {
+    const { employees, authUser, permissions, filters, filterValues, flash } =
+        usePage().props;
 
     const columns = [
         {
-            key: "serial_code",
-            label: "Serial Code",
+            key: "name",
+            label: "Name",
             type: "text",
         },
         {
-            key: "brand",
-            label: "Brand",
+            key: "position",
+            label: "Position",
             type: "text",
         },
         {
-            key: "condition",
-            label: "Condition",
-            type: "badge",
-            badgeColors: {
-                good: "green",
-                used: "yellow",
-                damaged: "red",
-            },
+            key: "email",
+            label: "Email",
+            type: "text",
         },
         {
-            key: "availability",
-            label: "Availability",
-            type: "badge",
-            badgeColors: {
-                available: "green",
-                loaned: "yellow",
-                missing: "red",
-            },
+            key: "bio",
+            label: "Bio",
+            type: "text",
+        },
+        {
+            key: "phone",
+            label: "Phone",
+            type: "text",
+        },
+        {
+            key: "address",
+            label: "Address",
+            type: "text",
         },
         {
             key: "created_at",
-            label: "Created At",
+            label: "Joined At",
             type: "time",
         },
     ];
 
     const [currentFilters, setCurrentFilters] = useState({
-        brand: filters.brand || "",
-        condition: filters.condition || "",
-        type: filters.type || "",
+        position: filters.position || "",
     });
+
+    const [open, setOpen] = useState(false);
 
     const [search, setSearch] = useState(filters.search || "");
 
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";
-    const fileInputRef = useRef(null);
-
-    function handleFileChange(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append("file", file);
-
-            router.post("/dashboard/assets/import", formData, {
-                forceFormData: true,
-                onSuccess: () => {},
-                onError: () => {},
-            });
-        }
-    }
 
     const onPaginationChange = (value) => {
         router.get(
-            `/dashboard/assets/`,
+            `/dashboard/employees/`,
             {
                 per_page: value,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                brand: currentFilters.brand,
-                condition: currentFilters.condition,
-                type: currentFilters.type,
+                position: currentFilters.position,
             },
             {
                 preserveScroll: true,
@@ -88,7 +72,7 @@ export default function useAssetIndex() {
     };
 
     const onRowClick = (item) => {
-        router.visit(`/dashboard/assets/${item.id}/details`);
+        router.visit(`/dashboard/employees/permission/${item.id}`);
     };
 
     const handleSort = (column) => {
@@ -98,15 +82,13 @@ export default function useAssetIndex() {
         }
 
         router.get(
-            "/dashboard/assets",
+            "/dashboard/employees",
             {
-                per_page: assets.per_page,
+                per_page: employees.per_page,
                 search,
                 sort_by: column,
                 sort_direction: direction,
-                brand: currentFilters.brand,
-                condition: currentFilters.condition,
-                type: currentFilters.type,
+                position: currentFilters.position,
             },
             { preserveScroll: true }
         );
@@ -114,15 +96,13 @@ export default function useAssetIndex() {
 
     const onSearch = () => {
         router.get(
-            "/dashboard/assets",
+            "/dashboard/employees",
             {
-                per_page: assets.per_page,
+                per_page: employees.per_page,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                brand: currentFilters.brand,
-                condition: currentFilters.condition,
-                type: currentFilters.type,
+                position: currentFilters.position,
             },
             { preserveScroll: true }
         );
@@ -130,15 +110,13 @@ export default function useAssetIndex() {
 
     const applyFilters = () => {
         router.get(
-            "/dashboard/assets",
+            "/dashboard/employees",
             {
-                per_page: assets.per_page,
+                per_page: employees.per_page,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                brand: currentFilters.brand,
-                condition: currentFilters.condition,
-                type: currentFilters.type,
+                position: currentFilters.position,
             },
             { preserveScroll: true }
         );
@@ -154,8 +132,9 @@ export default function useAssetIndex() {
     }, [flash]);
 
     return {
-        assets,
+        employees,
         columns,
+        permissions,
         search,
         setSearch,
         currentFilters,
@@ -167,9 +146,9 @@ export default function useAssetIndex() {
         applyFilters,
         onPaginationChange,
         onRowClick,
-        fileInputRef,
         handleSort,
         onSearch,
-        handleFileChange,
+        open,
+        setOpen,
     };
 }

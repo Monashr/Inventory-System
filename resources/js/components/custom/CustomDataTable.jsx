@@ -2,6 +2,8 @@ import React from "react";
 
 import { ArrowUpDown } from "lucide-react";
 
+import { formatDate, cn } from "../lib/utils";
+
 import {
     Table,
     TableHeader,
@@ -12,21 +14,6 @@ import {
 } from "@/components/ui/table";
 
 import { Button } from "@/components/ui/button";
-
-const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    try {
-        return new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    } catch (error) {
-        return "-";
-    }
-};
 
 function renderCell(column, value) {
     if (column.type === "badge") {
@@ -83,16 +70,21 @@ function CustomDataTable({
                                     }`}
                                 >
                                     <Button
+                                        size="sm"
                                         variant={
                                             filters.sort_by === column.key
                                                 ? "default"
                                                 : "ghost"
                                         }
-                                        className="cursor-pointer"
+                                        className={cn(
+                                            "cursor-pointer",
+                                            filters.sort_by === column.key &&
+                                                "text-primary"
+                                        )}
                                         onClick={() => onSort(column.key)}
                                     >
                                         {column.label}
-                                        <ArrowUpDown className="w-4 h-4 ml-2" />
+                                        <ArrowUpDown className="w-4 h-4" />
                                     </Button>
                                 </TableHead>
                             );
@@ -142,10 +134,10 @@ function CustomDataTable({
                                         className="max-w-60 m-auto"
                                     />
                                     <div>
-                                        <h1 className="font-bold">
+                                        <h1 className="font-bold text-sm">
                                             No {noItem} Found.
                                         </h1>
-                                        <p className="font-light">
+                                        <p className="font-light text-sm">
                                             Add {noItem} or try searching with
                                             different keyword
                                         </p>

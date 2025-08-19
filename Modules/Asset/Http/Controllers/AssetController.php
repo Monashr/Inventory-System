@@ -47,7 +47,7 @@ class AssetController extends Controller
                 'sort_direction' => $request->sort_direction,
                 'brand' => $request->brand,
                 'condition' => $request->condition,
-                'availability' => $request->availability,
+                'type' => $request->type,
             ],
             'filterValues' => $this->assetService->getAllAssetFilters(),
             'permissions' => auth()->user()->getTenantPermission(),
@@ -73,8 +73,9 @@ class AssetController extends Controller
         return redirect()->route('assets.index')->with('success', 'Asset Deleted Successfully');
     }
 
-    public function showAssetDetails($asset)
+    public function showAssetDetails(Request $request, $asset)
     {
+
         if (!checkAuthority(config('asset.permissions')['permissions']['view'])) {
             return redirect()->route('dashboard.index');
         }
@@ -87,10 +88,20 @@ class AssetController extends Controller
             ]);
         }
 
+        $perPage = $request->input('per_page', 10);
+
         return Inertia::render('Asset/AssetsDetails', [
             'asset' => $this->assetService->findAssetWithDetails($asset),
             'permissions' => auth()->user()->getTenantPermission(),
-            'log' => $this->assetLogService->getAssetLogs($this->assetService->findAsset($asset)),
+            'filters' => [
+                'search' => $request->search,
+                'sort_by' => $request->sort_by,
+                'sort_direction' => $request->sort_direction,
+                'user' => $request->user,
+                'activity_type' => $request->activity_type,
+            ],
+            'filterValues' => $this->assetLogService->getAllAssetLogFilters($asset),
+            'log' => $this->assetLogService->getAssetLogs($this->assetService->findAsset($asset), $request, $perPage),
         ]);
     }
 

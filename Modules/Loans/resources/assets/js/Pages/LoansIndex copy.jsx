@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-import { router, Link, usePage, Head } from "@inertiajs/react";
+import { usePage, router, Link, Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
 import {
-    Mail,
-    ChevronLeft,
-    SearchIcon,
+    PackageOpen,
+    Plus,
     Filter,
+    SearchIcon,
     ArrowUpDown,
 } from "lucide-react";
 
+import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
-import { Card } from "@/components/ui/card";
 import {
     Table,
     TableHeader,
@@ -21,7 +21,7 @@ import {
     TableHead,
     TableBody,
     TableCell,
-} from "@/components/ui/table";
+} from "@components/ui/table";
 import {
     Pagination,
     PaginationContent,
@@ -29,18 +29,18 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "@components/ui/pagination";
-import { Button } from "@/components/ui/button";
 import {
     Select,
     SelectTrigger,
-    SelectValue,
     SelectContent,
     SelectItem,
-} from "@components/ui/select";
-import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
+    SelectValue,
+} from "@/components/ui/select";
+import { Card } from "@components/ui/card";
+import { toast } from "sonner";
 
-function EmployeesInbox() {
-    const { user, inboxes, filters } = usePage().props;
+function LoansIndex() {
+    const { loans, permissions, filters, flash } = usePage().props;
     const [search, setSearch] = React.useState(filters.search || "");
     const sortBy = filters.sort_by || "";
     const sortDirection = filters.sort_direction || "";
@@ -52,10 +52,10 @@ function EmployeesInbox() {
         }
 
         router.get(
-            "/dashboard/employees",
+            "/dashboard/assettypes",
             {
                 search,
-                per_page: employees.per_page,
+                per_page: assetTypes.per_page,
                 sort_by: column,
                 sort_direction: direction,
             },
@@ -63,46 +63,61 @@ function EmployeesInbox() {
         );
     };
 
-    const formatDate = (dateString) => {
+    const formatDateNoHour = (dateString) => {
         if (!dateString) return "-";
         try {
             return new Date(dateString).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
             });
         } catch (error) {
+            console.error("Error formatting date:", error);
             return "-";
         }
     };
 
+    useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success);
+        }
+        if (flash?.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
+
     return (
         <>
-            <Head title="Inbox" />
+            <Head title="Loans" />
             <div className="w-full mx-auto">
                 <div className="space-y-4">
                     <Card>
                         <div className="grid grid-cols-1 sm:flex sm:justify-between px-6 py-2 gap-4">
                             <h1 className="flex items-center justify-center sm:justify-start font-bold text-2xl md:text-2xl m-0 p-0">
-                                <Mail className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
-                                Inbox
+                                <PackageOpen className="w-10 h-10 bg-accent text-primary rounded-2xl mr-4 p-2" />
+                                Loans
                             </h1>
-
-                            <Link href="/dashboard">
-                                <Button
-                                    data-modal-trigger="inbox"
-                                    className="cursor-pointer h-full w-full"
-                                >
-                                    <ChevronLeft />
-                                    Back
-                                </Button>
-                            </Link>
+                            {permissions.includes(
+                                "make and manage own loan"
+                            ) && (
+                                <Link href="/dashboard/loans/add">
+                                    <Button className="cursor-pointer h-full w-full">
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Add Loans
+                                    </Button>
+                                </Link>
+                            )}
                         </div>
                     </Card>
                     <Card>
-                        <div className="flex justify-end px-6">
+                        <div className="flex justify-between px-6">
+                            <Button
+                                variant="outline"
+                                className="cursor-pointer"
+                            >
+                                <Filter className="w-4 h-4" />
+                                Filter
+                            </Button>
                             <div className="flex w-full max-w-sm items-center gap-2">
                                 <Input
                                     type="text"
@@ -116,12 +131,10 @@ function EmployeesInbox() {
                                     className="cursor-pointer"
                                     onClick={() =>
                                         router.get(
-                                            "/dashboard/employees",
+                                            "/dashboard/loans",
                                             {
-                                                per_page: employees.per_page,
+                                                per_page: assets.per_page,
                                                 search,
-                                                sort_by: sortBy,
-                                                sort_direction: sortDirection,
                                             },
                                             { preserveScroll: true }
                                         )
@@ -134,55 +147,52 @@ function EmployeesInbox() {
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-slate-200 hover:bg-slate-200 dark:bg-background dark:hover:bg-background">
-                                    <TableHead className="pl-6">
+                                    <TableHead className="text-left pl-6">
+                                        <Button
+                                            variant={
+                                                filters.sort_by === "loaner"
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                            className="cursor-pointer"
+                                            onClick={() => handleSort("loaner")}
+                                        >
+                                            Loaner
+                                            <ArrowUpDown className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </TableHead>
+                                    <TableHead className="text-left pl-6">
+                                        <Button
+                                            variant={
+                                                filters.sort_by === "status"
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                            className="cursor-pointer"
+                                            onClick={() => handleSort("status")}
+                                        >
+                                            Status
+                                            <ArrowUpDown className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </TableHead>
+                                    <TableHead className="text-left">
                                         <Button
                                             variant={
                                                 filters.sort_by ===
-                                                "sender_name"
+                                                "description"
                                                     ? "default"
                                                     : "ghost"
                                             }
                                             className="cursor-pointer"
                                             onClick={() =>
-                                                handleSort("sender_name")
+                                                handleSort("description")
                                             }
                                         >
-                                            Sender
+                                            Description
                                             <ArrowUpDown className="w-4 h-4 ml-2" />
                                         </Button>
                                     </TableHead>
-                                    <TableHead>
-                                        <Button
-                                            variant={
-                                                filters.sort_by ===
-                                                "receiver_name"
-                                                    ? "default"
-                                                    : "ghost"
-                                            }
-                                            className="cursor-pointer"
-                                            onClick={() =>
-                                                handleSort("receiver_name")
-                                            }
-                                        >
-                                            Receiver
-                                            <ArrowUpDown className="w-4 h-4 ml-2" />
-                                        </Button>
-                                    </TableHead>
-                                    <TableHead>
-                                        <Button
-                                            variant={
-                                                filters.sort_by === "tenant"
-                                                    ? "default"
-                                                    : "ghost"
-                                            }
-                                            className="cursor-pointer"
-                                            onClick={() => handleSort("tenant")}
-                                        >
-                                            Tenant
-                                            <ArrowUpDown className="w-4 h-4 ml-2" />
-                                        </Button>
-                                    </TableHead>
-                                    <TableHead className="text-right">
+                                    <TableHead className="text-right pr-6">
                                         <Button
                                             variant={
                                                 filters.sort_by === "created_at"
@@ -194,84 +204,54 @@ function EmployeesInbox() {
                                                 handleSort("created_at")
                                             }
                                         >
-                                            Sent At
+                                            Created At
                                             <ArrowUpDown className="w-4 h-4 ml-2" />
                                         </Button>
-                                    </TableHead>
-                                    <TableHead className="pr-8 text-right">
-                                        Action
                                     </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {inboxes.data.length > 0 ? (
-                                    inboxes.data.map((inbox) => (
-                                        <TableRow key={inbox.id}>
-                                            <TableCell className="pl-9 flex items-center gap-2">
-                                                <Avatar>
-                                                    <AvatarImage
-                                                        src={`/storage/${inbox.sender.picture}`}
-                                                    />
-                                                    <AvatarFallback>
-                                                        {inbox.sender.name}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                {inbox.sender.name}
+                                {loans?.data?.length > 0 ? (
+                                    loans.data.map((loan) => (
+                                        <TableRow
+                                            key={loan.id}
+                                            className="group relative hover:bg-muted/50 cursor-pointer"
+                                            onClick={() =>
+                                                router.visit(
+                                                    `/dashboard/loans/${loan.id}`
+                                                )
+                                            }
+                                        >
+                                            <TableCell className="pl-9">
+                                                {loan.user.name}
                                             </TableCell>
-                                            <TableCell>
-                                                {inbox.receiver.name}
+                                            <TableCell className="text-left font-medium">
+                                                <span
+                                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                                        loan.status ===
+                                                        "accepted"
+                                                            ? "bg-green-100 text-green-800"
+                                                            : loan.status ===
+                                                              "pending"
+                                                            ? "bg-yellow-100 text-yellow-800"
+                                                            : loan.status ===
+                                                              "cancelled"
+                                                            ? "bg-slate-100 text-slate-800"
+                                                            : "bg-red-100 text-red-800"
+                                                    }`}
+                                                >
+                                                    {loan.status
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        loan.status.slice(1)}
+                                                </span>
                                             </TableCell>
-                                            <TableCell>
-                                                {inbox.tenant.name}
+                                            <TableCell className="text-left font-medium">
+                                                {loan.description}
                                             </TableCell>
-                                            <TableCell className="text-right">
-                                                {formatDate(inbox.created_at)}
-                                            </TableCell>
-                                            <TableCell className="text-right space-x-2 pr-8">
-                                                {inbox.status === "pending" &&
-                                                inbox.receiver.name ==
-                                                    user.name ? (
-                                                    <div className="flex justify-end items-center gap-2">
-                                                        <Button
-                                                            size="sm"
-                                                            onClick={() =>
-                                                                router.post(
-                                                                    `/dashboard/inbox/accept/${inbox.id}`
-                                                                )
-                                                            }
-                                                            className="bg-green-600 text-white hover:bg-green-700 cursor-pointer"
-                                                        >
-                                                            Accept
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            onClick={() =>
-                                                                router.delete(
-                                                                    `/dashboard/inbox/decline/${inbox.id}`
-                                                                )
-                                                            }
-                                                            className="hover:bg-red-100 hover:text-red-500 cursor-pointer"
-                                                        >
-                                                            Decline
-                                                        </Button>
-                                                    </div>
-                                                ) : (
-                                                    <span
-                                                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                                            inbox.status ===
-                                                            "accepted"
-                                                                ? "bg-green-100 text-green-800"
-                                                                : "bg-red-100 text-red-800"
-                                                        }`}
-                                                    >
-                                                        {inbox.status
-                                                            .charAt(0)
-                                                            .toUpperCase() +
-                                                            inbox.status.slice(
-                                                                1
-                                                            )}
-                                                    </span>
+                                            <TableCell className="text-right font-medium pr-9">
+                                                {formatDateNoHour(
+                                                    loan.created_at
                                                 )}
                                             </TableCell>
                                         </TableRow>
@@ -279,7 +259,7 @@ function EmployeesInbox() {
                                 ) : (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={5}
+                                            colSpan={4}
                                             className="text-center py-12 px-6"
                                         >
                                             <div className="flex flex-col gap-4">
@@ -290,8 +270,13 @@ function EmployeesInbox() {
                                                 />
                                                 <div>
                                                     <h1 className="font-bold">
-                                                        No Messages Found.
+                                                        No Loans Found.
                                                     </h1>
+                                                    <p className="font-light">
+                                                        Add loans or try
+                                                        searching with different
+                                                        keyword
+                                                    </p>
                                                 </div>
                                             </div>
                                         </TableCell>
@@ -303,20 +288,20 @@ function EmployeesInbox() {
                     <div className="flex justify-between items-center gap-2">
                         <div className="flex justify-center items-center gap-2 bg-card p-2 rounded-3xl shadow">
                             <Button variant="outline">
-                                {inboxes.from}-{inboxes.to} of {inboxes.total}
+                                {loans.from}-{loans.to} of {loans.total}
                             </Button>
                             <Select
-                                defaultValue={String(inboxes.per_page)}
+                                defaultValue={String(loans.per_page)}
                                 onValueChange={(value) => {
                                     router.get(
-                                        "/dashboard/employees",
+                                        "/dashboard/loans",
                                         { per_page: value },
                                         { preserveScroll: true }
                                     );
                                 }}
                             >
                                 <SelectTrigger className="w-[180px] cursor-pointer">
-                                    <SelectValue placeholder="Select a value" />
+                                    <SelectValue placeholder="Per Page" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem
@@ -340,31 +325,29 @@ function EmployeesInbox() {
                                 </SelectContent>
                             </Select>
                         </div>
-
                         <Pagination className="justify-end items-center">
                             <PaginationContent>
-                                {inboxes.prev_page_url && (
+                                {loans.prev_page_url && (
                                     <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationPrevious
-                                            href={inboxes.prev_page_url}
+                                            href={loans.prev_page_url}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 router.visit(
-                                                    inboxes.prev_page_url
+                                                    loans.prev_page_url
                                                 );
                                             }}
                                         />
                                     </PaginationItem>
                                 )}
-
-                                {inboxes.next_page_url && (
+                                {loans.next_page_url && (
                                     <PaginationItem className="bg-card shadow rounded-3xl">
                                         <PaginationNext
-                                            href={inboxes.next_page_url}
+                                            href={loans.next_page_url}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 router.visit(
-                                                    inboxes.next_page_url
+                                                    loans.next_page_url
                                                 );
                                             }}
                                         />
@@ -379,6 +362,6 @@ function EmployeesInbox() {
     );
 }
 
-EmployeesInbox.layout = (page) => <Dashboard>{page}</Dashboard>;
+LoansIndex.layout = (page) => <Dashboard>{page}</Dashboard>;
 
-export default EmployeesInbox;
+export default LoansIndex;
