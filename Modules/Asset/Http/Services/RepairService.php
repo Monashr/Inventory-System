@@ -19,8 +19,10 @@ class RepairService
         $this->locationService = $locationService;
     }
 
-    public function getAllRepairsPaginated($request, $perPage)
+    public function getAllRepairsPaginated($request)
     {
+        $perPage = $request->input('per_page', 10);
+
         $query = Repair::withoutGlobalScope('tenant')
             ->select('repairs.*', 'assets.serial_code as asset_name')
             ->join('assets', 'repairs.asset_id', '=', 'assets.id')
@@ -104,11 +106,20 @@ class RepairService
 
     public function updateRepair($request, $repair)
     {
-        $repair->update($request);
+        $validated = $request->validated();
+
+        $repair->update($validated);
         $repair->update(['updated_by' => auth()->user()->id]);
         $repair->save();
 
         $this->assetLogService->userEditRepair($repair->asset);
+    }
+
+    public function storeRepair($request)
+    {
+        $validated = $request->validated();
+
+        $this->createRepair($validated);
     }
 
     public function cancelRepair($repair)
@@ -171,11 +182,22 @@ class RepairService
             ->pluck('status');
     }
 
-    public function getAllRepairFilters()
+    public function getAllRepairFilterValues()
     {
         return [
             'vendor' => $this->getAllVendorDistinct(),
             'status' => $this->getAllStatus(),
+        ];
+    }
+
+    public function getAllRepairFilters($request)
+    {
+        return [
+            'search' => $request->search,
+            'sort_by' => $request->sort_by,
+            'sort_direction' => $request->sort_direction,
+            'vendor' => $request->vendor,
+            'status' => $request->status,
         ];
     }
 }

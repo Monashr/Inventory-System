@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Asset\Http\Requests;
+namespace Modules\Asset\Http\Requests\Asset;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddAssetRequest extends FormRequest
+class UpdateAssetRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

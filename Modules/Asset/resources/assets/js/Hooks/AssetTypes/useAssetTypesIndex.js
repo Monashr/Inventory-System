@@ -17,6 +17,11 @@ export default function useAssetTypeIndex() {
             type: "text",
         },
         {
+            key: "code",
+            label: "Code",
+            type: "text",
+        },
+        {
             key: "created_at",
             label: "Created At",
             type: "time",
@@ -75,9 +80,6 @@ export default function useAssetTypeIndex() {
     };
 
     const onSearch = () => {
-
-        console.log("search!!!!!!!!");
-
         router.get(
             "/dashboard/assettypes",
             {

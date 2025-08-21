@@ -43,7 +43,7 @@ class AssetLogService
         $this->createLog($asset, 'Asset Imported', $ActivityDescription);
     }
 
-    public function getAllAssetLogFilters($assetId)
+    public function getAllAssetLogFilterValues($assetId)
     {
         return [
             'user' => $this->getAllAssetLogUserNames($assetId),
@@ -72,8 +72,10 @@ class AssetLogService
             ->values();
     }
 
-    public function getAssetLogs(Asset $asset, $request, $perpage = 10)
+    public function getAssetLogs(Asset $asset, $request)
     {
+        $perPage = $request->input('per_page', 10);
+
         $query = $asset->logs()
             ->select('asset_logs.*', 'users.name as user')
             ->leftJoin('users', 'asset_logs.created_by', '=', 'users.id');
@@ -100,7 +102,7 @@ class AssetLogService
 
         $query->orderBy($sortBy, $sortDirection);
 
-        return $query->paginate($perpage);
+        return $query->paginate($perPage);
     }
 
     public function userEditRepair(Asset $asset, string $ActivityDescription = null)
@@ -134,5 +136,16 @@ class AssetLogService
     private function createDescriptionByTemplate(Asset $asset, string $activityType)
     {
         return auth()->user()->name . " " . $activityType . " on assets id=" . $asset->id . " at " . Carbon::now();
+    }
+
+    public function getAllAssetLogFilters($request)
+    {
+        return [
+            'search' => $request->search,
+            'sort_by' => $request->sort_by,
+            'sort_direction' => $request->sort_direction,
+            'user' => $request->user,
+            'activity_type' => $request->activity_type,
+        ];
     }
 }

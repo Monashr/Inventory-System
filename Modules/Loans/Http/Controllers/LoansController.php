@@ -84,7 +84,7 @@ class LoansController extends Controller
         $perPage = $request->input('per_page', 10);
 
         return Inertia::render('Loans/LoansAdd', [
-            'assets' => $this->assetService->getAvailableAssetPagination($request, $perPage),
+            'assets' => $this->assetService->getAllAssetPagination($request, null, true),
             'users' => $users,
             'permissions' => auth()->user()->getTenantPermission(),
         ]);

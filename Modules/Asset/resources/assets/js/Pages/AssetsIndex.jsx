@@ -2,13 +2,13 @@ import React from "react";
 
 import { usePage, Head } from "@inertiajs/react";
 
-import useAssetIndex from "../Hooks/useAssetsIndex";
+import useAssetIndex from "../Hooks/Assets/useAssetsIndex";
 
 import Dashboard from "@components/layout/Dashboard";
 import CustomDataTable from "@components/custom/CustomDataTable";
 import CustomPagination from "@components/custom/CustomPagination";
 import CustomTableSearch from "@components/custom/CustomTableSearch";
-import AssetsIndexActionButton from "../Components/AssetsIndexActionButton";
+import AssetsIndexActionButton from "../Components/Asset/AssetsIndexActionButton";
 
 import { Package } from "lucide-react";
 import { Card } from "@components/ui/card";

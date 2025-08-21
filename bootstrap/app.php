@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AuthorityCheck;
 use Inertia\Inertia;
 
 use symfony\Component\HttpFoundation\Response;
@@ -31,8 +32,14 @@ return Application::configure(basePath: dirname(__DIR__))
             ->group('tenant', [
                 NeedsTenant::class,
                 CustomEnsureValidTenantSession::class,
+
             ]);
+
+        $middleware->alias([
+            'permission' => AuthorityCheck::class,
+        ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions) {
         // $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
         //     if (in_array($response->getStatusCode(), [500, 503, 404, 403])) {
@@ -45,7 +52,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //             'message' => 'The page expired, please try again.',
         //         ]);
         //     }
-
+    
         //     return $response;
         // });
     })->create();

@@ -2,10 +2,10 @@ import React from "react";
 
 import { usePage, Head } from "@inertiajs/react";
 
-import useAssetTypeIndex from "../Hooks/useAssetTypesIndex";
+import useAssetTypeIndex from "../Hooks/AssetTypes/useAssetTypesIndex";
 
 import Dashboard from "@components/layout/Dashboard";
-import AssetTypesIndexActionButton from "../Components/AssetTypesActionButton";
+import AssetTypesIndexActionButton from "../Components/AssetType/AssetTypesActionButton";
 
 import CustomDataTable from "@components/custom/CustomDataTable";
 import CustomPagination from "@components/custom/CustomPagination";

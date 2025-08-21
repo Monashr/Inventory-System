@@ -1,8 +1,6 @@
 import React from "react";
 
-import { usePage, Head, Link } from "@inertiajs/react";
-
-import useAssetIndex from "../Hooks/useAssetsIndex";
+import { Head, Link } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
@@ -11,12 +9,11 @@ import { Button } from "@components/ui/button";
 import CustomDataTable from "@components/custom/CustomDataTable";
 import CustomPagination from "@components/custom/CustomPagination";
 import CustomTableSearch from "@components/custom/CustomTableSearch";
-import AssetsIndexActionButton from "../Components/AssetsIndexActionButton";
 
 import { Hammer, Plus } from "lucide-react";
 import { Card } from "@components/ui/card";
 import CustomTableFilterButton from "@components/custom/CustomTableFilterButton";
-import useRepairIndex from "../Hooks/useRepairIndex";
+import useRepairIndex from "../Hooks/Repairs/useRepairIndex";
 
 function AssetsIndex() {
     const repairIndexLogic = useRepairIndex();

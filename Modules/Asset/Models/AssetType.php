@@ -15,7 +15,7 @@ class AssetType extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['name', 'model', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['name', 'model', 'code', 'created_by', 'updated_by', 'deleted_by'];
 
     protected $table = 'asset_types';
 

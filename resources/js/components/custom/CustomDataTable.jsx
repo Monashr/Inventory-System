@@ -124,7 +124,7 @@ function CustomDataTable({
                     ) : (
                         <TableRow>
                             <TableCell
-                                colSpan={5}
+                                colSpan={columns.length}
                                 className="text-center py-12 px-6"
                             >
                                 <div className="flex flex-col gap-4">

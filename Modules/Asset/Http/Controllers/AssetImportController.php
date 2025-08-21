@@ -41,5 +41,4 @@ class AssetImportController extends Controller
         return Excel::download(new AssetExport, 'assets.xlsx');
     }
 
-
 }

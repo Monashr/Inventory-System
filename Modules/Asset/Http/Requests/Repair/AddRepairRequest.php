@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Asset\Http\Requests;
+namespace Modules\Asset\Http\Requests\Repair;
 
 use Illuminate\Foundation\Http\FormRequest;
 

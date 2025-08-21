@@ -8,41 +8,19 @@ class AssetService
 {
 
     protected $locationService;
+    protected $assetLogService;
 
-    public function __construct(LocationService $locationService)
+    protected $assetTypeService;
+
+    public function __construct(LocationService $locationService, AssetLogService $assetLogService, AssetTypeService $assetTypeService)
     {
         $this->locationService = $locationService;
+        $this->assetLogService = $assetLogService;
+        $this->assetTypeService = $assetTypeService;
     }
 
-    public function getPaginatedAssetsByAssetType($request, $assetTypeId, $perPage = 10)
-    {
-        $query = Asset::query()->where('asset_type_id', $assetTypeId);
-
-        $allowedSorts = ['serial_code', 'brand', 'created_at'];
-
-        $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
-            $sortBy = 'serial_code';
-        }
-
-        $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
-            $sortDirection = 'asc';
-        }
-
-        $query->orderBy($sortBy, $sortDirection);
-
-        if ($request->filled('search')) {
-            $search = strtolower($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->whereRaw('LOWER(brand) LIKE ?', ["%{$search}%"])
-                    ->orWhereRaw('LOWER(serial_code) LIKE ?', ["%{$search}%"]);
-            });
-        }
-
-        return $query->paginate($perPage)->withQueryString();
-    }
-
+    // INFORMATION QUERY
+    // --------------------------------------------------------------------------------------------------------
     public function getTotalAvailableAssets($assetType = null)
     {
         if ($assetType) {
@@ -106,67 +84,39 @@ class AssetService
         return Asset::with(['loans'])->where('availability', 'loaned')->orderBy('updated_at', 'desc')->take(5)->get();
     }
 
-    public function getAssetPagination($request, $perPage)
-    {
-        $query = Asset::query();
+    // BASIC QUERY
+    // --------------------------------------------------------------------------------------------------------
 
-        if ($request->filled('brand')) {
+    public function getAllAssetPagination($request, $assetTypeId = null, $available = false)
+    {
+        $perPage = $request->input('per_page', 10);
+
+        if ($assetTypeId) {
+            $query = Asset::query()->where('asset_type_id', $assetTypeId);
+        } else if ($available) {
+            $query = Asset::query()->where('availability', 'available')->where('condition', '!=', 'defect');
+        } else {
+            $query = Asset::query();
+        }
+
+        if ($request->filled('brand') && $request->brand != 'All') {
             $query->where('brand', 'LIKE', '%' . $request->brand . '%');
         }
 
-        if ($request->filled('condition')) {
+        if ($request->filled('condition') && $request->condition != 'All') {
             $query->where('condition', $request->condition);
         }
 
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
-
-        $query->where('availability', 'available');
-
-        $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
-
-        $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
-            $sortBy = 'serial_code';
-        }
-
-        $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
-            $sortDirection = 'asc';
-        }
-
-        $query->orderBy($sortBy, $sortDirection);
-
-        if ($request->filled('search')) {
-            $search = strtolower($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->whereRaw('LOWER(brand) LIKE ?', ["%{$search}%"])
-                    ->orWhereRaw('LOWER(serial_code) LIKE ?', ["%{$search}%"]);
-            });
-        }
-
-        return $query->paginate($perPage)->withQueryString();
-    }
-
-    public function getAllAssetPagination($request, $perPage)
-    {
-        $query = Asset::query();
-
-        if ($request->filled('brand')) {
-            $query->where('brand', 'LIKE', '%' . $request->brand . '%');
-        }
-
-        if ($request->filled('condition')) {
-            $query->where('condition', $request->condition);
-        }
-
-        if ($request->filled('type')) {
+        if ($request->filled('type') && $request->type != 'All') {
             $query->whereHas('assetType', function ($q) use ($request) {
                 $q->where('name', $request->type);
             });
         }
 
+        if (!$this->canManageAsset()) {
+            $query->where('availability', 'available');
+        }
+
         $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
 
         $sortBy = $request->get('sort_by');
@@ -190,16 +140,6 @@ class AssetService
         }
 
         return $query->paginate($perPage)->withQueryString();
-    }
-
-    public function findAsset($asset)
-    {
-        return Asset::findOrFail($asset);
-    }
-
-    public function findAssetWithDetails($asset)
-    {
-        return Asset::with('assetType', 'location')->findOrFail($asset);
     }
 
     public function getAvailableAssetsByAssetType($assetType, $loanId = null)
@@ -220,85 +160,14 @@ class AssetService
             ->get(['id', 'serial_code', 'condition', 'specification', 'brand']);
     }
 
-    public function getAvailableAssetPagination($request, $perPage)
+    public function findAsset($asset)
     {
-        $query = Asset::query()->where('availability', 'available')->where('condition', '!=', 'defect');
-
-        if ($request->filled('brand')) {
-            $query->where('brand', 'LIKE', '%' . $request->brand . '%');
-        }
-
-        if ($request->filled('condition')) {
-            $query->where('condition', $request->condition);
-        }
-
-        $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
-
-        $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
-            $sortBy = 'serial_code';
-        }
-
-        $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
-            $sortDirection = 'asc';
-        }
-
-        $query->orderBy($sortBy, $sortDirection);
-
-        if ($request->filled('search')) {
-            $search = strtolower($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->whereRaw('LOWER(brand) LIKE ?', ["%{$search}%"])
-                    ->orWhereRaw('LOWER(serial_code) LIKE ?', ["%{$search}%"]);
-            });
-        }
-
-        return $query->paginate($perPage)->withQueryString();
+        return Asset::findOrFail($asset);
     }
 
-    public function getAllAssetBrands()
+    public function findAssetWithDetails($asset)
     {
-        return Asset::select('brand')
-            ->distinct()
-            ->whereNotNull('brand')
-            ->where('brand', '!=', '')
-            ->orderBy('brand')
-            ->get()
-            ->pluck('brand');
-    }
-
-    public function getAllAssetConditions()
-    {
-        return Asset::select('condition')
-            ->distinct()
-            ->whereNotNull('condition')
-            ->where('condition', '!=', '')
-            ->orderBy('condition')
-            ->get()
-            ->pluck('condition');
-    }
-
-    public function getAllAssetTypes()
-    {
-        return Asset::withoutGlobalScope('tenant')
-            ->join('asset_types', 'assets.asset_type_id', '=', 'asset_types.id')
-            ->whereNotNull('asset_types.name')
-            ->where('asset_types.name', '!=', '')
-            ->where('assets.tenant_id', tenant()->id)
-            ->select('asset_types.name')
-            ->distinct()
-            ->orderBy('asset_types.name')
-            ->pluck('asset_types.name');
-    }
-
-    public function getAllAssetFilters()
-    {
-        return [
-            'type' => $this->getAllAssetTypes(),
-            'brand' => $this->getAllAssetBrands(),
-            'condition' => $this->getAllAssetConditions(),
-        ];
+        return Asset::with('assetType', 'location')->findOrFail($asset);
     }
 
     public function createAsset($validated, $assetType)
@@ -322,5 +191,117 @@ class AssetService
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+    }
+
+    public function deleteAsset($asset)
+    {
+        $asset = $this->findAsset($asset);
+
+        $asset->deleted_by = auth()->id();
+
+        $asset->save();
+
+        $asset->delete();
+
+        $this->assetLogService->userDeleteAsset($asset);
+    }
+
+    public function storeAsset($request)
+    {
+        $validated = $request->validated();
+
+        $assetType = $this->assetTypeService->findAssetType($validated['asset_type_id']);
+
+        $asset = $this->createAsset($validated, $assetType);
+
+        $this->assetLogService->userAddAsset($asset);
+    }
+
+    public function updateAsset($request, $asset)
+    {
+        $validated = $request->validated();
+
+        $asset->update($validated);
+
+        $this->assetLogService->userEditAsset($asset);
+    }
+
+    // AUTHORITY CHECK
+    // --------------------------------------------------------------------------------------------------------
+
+    public function canManageAsset()
+    {
+        return checkAuthority(config('asset.permissions')['permissions']['manage']);
+    }
+
+    public function canAuditAsset()
+    {
+        return checkAuthority(config('asset.permissions')['permissions']['audit']);
+    }
+
+    // FILTERS
+    // --------------------------------------------------------------------------------------------------------
+
+    public function getAllAssetBrands()
+    {
+        $brands = Asset::select('brand')
+            ->distinct()
+            ->whereNotNull('brand')
+            ->where('brand', '!=', '')
+            ->orderBy('brand')
+            ->get()
+            ->pluck('brand');
+
+        return $brands->prepend('All');
+    }
+
+
+    public function getAllAssetConditions()
+    {
+        $conditions = Asset::select('condition')
+            ->distinct()
+            ->whereNotNull('condition')
+            ->where('condition', '!=', '')
+            ->orderBy('condition')
+            ->get()
+            ->pluck('condition');
+
+        return $conditions->prepend('All');
+    }
+
+    public function getAllAssetTypes()
+    {
+        $assetTypes = Asset::withoutGlobalScope('tenant')
+            ->join('asset_types', 'assets.asset_type_id', '=', 'asset_types.id')
+            ->whereNotNull('asset_types.name')
+            ->where('asset_types.name', '!=', '')
+            ->where('assets.tenant_id', tenant()->id)
+            ->select('asset_types.name')
+            ->distinct()
+            ->orderBy('asset_types.name')
+            ->pluck('asset_types.name');
+
+        return $assetTypes->prepend('All');
+    }
+
+    public function getAllAssetFilterValues()
+    {
+        return [
+            'type' => $this->getAllAssetTypes(),
+            'brand' => $this->getAllAssetBrands(),
+            'condition' => $this->getAllAssetConditions(),
+        ];
+    }
+
+    public function getAllAssetFilter($request)
+    {
+        return [
+            'search' => $request->search,
+            'sort_by' => $request->sort_by,
+            'sort_direction' => $request->sort_direction,
+            'brand' => $request->brand,
+            'condition' => $request->condition,
+            'type' => $request->type,
+        ];
     }
 }

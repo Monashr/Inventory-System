@@ -2,8 +2,8 @@
 
 namespace Modules\Asset\Http\Controllers;
 
-use Modules\Asset\Http\Requests\UpdateAssetTypeRequest;
-use Modules\Asset\Http\Requests\AddAssetTypeRequest;
+use Modules\Asset\Http\Requests\AssetType\UpdateAssetTypeRequest;
+use Modules\Asset\Http\Requests\AssetType\AddAssetTypeRequest;
 use Modules\Asset\Http\Services\AssetTypeService;
 use Modules\Asset\Http\Services\AssetLogService;
 use Modules\Asset\Http\Services\AssetService;
@@ -27,32 +27,16 @@ class AssetTypeController extends Controller
 
     public function assetTypeIndex(Request $request)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['view'])) {
-            return redirect()->route('dashboard.index');
-        }
-
-        $perPage = $request->input('per_page', 10);
-
         return Inertia::render('Asset/AssetTypesIndex', [
-            'assetTypes' => $this->assetTypeService->getAssetTypePagination($request, $perPage),
+            'assetTypes' => $this->assetTypeService->getAssetTypePagination($request),
             'permissions' => auth()->user()->getTenantPermission(),
-            'filters' => [
-                'search' => $request->search,
-                'sort_by' => $request->sort_by,
-                'sort_direction' => $request->sort_direction,
-                'name' => $request->name,
-                'model' => $request->model,
-            ],
-            'filterValues' => $this->assetTypeService->getAllAssetTypeFilters(),
+            'filters' => $this->assetTypeService->getAllAssetTypeFilters($request),
+            'filterValues' => $this->assetTypeService->getAllAssetTypeFilterValues(),
         ]);
     }
 
     public function showAssetTypeAddForm()
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['view'])) {
-            return redirect()->route('dashboard.index');
-        }
-
         return Inertia::render('Asset/AssetTypesAdd', [
             'models' => $this->assetTypeService->getAllAssetTypeModels(),
         ]);
@@ -60,20 +44,10 @@ class AssetTypeController extends Controller
 
     public function assetTypeDetails(Request $request, $assetType)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['view'])) {
-            return redirect()->route('dashboard.index');
-        }
-        
-        $perPage = $request->input('per_page', 10);
-
         return Inertia::render('Asset/AssetTypesDetails', [
-            'assets' => $this->assetService->getPaginatedAssetsByAssetType($request, $assetType, $perPage),
+            'assets' => $this->assetService->getAllAssetPagination($request, $assetType),
             'assetType' => $this->assetTypeService->findAssetType($assetType),
-            'filters' => [
-                'search' => $request->search,
-                'sort_by' => $request->sort_by,
-                'sort_direction' => $request->sort_direction,
-            ],
+            'filters' => $this->assetTypeService->getAllAssetTypeFilters($request),
             'permissions' => auth()->user()->getTenantPermission(),
             'totalAvailableAssets' => $this->assetService->getTotalAvailableAssets($assetType),
             'totalLoanedAssets' => $this->assetService->getTotalLoanedAssets($assetType),
@@ -83,23 +57,13 @@ class AssetTypeController extends Controller
 
     public function storeAssetType(AddAssetTypeRequest $request)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            return redirect()->route('dashboard.index');
-        }
+        $this->assetTypeService->storeAssetType($request);
 
-        $validated = $request->validated();
-
-        $assetType = $this->assetTypeService->createAssetType($validated);
-
-        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' created successfully');
+        return redirect()->route('assettypes.index')->with('success', 'Asset Type created successfully');
     }
 
     public function showAssetTypeEditForm(AssetType $assetType)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            return redirect()->route('dashboard.index');
-        }
-
         return Inertia::render("Asset/AssetTypesEdit", [
             "assetType" => $assetType,
         ]);
@@ -107,34 +71,16 @@ class AssetTypeController extends Controller
 
     public function updateAssetType(UpdateAssetTypeRequest $request, AssetType $assetType)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            return redirect()->route('dashboard.index');
-        }
+        $this->assetTypeService->updateAssetType($request, $assetType);
 
-        $validated = $request->validated();
-
-        $assetType->update($validated);
-
-        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' updated successfully');
-        ;
+        return redirect()->route('assettypes.index')->with('success', 'Asset Type updated successfully');
     }
 
     public function destroy($assetType)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            return redirect()->route('dashboard.index');
-        }
+        $this->assetTypeService->deleteAssetType($assetType);
 
-        $assetType = $this->assetTypeService->findAssetType($assetType);
-
-        $assetType->deleted_by = auth()->id();
-
-        $assetType->save();
-
-        $assetType->delete();
-
-        return redirect()->route('assettypes.index')->with('success', 'Asset Type ' . $assetType->name . ' deleted successfully');
-        ;
+        return redirect()->route('assettypes.index')->with('success', 'Asset Type deleted successfully');
     }
 
 }

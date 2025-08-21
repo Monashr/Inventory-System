@@ -1,22 +1,20 @@
 import React from "react";
 
-import { Head, usePage } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 
 import Dashboard from "@components/layout/Dashboard";
 
 import { Package } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import AssetDetailsActionButton from "../Components/AssetDetailsActionButton";
-import AssetDetailsTable from "../Components/AssetDetailsTable";
+import AssetDetailsActionButton from "../Components/Asset/AssetDetailsActionButton";
+import AssetDetailsTable from "../Components/Asset/AssetDetailsTable";
 import CustomDataTable from "@components/custom/CustomDataTable";
-import useAssetLogs from "../Hooks/useAssetLogs";
+import useAssetLogs from "../Hooks/AssetLogs/useAssetLogs";
 import CustomPagination from "@components/custom/CustomPagination";
 import CustomTableFilterButton from "@components/custom/CustomTableFilterButton";
 
 function AssetDetail() {
-    const { permissions } = usePage().props;
 
     const AssetDetailsLogic = useAssetLogs();
 
@@ -41,7 +39,7 @@ function AssetDetail() {
                         <div className="">
                             <AssetDetailsActionButton
                                 asset={AssetDetailsLogic.asset}
-                                permissions={permissions}
+                                permissions={AssetDetailsLogic.permissions}
                             />
                         </div>
                     </div>
@@ -50,7 +48,7 @@ function AssetDetail() {
                     <AssetDetailsTable asset={AssetDetailsLogic.asset} />
                 </Card>
 
-                {permissions.includes("audit assets") ? (
+                {AssetDetailsLogic.permissions.includes("audit assets") && AssetDetailsLogic.log ? (
                     <>
                         <Card>
                             <CardContent>

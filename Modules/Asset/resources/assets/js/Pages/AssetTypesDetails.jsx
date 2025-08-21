@@ -7,47 +7,17 @@ import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 
 import {
     Package,
-    Plus,
-    SquarePen,
     Boxes,
-    ArrowUpDown,
     ChevronLeft,
     Pen,
-    SearchIcon,
     Trash,
 } from "lucide-react";
 
-import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@components/ui/avatar";
-import {
-    Table,
-    TableHeader,
-    TableRow,
-    TableHead,
-    TableBody,
-    TableCell,
-} from "@components/ui/table";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationPrevious,
-    PaginationNext,
-} from "@components/ui/pagination";
-import {
-    Select,
-    SelectTrigger,
-    SelectContent,
-    SelectItem,
-    SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@components/ui/label";
 import { Card } from "@components/ui/card";
-import useAssetIndex from "../Hooks/useAssetsIndex";
-import AssetsIndexActionButton from "../Components/AssetsIndexActionButton";
+import useAssetIndex from "../Hooks/Assets/useAssetsIndex";
 import CustomDataTable from "@components/custom/CustomDataTable";
-import CustomTableFilterButton from "@components/custom/CustomTableFilterButton";
 import CustomTableSearch from "@components/custom/CustomTableSearch";
 import CustomPagination from "@components/custom/CustomPagination";
 

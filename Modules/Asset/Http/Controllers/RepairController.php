@@ -2,15 +2,15 @@
 
 namespace Modules\Asset\Http\Controllers;
 
-use Modules\Asset\Http\Requests\AddRepairRequest;
-use Modules\Asset\Http\Requests\UpdateRepairRequest;
+use Modules\Asset\Http\Requests\Repair\AddRepairRequest;
+use Modules\Asset\Http\Requests\Repair\UpdateRepairRequest;
 use Modules\Asset\Http\Services\AssetTypeService;
 use Modules\Asset\Http\Services\RepairService;
 use Modules\Asset\Http\Services\AssetService;
 use App\Http\Controllers\Controller;
+use Modules\Asset\Models\Repair;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Modules\Asset\Models\Repair;
 
 class RepairController extends Controller
 {
@@ -26,45 +26,23 @@ class RepairController extends Controller
     }
     public function index(Request $request)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
-            return redirect()->route('dashboard.index');
-        }
-
-        $perPage = $request->input('per_page', 10);
-
-        $repairs = $this->repairService->getAllRepairsPaginated($request, $perPage);
-
         return Inertia::render('Asset/RepairIndex', [
-            'repairs' => $repairs,
-            'filters' => [
-                'search' => $request->search,
-                'sort_by' => $request->sort_by,
-                'sort_direction' => $request->sort_direction,
-                'vendor' => $request->vendor,
-                'status' => $request->status,
-            ],
-            'filterValues' => $this->repairService->getAllRepairFilters(),
+            'repairs' => $this->repairService->getAllRepairsPaginated($request),
+            'filters' => $this->repairService->getAllRepairFilters($request),
+            'filterValues' => $this->repairService->getAllRepairFilterValues(),
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
     }
 
     public function details($repair)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
-            return redirect()->route('dashboard.index');
-        }
         return Inertia::render('Asset/RepairDetails', [
             'repair' => $this->repairService->getRepair($repair),
         ]);
-
     }
 
     public function showRepairAdd()
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
-            return redirect()->route('dashboard.index');
-        }
-
         return Inertia::render('Asset/RepairAdd', [
             'assetTypes' => $this->assetTypeService->getAllAssetTypes(),
             'vendors' => $this->repairService->getAllVendor(),
@@ -73,22 +51,13 @@ class RepairController extends Controller
 
     public function store(AddRepairRequest $request)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
-            return redirect()->route('dashboard.index');
-        }
-
-        $validated = $request->validated();
-
-        $this->repairService->createRepair($validated);
+        $this->repairService->storeRepair($request);
 
         return redirect()->route('repairs.index');
     }
 
     public function showRepairEdit($repair)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
-            return redirect()->route('dashboard.index');
-        }
         return Inertia::render('Asset/RepairEdit', [
             'repair' => $this->repairService->getRepair($repair),
             'vendors' => $this->repairService->getAllVendor(),
@@ -97,29 +66,18 @@ class RepairController extends Controller
 
     public function update(UpdateRepairRequest $request, Repair $repair)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
-            return redirect()->route('dashboard.index');
-        }
-        $validated = $request->validated();
-
-        $this->repairService->updateRepair($validated, $repair);
+        $this->repairService->updateRepair($request, $repair);
 
         return redirect()->route('repairs.index');
     }
 
     public function cancel($repair)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
-            return redirect()->route('dashboard.index');
-        }
         $this->repairService->cancelRepair($repair);
     }
 
     public function complete($repair)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['repair'])) {
-            return redirect()->route('dashboard.index');
-        }
         $this->repairService->completedRepair($repair);
     }
 
@@ -127,6 +85,5 @@ class RepairController extends Controller
     {
 
     }
-
 
 }

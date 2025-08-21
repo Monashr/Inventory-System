@@ -5,7 +5,7 @@ import { Head, useForm, Link, usePage } from "@inertiajs/react";
 import Dashboard from "@components/layout/Dashboard";
 import { ComboBoxInput } from "@components/custom/ComboBoxInput";
 
-import { Package, Save, ChevronLeft, Plus } from "lucide-react";
+import { Package, Save, ChevronLeft } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import NoAssetType from "../Components/NoAssetType";
+import NoAssetType from "../Components/AssetType/NoAssetType";
 
 function AssetCreate() {
     const { assetTypes, brands } = usePage().props;
@@ -84,7 +84,7 @@ function AssetCreate() {
                                                 );
 
                                             const now = Date.now();
-                                            const slug = selectedType?.name
+                                            const slug = selectedType?.code
                                                 ?.toLowerCase()
                                                 ?.replace(/\s+/g, "-")
                                                 ?.replace(/[^\w\-]+/g, "");

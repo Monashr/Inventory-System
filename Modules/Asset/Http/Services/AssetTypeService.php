@@ -22,8 +22,10 @@ class AssetTypeService
         return AssetType::all();
     }
 
-    public function getAssetTypePagination($request, $perPage)
+    public function getAssetTypePagination($request)
     {
+        $perPage = $request->input('per_page', 10);
+
         $query = AssetType::query();
 
         if ($request->filled('name')) {
@@ -58,6 +60,41 @@ class AssetTypeService
         return $assetTypes;
     }
 
+    public function storeAssetType($request)
+    {
+        $validated = $request->validated();
+
+        $this->createAssetType($validated);
+    }
+
+    public function createAssetType($validated)
+    {
+        return AssetType::create([
+            'name' => $validated['name'],
+            'model' => $validated['model'],
+            'code' => $validated['code'],
+            'created_by' => auth()->user()->id,
+            'updated_by' => auth()->user()->id,
+        ]);
+    }
+    public function updateAssetType($request, $assetType)
+    {
+        $validated = $request->validated();
+
+        $assetType->update($validated);
+    }
+
+    public function deleteAssetType($assetType)
+    {
+        $assetType = $this->findAssetType($assetType);
+
+        $assetType->deleted_by = auth()->id();
+
+        $assetType->save();
+
+        $assetType->delete();
+    }
+
     public function getAllAssetTypeNames()
     {
         return AssetType::select('name')
@@ -80,7 +117,7 @@ class AssetTypeService
             ->pluck('model');
     }
 
-    public function getAllAssetTypeFilters()
+    public function getAllAssetTypeFilterValues()
     {
         return [
             'name' => $this->getAllAssetTypeNames(),
@@ -88,13 +125,14 @@ class AssetTypeService
         ];
     }
 
-    public function createAssetType($validated)
+    public function getAllAssetTypeFilters($request)
     {
-        return AssetType::create([
-            'name' => $validated['name'],
-            'model' => $validated['model'],
-            'created_by' => auth()->user()->id,
-            'updated_by' => auth()->user()->id,
-        ]);
+        return [
+            'search' => $request->search,
+            'sort_by' => $request->sort_by,
+            'sort_direction' => $request->sort_direction,
+            'name' => $request->name,
+            'model' => $request->model,
+        ];
     }
 }

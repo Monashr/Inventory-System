@@ -6,7 +6,7 @@ import Dashboard from "@components/layout/Dashboard";
 
 import { ChevronLeft, Package, SaveAll } from "lucide-react";
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,7 @@ function AssetTypesEdit() {
     const { data, setData, put, processing, errors } = useForm({
         name: assetType.name || "",
         model: assetType.model || "",
+        code: assetType.code || "",
     });
 
     const handleSubmit = (e) => {
@@ -52,7 +53,7 @@ function AssetTypesEdit() {
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2">
+                                <div className="space-y-2 col-span-2">
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
@@ -77,6 +78,22 @@ function AssetTypesEdit() {
                                             setData("model", e.target.value)
                                         }
                                         placeholder="Enter Asset Type Model"
+                                    />
+                                    {errors.model && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.model}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="code">Code</Label>
+                                    <Input
+                                        id="code"
+                                        value={data.code}
+                                        onChange={(e) =>
+                                            setData("code", e.target.value)
+                                        }
+                                        placeholder="Enter Asset Type Code"
                                     />
                                     {errors.model && (
                                         <p className="text-sm text-red-500">

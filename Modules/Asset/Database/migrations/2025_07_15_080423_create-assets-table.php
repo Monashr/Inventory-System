@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('model');
+            $table->string('code');
             $table->foreignId('tenant_id')->constrained()->nullOnDelete();
             $table->foreignId('created_by')->nullable();
             $table->foreignId('updated_by')->nullable();

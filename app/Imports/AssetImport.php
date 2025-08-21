@@ -2,7 +2,9 @@
 
 namespace App\Imports;
 
+use App\Models\Tenant;
 use Modules\Asset\Models\Asset;
+use Modules\Asset\Models\AssetType;
 use Maatwebsite\Excel\Concerns\ToModel;
 
 class AssetImport implements ToModel
@@ -14,15 +16,10 @@ class AssetImport implements ToModel
      */
     public function model(array $row)
     {
-
-        dd($row);
-        // Resolve foreign keys
         $assetType = AssetType::where('name', $row['asset_type'])->first();
         $tenant = Tenant::where('name', $row['tenant'])->first();
 
-        // Optionally validate
         if (!$assetType || !$tenant) {
-            // Skip row or handle error
             return null;
         }
 

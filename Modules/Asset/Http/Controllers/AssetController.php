@@ -2,9 +2,9 @@
 
 namespace Modules\Asset\Http\Controllers;
 
-use Modules\Asset\Http\Requests\UpdateAssetRequest;
+use Modules\Asset\Http\Requests\Asset\UpdateAssetRequest;
+use Modules\Asset\Http\Requests\Asset\AddAssetRequest;
 use Modules\Asset\Http\Services\AssetTypeService;
-use Modules\Asset\Http\Requests\AddAssetRequest;
 use Modules\Asset\Http\Services\AssetLogService;
 use Modules\Asset\Http\Services\AssetService;
 use App\Http\Controllers\Controller;
@@ -27,90 +27,44 @@ class AssetController extends Controller
 
     public function assetIndex(Request $request)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['view'])) {
-            return redirect()->route('dashboard.index');
-        }
-
-        $perPage = $request->input('per_page', 10);
-
-        if (checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            $asset = $this->assetService->getAllAssetPagination($request, $perPage);
-        } else {
-            $asset = $this->assetService->getAssetPagination($request, $perPage);
-        }
-
         return Inertia::render('Asset/AssetsIndex', [
-            'assets' => $asset,
-            'filters' => [
-                'search' => $request->search,
-                'sort_by' => $request->sort_by,
-                'sort_direction' => $request->sort_direction,
-                'brand' => $request->brand,
-                'condition' => $request->condition,
-                'type' => $request->type,
-            ],
-            'filterValues' => $this->assetService->getAllAssetFilters(),
+            'assets' => $this->assetService->getAllAssetPagination($request),
+            'filters' => $this->assetService->getAllAssetFilter($request),
+            'filterValues' => $this->assetService->getAllAssetFilterValues(),
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
     }
 
     public function destroy($asset)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            return redirect()->route('dashboard.index');
-        }
-
-        $asset = $this->assetService->findAsset($asset);
-
-        $asset->deleted_by = auth()->id();
-
-        $asset->save();
-
-        $asset->delete();
-
-        $this->assetLogService->userDeleteAsset($asset);
+        $this->assetService->deleteAsset($asset);
 
         return redirect()->route('assets.index')->with('success', 'Asset Deleted Successfully');
     }
 
     public function showAssetDetails(Request $request, $asset)
     {
-
-        if (!checkAuthority(config('asset.permissions')['permissions']['view'])) {
-            return redirect()->route('dashboard.index');
-        }
-
-        if (!checkAuthority(config('asset.permissions')['permissions']['audit'])) {
+        if (!$this->assetService->canAuditAsset()) {
             return Inertia::render('Asset/AssetsDetails', [
                 'asset' => $this->assetService->findAssetWithDetails($asset),
                 'permissions' => auth()->user()->getTenantPermission(),
+                'filters' => null,
+                'filterValues' => null,
                 'log' => null,
             ]);
         }
 
-        $perPage = $request->input('per_page', 10);
-
         return Inertia::render('Asset/AssetsDetails', [
             'asset' => $this->assetService->findAssetWithDetails($asset),
             'permissions' => auth()->user()->getTenantPermission(),
-            'filters' => [
-                'search' => $request->search,
-                'sort_by' => $request->sort_by,
-                'sort_direction' => $request->sort_direction,
-                'user' => $request->user,
-                'activity_type' => $request->activity_type,
-            ],
-            'filterValues' => $this->assetLogService->getAllAssetLogFilters($asset),
-            'log' => $this->assetLogService->getAssetLogs($this->assetService->findAsset($asset), $request, $perPage),
+            'filters' => $this->assetLogService->getAllAssetLogFilters($request),
+            'filterValues' => $this->assetLogService->getAllAssetLogFilterValues($asset),
+            'log' => $this->assetLogService->getAssetLogs($this->assetService->findAsset($asset), $request),
         ]);
     }
 
     public function showAssetAdd()
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            return redirect()->route('dashboard.index');
-        }
-
         return Inertia::render('Asset/AssetsAdd', [
             'assetTypes' => $this->assetTypeService->getAllAssetTypes(),
             'brands' => $this->assetService->getAllAssetBrands(),
@@ -119,27 +73,13 @@ class AssetController extends Controller
 
     public function storeAssets(AddAssetRequest $request)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            return redirect()->route('dashboard.index');
-        }
-
-        $validated = $request->validated();
-
-        $assetType = $this->assetTypeService->findAssetType($validated['asset_type_id']);
-
-        $asset = $this->assetService->createAsset($validated, $assetType);
-
-        $this->assetLogService->userAddAsset($asset);
+        $this->assetService->storeAsset($request);
 
         return redirect()->route('assets.index')->with('success', 'Assets Added Successfully.');
     }
 
     public function showAssetEdit($asset)
     {
-        if (!checkAuthority(config('asset.permissions')['permissions']['manage'])) {
-            return redirect()->route('dashboard.index');
-        }
-
         return Inertia::render('Asset/AssetsEdit', [
             'asset' => $this->assetService->findAsset($asset),
             'assetTypes' => $this->assetTypeService->getAllAssetTypes(),
@@ -149,11 +89,7 @@ class AssetController extends Controller
 
     public function assetUpdate(UpdateAssetRequest $request, Asset $asset)
     {
-        $validated = $request->validated();
-
-        $asset->update($validated);
-
-        $this->assetLogService->userEditAsset($asset);
+        $this->assetService->updateAsset($request, $asset);
 
         return redirect()->route('assets.index')->with('success', 'Asset Updated Sucessfully');
     }

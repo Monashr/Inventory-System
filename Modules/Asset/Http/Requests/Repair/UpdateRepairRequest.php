@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Asset\Http\Requests;
+namespace Modules\Asset\Http\Requests\Repair;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAssetTypeRequest extends FormRequest
+class UpdateRepairRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,12 @@ class UpdateAssetTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
+            'vendor' => 'nullable|string|max:255',
+            'defect_description' => 'nullable|string|max:255',
+            'corrective_action' => 'nullable|string|max:255',
+            'repair_start_date' => 'nullable|date',
+            'repair_cost' => 'nullable|numeric',
+
         ];
     }
 }
