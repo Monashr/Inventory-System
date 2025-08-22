@@ -48,8 +48,7 @@ class LocationService
 
         return $location;
     }
-
-
+    
     public function getOrCreateDefaultLocation()
     {
         return Location::firstOrCreate(

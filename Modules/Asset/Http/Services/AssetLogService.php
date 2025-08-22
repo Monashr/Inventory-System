@@ -88,7 +88,7 @@ class AssetLogService
             $query->where('users.name', 'LIKE', '%' . $request->user . '%');
         }
 
-        $allowedSorts = ['user', 'activity_type'];
+        $allowedSorts = ['user', 'activity_type', 'activity_date'];
 
         $sortBy = $request->get('sort_by');
         if (!in_array($sortBy, $allowedSorts)) {

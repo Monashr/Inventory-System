@@ -10,9 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('inboxes', function (Blueprint $table) {
+        Schema::create('mails', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
 
             $table->foreignId('sender_id')->constrained('users')->nullOnDelete();
             $table->foreignId('receiver_id')->constrained('users')->nullOnDelete();

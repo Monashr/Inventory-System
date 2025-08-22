@@ -7,14 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
 use App\Models\Tenant;
 
-class Inbox extends Model
+class Mail extends Model
 {
     use HasFactory;
 
-    protected $table = 'inboxes';
+    protected $table = 'mails';
 
     protected $fillable = [
-        'name',
         'sender_id',
         'receiver_id',
         'status',

@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->dateTime('repair_completion_date')->nullable();
             $table->text('defect_description')->nullable();
             $table->string('corrective_action')->unique();
-            $table->decimal('repair_cost')->nullable();
+            $table->integer('repair_cost')->nullable();
             $table->string('vendor')->nullable();
             $table->enum('status', ['progress', 'completed', 'cancelled'])->default('progress');
             $table->foreignId('created_by')->nullable();

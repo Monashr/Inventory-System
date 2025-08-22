@@ -2,16 +2,15 @@
 
 namespace Modules\Employee\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Position;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use App\Models\User;
 use Modules\Employee\Http\Requests\CreateEmployeeRequest;
 use Modules\Employee\Http\Services\EmployeeService;
-use Modules\Employee\Models\Inbox;
 use Spatie\Permission\Models\Permission;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use App\Models\Position;
+use Inertia\Inertia;
+use App\Models\User;
 
 
 class EmployeeController extends Controller
@@ -24,19 +23,8 @@ class EmployeeController extends Controller
     }
     public function index(Request $request)
     {
-
-        $permission = config('employee.permissions')['permissions']['view employees'];
-
-        if (!checkAuthority($permission)) {
-            return redirect()->route('dashboard.index');
-        }
-
-        $perPage = $request->input('per_page', 10);
-
-        $employees = $this->employeeService->getAllEmployeePaginated($request, $perPage);
-
         return Inertia::render('Employee/EmployeesIndex', [
-            'employees' => $employees,
+            'employees' => $this->employeeService->getAllEmployeePaginated($request),
             'filters' => [
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,
@@ -45,99 +33,6 @@ class EmployeeController extends Controller
             'authUser' => auth()->user(),
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
-    }
-
-    public function store(Request $request)
-    {
-        $permission = config('employee.permissions')['permissions']['make employees'];
-
-        if (!checkAuthority($permission)) {
-            return redirect()->route('employees.index');
-        }
-
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return back()->withErrors(['email' => 'No user found with this email.']);
-        }
-
-        $tenantId = session('active_tenant_id');
-
-        if ($user->tenants()->where('tenant_id', $tenantId)->exists()) {
-            return back()->withErrors(['email' => 'This user is already part of the tenant.']);
-        }
-
-        Inbox::create([
-            'name' => auth()->user()->name,
-            'sender_id' => auth()->id(),
-            'receiver_id' => $user->id,
-            'tenant_id' => $tenantId,
-        ]);
-
-        return redirect()->route('employees.index')->with('success', 'Employee successfully added to tenant.');
-    }
-
-
-    public function showInbox(Request $request)
-    {
-        $inboxes = Inbox::with(['sender', 'tenant', 'receiver'])
-            ->where(function ($query) {
-                $query->where('receiver_id', auth()->id())
-                    ->orWhere('sender_id', auth()->id());
-            })
-            ->latest()
-            ->paginate(10);
-
-        return Inertia::render("Employee/EmployeesInbox", [
-            'inboxes' => $inboxes,
-            'user' => auth()->user(),
-            'filters' => [
-                'search' => $request->search,
-                'sort_by' => $request->sort_by,
-                'sort_direction' => $request->sort_direction,
-            ],
-        ]);
-    }
-
-    public function acceptInvitation($id)
-    {
-        $inbox = Inbox::findOrFail($id);
-
-        if ($inbox->receiver_id !== auth()->user()->id) {
-            abort(403);
-        }
-
-        $user = auth()->user();
-        $tenantId = $inbox->tenant_id;
-
-        if (!$user->tenants()->where('tenant_id', $tenantId)->exists()) {
-            $user->tenants()->attach($tenantId);
-        }
-
-        $inbox->update([
-            'status' => 'accepted',
-        ]);
-
-        return redirect()->back()->with('success', 'Invitation Accepted.');
-    }
-
-    public function declineInvitation($id)
-    {
-        $inbox = Inbox::findOrFail($id);
-
-        if ($inbox->receiver_id !== auth()->user()->id) {
-            abort(403);
-        }
-
-        $inbox->update([
-            'status' => 'rejected',
-        ]);
-
-        return redirect()->back()->with('info', 'Invitation declined.');
     }
 
     public function showPermission(Request $request, $id)

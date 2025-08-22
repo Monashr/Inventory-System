@@ -37,9 +37,11 @@ class AssetController extends Controller
 
     public function destroy($asset)
     {
-        $this->assetService->deleteAsset($asset);
+        if ($this->assetService->deleteAsset($asset)) {
+            return redirect()->route('assets.index')->with('success', 'Asset Deleted Successfully');
+        }
 
-        return redirect()->route('assets.index')->with('success', 'Asset Deleted Successfully');
+        return redirect()->route('assets.index')->with('error', 'Asset currently in repair cannot delete');
     }
 
     public function showAssetDetails(Request $request, $asset)
@@ -67,7 +69,7 @@ class AssetController extends Controller
     {
         return Inertia::render('Asset/AssetsAdd', [
             'assetTypes' => $this->assetTypeService->getAllAssetTypes(),
-            'brands' => $this->assetService->getAllAssetBrands(),
+            'brands' => $this->assetService->getAllAssetBrandsNoAll(),
         ]);
     }
 

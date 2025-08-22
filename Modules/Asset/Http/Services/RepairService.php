@@ -8,15 +8,11 @@ use Carbon\Carbon;
 
 class RepairService
 {
-    protected $assetLogService;
-    protected $assetService;
-    protected $locationService;
-
-    public function __construct(AssetLogService $assetLogService, AssetService $assetService, LocationService $locationService)
-    {
-        $this->assetLogService = $assetLogService;
-        $this->assetService = $assetService;
-        $this->locationService = $locationService;
+    public function __construct(
+        protected LocationService $locationService,
+        protected AssetLogService $assetLogService,
+        protected AssetService $assetService,
+    ) {
     }
 
     public function getAllRepairsPaginated($request)

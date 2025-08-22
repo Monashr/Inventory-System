@@ -10,11 +10,13 @@ export default function useAssetIndex() {
             key: "serial_code",
             label: "Serial Code",
             type: "text",
+            sort: true,
         },
         {
             key: "brand",
             label: "Brand",
             type: "text",
+            sort: true,
         },
         {
             key: "condition",
@@ -25,6 +27,7 @@ export default function useAssetIndex() {
                 used: "yellow",
                 damaged: "red",
             },
+            sort: true,
         },
         {
             key: "availability",
@@ -35,11 +38,13 @@ export default function useAssetIndex() {
                 loaned: "yellow",
                 missing: "red",
             },
+            sort: true,
         },
         {
             key: "created_at",
             label: "Created At",
             type: "time",
+            sort: true,
         },
     ];
 

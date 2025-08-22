@@ -19,8 +19,11 @@ class EmployeeService
         protected RoleService $roleService,
     ) {
     }
-    public function getAllEmployeePaginated($request, $perPage)
+    public function getAllEmployeePaginated($request)
     {
+
+        $perPage = $request->input('per_page', 10);
+
         $tenantId = session('active_tenant_id');
 
         $query = User::with('positions')
@@ -76,6 +79,16 @@ class EmployeeService
         $user->tenants()->attach($tenant->id);
 
         $user->tenants()->attach(tenant());
+
+        return $user;
+    }
+
+    public function getEmployeeByEmail($email) {
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'No user found with this email.']);
+        }
 
         return $user;
     }

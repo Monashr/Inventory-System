@@ -15,7 +15,7 @@ export default function AddEmployeeForm({ onClose }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post("/dashboard/employees/add", {
+        post("/dashboard/inbox/add", {
             onSuccess: () => {
                 onClose?.();
             },

@@ -2,37 +2,25 @@ import { useEffect, useRef, useState } from "react";
 import { usePage, router } from "@inertiajs/react";
 import { toast } from "sonner";
 
-export default function useRepairsIndex() {
-    const { repairs, filters, filterValues, flash } = usePage().props;
+export default function useInboxIndex() {
+    const {user, inbox, filters, filterValues, flash} = usePage().props;
 
     const columns = [
         {
-            key: "asset_name",
-            label: "Asset",
+            key: "sender_name",
+            label: "Sender",
             type: "text",
             sort: true,
         },
         {
-            key: "repair_start_date",
-            label: "Repair Start",
-            type: "time",
-            sort: true,
-        },
-        {
-            key: "repair_completion_date",
-            label: "Repair Completion",
-            type: "time",
-            sort: true,
-        },
-        {
-            key: "repair_cost",
-            label: "Repair Cost",
+            key: "receiver_name",
+            label: "Receiver",
             type: "text",
             sort: true,
         },
         {
-            key: "vendor",
-            label: "Vendor",
+            key: "tenant_name",
+            label: "Tenant",
             type: "text",
             sort: true,
         },
@@ -41,17 +29,22 @@ export default function useRepairsIndex() {
             label: "Status",
             type: "badge",
             badgeColors: {
-                completed: "green",
-                progress: "yellow",
-                cancelled: "red",
+                pending: "yellow",
+                accepted: "green",
+                rejected: "red",
             },
+            sort: true,
+        },
+        {
+            key: "created_at",
+            label: "Sent At",
+            type: "time",
             sort: true,
         },
     ];
 
     const [currentFilters, setCurrentFilters] = useState({
-        status: filters.status || "",
-        vendor: filters.vendor || "",
+        tenant: filters.tenant || "",
     });
 
     const [search, setSearch] = useState(filters.search || "");
@@ -61,14 +54,13 @@ export default function useRepairsIndex() {
 
     const onPaginationChange = (value) => {
         router.get(
-            `/dashboard/repairs/`,
+            `/dashboard/inbox/`,
             {
                 per_page: value,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                status: currentFilters.status,
-                vendor: currentFilters.vendor,
+                tenant: currentFilters.tenant,
             },
             {
                 preserveScroll: true,
@@ -77,7 +69,7 @@ export default function useRepairsIndex() {
     };
 
     const onRowClick = (item) => {
-        router.visit(`/dashboard/repairs/${item.id}/details`);
+        router.visit(`/dashboard/inbox/detail/${item.id}`);
     };
 
     const handleSort = (column) => {
@@ -87,14 +79,13 @@ export default function useRepairsIndex() {
         }
 
         router.get(
-            "/dashboard/repairs",
+            "/dashboard/inbox",
             {
-                per_page: repairs.per_page,
+                per_page: inbox.per_page,
                 search,
                 sort_by: column,
                 sort_direction: direction,
-                status: currentFilters.status,
-                vendor: currentFilters.vendor,
+                tenant: currentFilters.tenant,
             },
             { preserveScroll: true }
         );
@@ -102,14 +93,13 @@ export default function useRepairsIndex() {
 
     const onSearch = () => {
         router.get(
-            "/dashboard/repairs",
+            "/dashboard/inbox",
             {
-                per_page: repairs.per_page,
+                per_page: inbox.per_page,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                status: currentFilters.status,
-                vendor: currentFilters.vendor,
+                tenant: currentFilters.tenant,
             },
             { preserveScroll: true }
         );
@@ -117,14 +107,13 @@ export default function useRepairsIndex() {
 
     const applyFilters = () => {
         router.get(
-            "/dashboard/repairs",
+            "/dashboard/inbox",
             {
-                per_page: repairs.per_page,
+                per_page: inbox.per_page,
                 search,
                 sort_by: sortBy,
                 sort_direction: sortDirection,
-                status: currentFilters.status,
-                vendor: currentFilters.vendor,
+                tenant: currentFilters.tenant,
             },
             { preserveScroll: true }
         );
@@ -140,7 +129,8 @@ export default function useRepairsIndex() {
     }, [flash]);
 
     return {
-        repairs,
+        user,
+        inbox,
         columns,
         search,
         setSearch,

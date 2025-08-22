@@ -6,17 +6,11 @@ use Modules\Asset\Models\Asset;
 
 class AssetService
 {
-
-    protected $locationService;
-    protected $assetLogService;
-
-    protected $assetTypeService;
-
-    public function __construct(LocationService $locationService, AssetLogService $assetLogService, AssetTypeService $assetTypeService)
-    {
-        $this->locationService = $locationService;
-        $this->assetLogService = $assetLogService;
-        $this->assetTypeService = $assetTypeService;
+    public function __construct(
+        protected LocationService $locationService,
+        protected AssetLogService $assetLogService,
+        protected AssetTypeService $assetTypeService,
+    ) {
     }
 
     // INFORMATION QUERY
@@ -197,6 +191,10 @@ class AssetService
     {
         $asset = $this->findAsset($asset);
 
+        if($asset->availability == "repair") {
+            return false;
+        }
+
         $asset->deleted_by = auth()->id();
 
         $asset->save();
@@ -204,6 +202,8 @@ class AssetService
         $asset->delete();
 
         $this->assetLogService->userDeleteAsset($asset);
+
+        return true;
     }
 
     public function storeAsset($request)
@@ -255,6 +255,16 @@ class AssetService
         return $brands->prepend('All');
     }
 
+    public function getAllAssetBrandsNoAll()
+    {
+        return Asset::select('brand')
+            ->distinct()
+            ->whereNotNull('brand')
+            ->where('brand', '!=', '')
+            ->orderBy('brand')
+            ->get()
+            ->pluck('brand');
+    }
 
     public function getAllAssetConditions()
     {

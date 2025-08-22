@@ -10,21 +10,25 @@ export default function useAssetTypeIndex() {
             key: "name",
             label: "Name",
             type: "text",
+            sort: true,
         },
         {
             key: "model",
             label: "Model",
             type: "text",
+            sort: true,
         },
         {
             key: "code",
             label: "Code",
             type: "text",
+            sort: true,
         },
         {
             key: "created_at",
             label: "Created At",
             type: "time",
+            sort: true,
         },
     ];
 

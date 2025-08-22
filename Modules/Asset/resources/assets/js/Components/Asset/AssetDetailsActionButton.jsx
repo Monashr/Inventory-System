@@ -23,7 +23,13 @@ function AssetDetailsActionButton({ asset, permissions }) {
                 </Link>
             ) : null}
             {permissions.includes("manage assets") ? (
-                <DeleteAlertDialog url={`/dashboard/assets/${asset.id}/delete`}>
+                <DeleteAlertDialog
+                    url={`/dashboard/assets/${asset.id}/delete`}
+                    title={"Are you sure?"}
+                    description={
+                        "This action cannot be undone. This will permanently delete the asset."
+                    }
+                >
                     <Button
                         className="cursor-pointer h-full"
                         variant="destructive"

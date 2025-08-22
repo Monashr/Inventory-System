@@ -69,28 +69,33 @@ function CustomDataTable({
                                         isLast ? "pr-11 text-right" : ""
                                     }`}
                                 >
-                                    <Button
-                                        size="sm"
-                                        variant={
-                                            filters.sort_by === column.key
-                                                ? "default"
-                                                : "ghost"
-                                        }
-                                        className={cn(
-                                            "cursor-pointer",
-                                            filters.sort_by === column.key &&
-                                                "text-primary"
-                                        )}
-                                        onClick={() => onSort(column.key)}
-                                    >
-                                        {column.label}
-                                        <ArrowUpDown className="w-4 h-4" />
-                                    </Button>
+                                    {column.sort ? (
+                                        <Button
+                                            size="sm"
+                                            variant={
+                                                filters.sort_by === column.key
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                            className={cn(
+                                                "cursor-pointer",
+                                                filters.sort_by ===
+                                                    column.key && "text-primary"
+                                            )}
+                                            onClick={() => onSort(column.key)}
+                                        >
+                                            {column.label}
+                                            <ArrowUpDown className="w-4 h-4 ml-1" />
+                                        </Button>
+                                    ) : (
+                                        <span>{column.label}</span>
+                                    )}
                                 </TableHead>
                             );
                         })}
                     </TableRow>
                 </TableHeader>
+
                 <TableBody>
                     {data.length > 0 ? (
                         data.map((item) => (

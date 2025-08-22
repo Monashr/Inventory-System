@@ -78,9 +78,11 @@ class AssetTypeController extends Controller
 
     public function destroy($assetType)
     {
-        $this->assetTypeService->deleteAssetType($assetType);
+        if ($this->assetTypeService->deleteAssetType($assetType)) {
+            return redirect()->route('assettypes.index')->with('success', 'Asset Type deleted successfully');
+        }
 
-        return redirect()->route('assettypes.index')->with('success', 'Asset Type deleted successfully');
+        return redirect()->route('assettypes.index')->with('error', 'Asset Type cannot be deleted there is assets in repair');
     }
 
 }

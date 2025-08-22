@@ -7,23 +7,14 @@ import CustomDataTable from "@components/custom/CustomDataTable";
 import CustomPagination from "@components/custom/CustomPagination";
 import CustomTableSearch from "@components/custom/CustomTableSearch";
 
-import { Package, User, Mail, Plus, PackageOpen } from "lucide-react";
+import { Plus, PackageOpen } from "lucide-react";
 import { Card } from "@components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { Button } from "@components/ui/button";
 import CustomTableFilterButton from "@components/custom/CustomTableFilterButton";
 import useLoansIndex from "../Hooks/useLoansIndex";
 
 function EmployeesIndex() {
     const { permissions } = usePage().props;
-
-    // const employeeIndexLogic = useEmployeesIndex();
 
     const loanIndexLogic = useLoansIndex();
 

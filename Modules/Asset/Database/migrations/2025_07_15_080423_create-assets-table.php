@@ -36,7 +36,7 @@ return new class extends Migration {
             $table->string('brand')->nullable();
             $table->text('specification')->nullable();
             $table->dateTime('purchase_date')->nullable();
-            $table->decimal('purchase_price')->nullable();
+            $table->integer('purchase_price')->nullable();
             $table->enum('initial_condition', ['new', 'used', 'defect'])->default('new');
             $table->enum('condition', ['good', 'used', 'defect'])->default('good');
             $table->enum('availability', ['available', 'pending', 'loaned', 'repair'])->default('available');

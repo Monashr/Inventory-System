@@ -11,7 +11,7 @@ class LoanService
         $query = Loan::select('loans.*', 'users.name as user_name')
                 ->join('users', 'users.id', '=', 'loans.user_id');
 
-        if ($request->filled('status')) {
+        if ($request->filled('status') && $request->status != "All") {
             $query->where('status', 'LIKE', '%' . $request->status . '%');
         }
 
@@ -43,13 +43,15 @@ class LoanService
 
     public function getAllLoanStatuses()
     {
-        return Loan::select('status')
+        $status = Loan::select('status')
             ->distinct()
             ->whereNotNull('status')
             ->where('status', '!=', '')
             ->orderBy('status')
             ->get()
             ->pluck('status');
+
+            return $status->prepend("All"); 
     }
 
     public function getAllLoanFilters()

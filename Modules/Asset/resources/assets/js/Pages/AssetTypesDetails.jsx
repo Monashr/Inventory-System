@@ -5,13 +5,7 @@ import { usePage, router, Link, Head } from "@inertiajs/react";
 import Dashboard from "@components/layout/Dashboard";
 import DeleteAlertDialog from "@components/custom/DeleteAlertDialog";
 
-import {
-    Package,
-    Boxes,
-    ChevronLeft,
-    Pen,
-    Trash,
-} from "lucide-react";
+import { Package, Boxes, ChevronLeft, Pen, Trash } from "lucide-react";
 
 import { Button } from "@components/ui/button";
 import { Label } from "@components/ui/label";
@@ -116,6 +110,10 @@ function AssetsIndex() {
                                     {permissions.includes("manage assets") ? (
                                         <DeleteAlertDialog
                                             url={`/dashboard/assettypes/${assetType.id}/delete`}
+                                            title={"Are you sure?"}
+                                            description={
+                                                "This action cannot be undone. This will permanently delete the assets linked by this asset type."
+                                            }
                                         >
                                             <Button
                                                 variant="destructive"

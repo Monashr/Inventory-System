@@ -11,16 +11,19 @@ export default function useAssetLogs() {
                 key: "activity_date",
                 label: "Activity Date",
                 type: "time",
+                sort: true,
             },
             {
                 key: "user",
                 label: "User",
                 type: "text",
+                sort: true,
             },
             {
                 key: "activity_type",
                 label: "Activity Type",
                 type: "text",
+                sort: true,
             },
         ];
 

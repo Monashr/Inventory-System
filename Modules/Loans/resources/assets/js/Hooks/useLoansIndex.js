@@ -13,6 +13,7 @@ export default function useLoansIndex() {
             key: "user_name",
             label: "Name",
             type: "text",
+            sort: true,
         },
         {
             key: "status",
@@ -24,16 +25,19 @@ export default function useLoansIndex() {
                 cancelled: "red",
                 rejected: "red",
             },
+            sort: true,
         },
         {
             key: "description",
             label: "Description",
             type: "text",
+            sort: true,
         },
         {
             key: "created_at",
             label: "Created At",
             type: "time",
+            sort: true,
         },
     ];
 

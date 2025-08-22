@@ -6,15 +6,18 @@ use Modules\Asset\Models\AssetType;
 
 class AssetTypeService
 {
-    protected $assetLogService;
-
-    public function __construct(AssetLogService $assetLogService)
-    {
-        $this->assetLogService = $assetLogService;
+    public function __construct(
+        protected AssetLogService $assetLogService,
+    ) {
     }
     public function findAssetType($assetType)
     {
         return AssetType::findOrFail($assetType);
+    }
+
+    public function findAssetTypeWithAsset($assetType)
+    {
+        return AssetType::with('assets')->findOrFail($assetType);
     }
 
     public function getAllAssetTypes()
@@ -36,7 +39,7 @@ class AssetTypeService
             $query->where('model', $request->model);
         }
 
-        $allowedSorts = ['name', 'model', 'created_at'];
+        $allowedSorts = ['name', 'model', 'created_at', 'code'];
 
         $sortBy = $request->get('sort_by');
         if (!in_array($sortBy, $allowedSorts)) {
@@ -86,13 +89,23 @@ class AssetTypeService
 
     public function deleteAssetType($assetType)
     {
-        $assetType = $this->findAssetType($assetType);
+        $assetType = $this->findAssetTypeWithAsset($assetType);
+
+        $hasRepairAssets = $assetType->assets()
+            ->where('availability', 'repair')
+            ->exists();
+
+        if ($hasRepairAssets) {
+            return false;
+        }
 
         $assetType->deleted_by = auth()->id();
 
         $assetType->save();
 
         $assetType->delete();
+
+        return true;
     }
 
     public function getAllAssetTypeNames()

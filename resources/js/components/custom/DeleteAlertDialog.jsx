@@ -14,7 +14,12 @@ import {
     AlertDialogTrigger,
 } from "@components/ui/alert-dialog";
 
-export default function DeleteAlertDialog({ url, children }) {
+export default function DeleteAlertDialog({
+    url,
+    children,
+    title,
+    description,
+}) {
     const [open, setOpen] = useState(false);
 
     function handleDelete() {
@@ -27,15 +32,19 @@ export default function DeleteAlertDialog({ url, children }) {
 
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger asChild>
-                {children}
-            </AlertDialogTrigger>
+            <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                        {title && <>Are you sure?</>}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete the item.
+                        {description && (
+                            <>
+                                This action cannot be undone. This will
+                                permanently delete the item.
+                            </>
+                        )}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
