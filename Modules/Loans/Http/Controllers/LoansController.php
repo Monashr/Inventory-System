@@ -8,6 +8,7 @@ use Modules\Asset\Http\Services\AssetService;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
+use Modules\Asset\Http\Services\AssetTypeService;
 use Modules\Asset\Models\AssetType;
 use Illuminate\Support\Facades\DB;
 use Modules\Asset\Models\Asset;
@@ -23,38 +24,19 @@ class LoansController extends Controller
     protected $assetService;
     protected $assetLogService;
     protected $loanService;
+    protected $assetTypeService;
 
-    public function __construct(AssetService $assetService, AssetLogService $assetLogService, LoanService $loanService)
+    public function __construct(AssetService $assetService, AssetLogService $assetLogService, LoanService $loanService, AssetTypeService $assetTypeService)
     {
         $this->assetService = $assetService;
         $this->assetLogService = $assetLogService;
         $this->loanService = $loanService;
+        $this->assetTypeService = $assetTypeService;
     }
     public function index(Request $request)
     {
-        if (
-            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
-                checkAuthority(config('loans.permissions')['permissions']['all loans']))
-        ) {
-            return redirect()->route('dashboard.index');
-        }
-
-        $perPage = $request->input('per_page', 10);
-
-        $loans = $this->loanService->getAllLoanPagination($request, $perPage);
-
-        // if (checkAuthority(config('loans.permissions')['permissions']['all loans'])) {
-        //     $loans = Loan::select('loans.*', 'users.name as user_name')
-        //         ->join('users', 'users.id', '=', 'loans.user_id')
-        //         ->paginate($perPage);
-        // } else {
-        //     $loans = $loans = Loan::with('user')
-        //         ->where('user_id', auth()->id())
-        //         ->paginate($perPage);
-        // }
-
         return Inertia::render('Loans/LoansIndex', [
-            'loans' => $loans,
+            'loans' => $this->loanService->getAllLoanPagination($request),
             'filters' => [
                 'search' => $request->search,
                 'sort_by' => $request->sort_by,
@@ -68,40 +50,18 @@ class LoansController extends Controller
 
     public function showAddLoans(Request $request)
     {
-        if (
-            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
-                checkAuthority(config('loans.permissions')['permissions']['all loans']))
-        ) {
-            return redirect()->route('dashboard.index');
-        }
-
-        if (checkAuthority(config('loans.permissions')['permissions']['all loans'])) {
-            $users = auth()->user()->usersFromSameTenant();
-        } else {
-            $users = [auth()->user()];
-        }
-
-        $perPage = $request->input('per_page', 10);
-
         return Inertia::render('Loans/LoansAdd', [
             'assets' => $this->assetService->getAllAssetPagination($request, null, true),
-            'users' => $users,
+            'users' => $this->loanService->getUserForLoan(),
             'permissions' => auth()->user()->getTenantPermission(),
         ]);
     }
 
     public function store(Request $request)
     {
-        if (
-            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
-                checkAuthority(config('loans.permissions')['permissions']['all loans']))
-        ) {
-            return redirect()->route('dashboard.index');
-        }
-
         if (!checkAuthority(config('loans.permissions')['permissions']['all loans']) && $request['loaner'] != auth()->user()->id) {
             return back()->withErrors(['error' => 'Error occurred while creating loan.']);
-        }
+        } // check that user can only make loans for themself, except for all loans admin
 
         $validated = $request->validate([
             'loaner' => 'required|numeric',
@@ -110,7 +70,7 @@ class LoansController extends Controller
             'assets.*.asset_type_id' => 'required|integer|exists:asset_types,id',
             'assets.*.asset_id' => 'required|integer|exists:assets,id',
             'assets.*.loaned_date' => 'required|date',
-        ]);
+        ]); // need to make request
 
         DB::beginTransaction();
 
@@ -119,7 +79,7 @@ class LoansController extends Controller
                 'user_id' => $validated['loaner'],
                 'description' => $validated['description'] ?? null,
                 'tenant_id' => tenant(),
-            ]);
+            ]); // make it function in service
 
             foreach ($validated['assets'] as $assetData) {
                 $loan->assets()->attach($assetData['asset_id'], [
@@ -127,6 +87,7 @@ class LoansController extends Controller
                 ]);
 
                 Asset::where('id', $assetData['asset_id'])->update(['availability' => 'pending']);
+                // make it function in asset service
             }
 
             DB::commit();
@@ -134,23 +95,15 @@ class LoansController extends Controller
             return redirect()->route('loans.index')->with('success', 'Loan created successfully.');
         } catch (Exception $e) {
             DB::rollBack();
-            report($e);
             return back()->withErrors(['error' => 'Error occurred while creating loan.']);
         }
     }
 
     public function showLoanDetails($loanId)
     {
-        if (
-            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
-                checkAuthority(config('loans.permissions')['permissions']['all loans']))
-        ) {
-            return redirect()->route('dashboard.index');
-        }
+        $loan = $this->loanService->getLoanWithAssetTypeAndUserById($loanId);
 
-        $loan = Loan::with(['assets.assetType', 'user'])->findOrFail($loanId);
-
-        if (!(checkAuthority(config('loans.permissions')['permissions']['all loans']) || (checkAuthority(config('loans.permissions')['permissions']['own loans']) && $loan->user_id === auth()->id()))) {
+        if ($this->loanService->checkIfUserCanAccessLoan($loan)) {
             return redirect()->route('dashboard')->withErrors('You are not authorized to view this loan.');
         }
 
@@ -162,44 +115,21 @@ class LoansController extends Controller
 
     public function edit($id)
     {
-        if (
-            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
-                checkAuthority(config('loans.permissions')['permissions']['all loans']))
-        ) {
-            return redirect()->route('dashboard.index');
-        }
+        $loan = $this->loanService->getLoanWithAssetTypeAndUserById($id);
 
-        $loan = Loan::with(['assets.assetType', 'user'])->findOrFail($id);
-
-        if (!(checkAuthority(config('loans.permissions')['permissions']['all loans']) || (checkAuthority(config('loans.permissions')['permissions']['own loans']) && $loan->user_id === auth()->id()))) {
+        if ($this->loanService->checkIfUserCanAccessLoan($loan)) {
             return redirect()->route('dashboard')->withErrors('You are not authorized to view this loan.');
         }
 
-        $assetTypes = AssetType::with('assets')->get();
-
-        if ((checkAuthority(config('loans.permissions')['permissions']['all loans']))) {
-            $users = auth()->user()->usersFromSameTenant();
-        } else {
-            $users = auth()->user();
-        }
-
-
         return Inertia::render('Loans/LoansEdit', [
             'loan' => $loan,
-            'assetTypes' => $assetTypes,
-            'users' => $users,
+            'assetTypes' => $this->assetTypeService->getAllAssetTypeWithAsset(),
+            'users' => $this->loanService->getUserForLoan(),
         ]);
     }
 
     public function update(Request $request, $id)
     {
-        if (
-            !(checkAuthority(config('loans.permissions')['permissions']['own loans']) ||
-                checkAuthority(config('loans.permissions')['permissions']['all loans']))
-        ) {
-            return redirect()->route('dashboard.index');
-        }
-
         $request->validate([
             'loaner' => 'required|exists:users,id',
             'description' => 'nullable|string',
@@ -207,13 +137,14 @@ class LoansController extends Controller
             'assets.*.asset_id' => 'required|exists:assets,id',
             'assets.*.asset_type_id' => 'required|exists:asset_types,id',
             'assets.*.loaned_date' => 'required|date',
-        ]);
+        ]); // make request
 
         $loan = Loan::with(['user'])->findOrFail($id);
+        // make function in service
 
         if (!(checkAuthority(config('loans.permissions')['permissions']['all loans']) || (checkAuthority(config('loans.permissions')['permissions']['own loans']) && $loan->user_id === auth()->id()))) {
             return redirect()->route('dashboard')->withErrors('You are not authorized to view this loan.');
-        }
+        } // function checkIfUserCanAccessLoan
 
         $oldAssetIds = $loan->assets()->pluck('assets.id')->toArray();
 
@@ -237,12 +168,12 @@ class LoansController extends Controller
         $removedAssetIds = array_diff($oldAssetIds, $newAssetIds);
         $addedAssetIds = array_diff($newAssetIds, $oldAssetIds);
 
+        // bellow make function in asset service
         Asset::whereIn('id', $removedAssetIds)->update(['availability' => 'available']);
         Asset::whereIn('id', $addedAssetIds)->update(['availability' => 'loaned']);
 
         return redirect()->route('loans.index')->with('success', 'Loan updated.');
     }
-
 
     public function acceptLoan(Loan $loan)
     {
@@ -276,7 +207,6 @@ class LoansController extends Controller
 
         return back()->with('success', 'Loan accepted.');
     }
-
 
     public function rejectLoan(Loan $loan)
     {

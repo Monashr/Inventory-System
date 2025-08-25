@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Link, usePage, router, Head } from "@inertiajs/react";
 import Dashboard from "@components/layout/Dashboard";
 import {
@@ -42,6 +42,12 @@ function LoansAdd() {
     const [conditionFilter, setConditionFilter] = useState("all");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    useEffect(() => {
+        if (users?.length === 1) {
+            setSelectedUser(users[0].id);
+        }
+    }, [users]);
+
     const onPaginationChange = (value) => {
         router.get(
             `/dashboard/loans/add`,
@@ -78,25 +84,6 @@ function LoansAdd() {
             cart.map((item) => (item.id === id ? { ...item, date } : item))
         );
     };
-
-    const filteredAssets = useMemo(() => {
-        let filtered =
-            assets?.data?.filter(
-                (asset) =>
-                    asset.brand.toLowerCase().includes(search.toLowerCase()) ||
-                    asset.serial_code
-                        .toLowerCase()
-                        .includes(search.toLowerCase())
-            ) || [];
-
-        if (conditionFilter !== "all") {
-            filtered = filtered.filter(
-                (asset) => asset.condition === conditionFilter
-            );
-        }
-
-        return filtered;
-    }, [assets, search, conditionFilter]);
 
     const getConditionConfig = (condition) => {
         const configs = {
@@ -180,7 +167,7 @@ function LoansAdd() {
                                 </CardTitle>
 
                                 <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                                    <div className="relative">
+                                    <div className="relative flex">
                                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                                         <Input
                                             type="text"
@@ -191,6 +178,19 @@ function LoansAdd() {
                                             }
                                             className="pl-10 w-full sm:w-64"
                                         />
+                                        <Button
+                                            type="button"
+                                            className="ml-2 cursor-pointer"
+                                            onClick={() => {
+                                                router.get(
+                                                    "/dashboard/loans/add",
+                                                    { search },
+                                                    { preserveScroll: true }
+                                                );
+                                            }}
+                                        >
+                                            Search
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -198,9 +198,9 @@ function LoansAdd() {
 
                         <CardContent className="flex-1 overflow-hidden p-0">
                             <ScrollArea className="h-full px-6 pb-6">
-                                {filteredAssets.length > 0 ? (
+                                {assets.data.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 p-2">
-                                        {filteredAssets.map((asset) => {
+                                        {assets.data.map((asset) => {
                                             const isInCart = cart.some(
                                                 (item) => item.id === asset.id
                                             );
@@ -318,25 +318,34 @@ function LoansAdd() {
                                     <User className="w-4 h-4" />
                                     Employee
                                 </Label>
-                                <Select
-                                    value={selectedUser || ""}
-                                    onValueChange={setSelectedUser}
-                                >
-                                    <SelectTrigger className="w-full cursor-pointer">
-                                        <SelectValue placeholder="Choose an employee" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {users?.map((user) => (
-                                            <SelectItem
-                                                className="cursor-pointer"
-                                                key={user.id}
-                                                value={user.id}
-                                            >
-                                                {user.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                {users?.length === 1 ? (
+                                    <Input
+                                        type="text"
+                                        value={users[0].name}
+                                        disabled
+                                        className="cursor-not-allowed bg-gray-100 dark:bg-gray-800"
+                                    />
+                                ) : (
+                                    <Select
+                                        value={selectedUser || ""}
+                                        onValueChange={setSelectedUser}
+                                    >
+                                        <SelectTrigger className="w-full cursor-pointer">
+                                            <SelectValue placeholder="Choose an employee" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {users?.map((user) => (
+                                                <SelectItem
+                                                    className="cursor-pointer"
+                                                    key={user.id}
+                                                    value={user.id}
+                                                >
+                                                    {user.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
                             </div>
 
                             <Separator className="shrink-0" />

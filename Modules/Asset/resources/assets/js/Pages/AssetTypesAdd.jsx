@@ -19,7 +19,6 @@ function AssetTypesAdd() {
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         model: "",
-        code: "",
     });
 
     const handleSubmit = (e) => {
@@ -54,7 +53,7 @@ function AssetTypesAdd() {
                     <form onSubmit={handleSubmit}>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2 col-span-2">
+                                <div className="space-y-2">
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
@@ -85,23 +84,6 @@ function AssetTypesAdd() {
                                     {errors.model && (
                                         <p className="text-sm text-red-500">
                                             {errors.model}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="Code">Code</Label>
-                                    <Input
-                                        id="code"
-                                        value={data.code}
-                                        onChange={(e) =>
-                                            setData("code", e.target.value)
-                                        }
-                                        placeholder="Enter code"
-                                    />
-                                    {errors.code && (
-                                        <p className="text-sm text-red-500">
-                                            {errors.code}
                                         </p>
                                     )}
                                 </div>

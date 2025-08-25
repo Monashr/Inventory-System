@@ -11,13 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
+import { ComboBoxInput } from "@components/custom/ComboBoxInput";
+
 function AssetTypesEdit() {
-    const { assetType } = usePage().props;
+    const { assetType, models } = usePage().props;
 
     const { data, setData, put, processing, errors } = useForm({
         name: assetType.name || "",
         model: assetType.model || "",
-        code: assetType.code || "",
     });
 
     const handleSubmit = (e) => {
@@ -53,7 +54,7 @@ function AssetTypesEdit() {
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2 col-span-2">
+                                <div className="space-y-2">
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
@@ -71,29 +72,22 @@ function AssetTypesEdit() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="model">Model</Label>
-                                    <Input
+                                    {/* <Input
                                         id="model"
                                         value={data.model}
                                         onChange={(e) =>
                                             setData("model", e.target.value)
                                         }
                                         placeholder="Enter Asset Type Model"
-                                    />
-                                    {errors.model && (
-                                        <p className="text-sm text-red-500">
-                                            {errors.model}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="code">Code</Label>
-                                    <Input
-                                        id="code"
-                                        value={data.code}
-                                        onChange={(e) =>
-                                            setData("code", e.target.value)
+                                    /> */}
+                                    <ComboBoxInput
+                                        id="model"
+                                        options={models}
+                                        value={data.model}
+                                        onChange={(value) =>
+                                            setData("model", value)
                                         }
-                                        placeholder="Enter Asset Type Code"
+                                        placeholder="Enter Model"
                                     />
                                     {errors.model && (
                                         <p className="text-sm text-red-500">

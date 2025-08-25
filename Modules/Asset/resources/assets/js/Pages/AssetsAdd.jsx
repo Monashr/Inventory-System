@@ -76,23 +76,7 @@ function AssetCreate() {
                                     <Select
                                         value={data.asset_type_id}
                                         onValueChange={(value) => {
-                                            const selectedType =
-                                                assetTypes.find(
-                                                    (type) =>
-                                                        String(type.id) ===
-                                                        value
-                                                );
-
-                                            const now = Date.now();
-                                            const slug = selectedType?.code
-                                                ?.toLowerCase()
-                                                ?.replace(/\s+/g, "-")
-                                                ?.replace(/[^\w\-]+/g, "");
-
-                                            const serial = `${slug}-${now}`;
-
                                             setData("asset_type_id", value);
-                                            setData("serial_code", serial);
                                         }}
                                     >
                                         <SelectTrigger className="w-full cursor-pointer">
@@ -113,23 +97,6 @@ function AssetCreate() {
                                     {errors.asset_type_id && (
                                         <p className="text-sm text-red-500">
                                             {errors.asset_type_id}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="serial_code">
-                                        Serial Code
-                                    </Label>
-                                    <Input
-                                        type="text"
-                                        id="serial_code"
-                                        disabled
-                                        value={data.serial_code ?? ""}
-                                    />
-                                    {errors.serial_code && (
-                                        <p className="text-sm text-red-500">
-                                            {errors.serial_code}
                                         </p>
                                     )}
                                 </div>
@@ -176,27 +143,6 @@ function AssetCreate() {
                                     )}
                                 </div>
 
-                                <div className="sm:col-span-3 space-y-2">
-                                    <Label htmlFor="specification">
-                                        Specification
-                                    </Label>
-                                    <Textarea
-                                        id="specification"
-                                        value={data.specification}
-                                        onChange={(e) =>
-                                            setData(
-                                                "specification",
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                    {errors.specification && (
-                                        <p className="text-sm text-red-500">
-                                            {errors.specification}
-                                        </p>
-                                    )}
-                                </div>
-
                                 <div className="space-y-2">
                                     <Label htmlFor="purchase_date">
                                         Purchase Date
@@ -216,6 +162,27 @@ function AssetCreate() {
                                     {errors.purchase_date && (
                                         <p className="text-sm text-red-500">
                                             {errors.purchase_date}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="sm:col-span-4 space-y-2">
+                                    <Label htmlFor="specification">
+                                        Specification
+                                    </Label>
+                                    <Textarea
+                                        id="specification"
+                                        value={data.specification}
+                                        onChange={(e) =>
+                                            setData(
+                                                "specification",
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                    {errors.specification && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.specification}
                                         </p>
                                     )}
                                 </div>

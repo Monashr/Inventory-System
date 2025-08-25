@@ -69,19 +69,38 @@ class MailService
         $request->validated();
 
         $user = $this->employeeService->getEmployeeByEmail($request->email);
-
         $tenantId = session('active_tenant_id');
 
-        $this->checkUserIfAlreadyInTenant($user, $tenantId);
+        // 1. Already member?
+        if ($this->checkUserIfAlreadyInTenant($user, $tenantId)) {
+            return back()->with('error', 'This user is already part of the tenant.');
+        }
 
+        // 2. Already has a pending invite?
+        if ($this->checkIfAlreadyInvited($user, $tenantId)) {
+            return back()->with('error', 'This user already has a pending invitation.');
+        }
+
+        // 3. Send new invitation
         $this->createMail($user, $tenantId);
+
+        return redirect()->route('employees.index')
+            ->with('success', 'Employee successfully invited to tenant.');
     }
 
-    private function checkUserIfAlreadyInTenant($user, $tenantId)
+    private function checkUserIfAlreadyInTenant($user, $tenantId): bool
     {
-        if ($user->tenants()->where('tenant_id', $tenantId)->exists()) {
-            return back()->withErrors(['email' => 'This user is already part of the tenant.']);
-        }
+        return $user->tenants()->where('tenant_id', $tenantId)->exists();
+    }
+
+    private function checkIfAlreadyInvited($user, $tenantId): bool
+    {
+        // If user is still in tenant, block at the "already in tenant" check
+        // Otherwise, only block if there's a PENDING invitation
+        return Mail::where('receiver_id', $user->id)
+            ->where('tenant_id', $tenantId)
+            ->where('status', 'pending')
+            ->exists();
     }
 
     public function createMail($receiver, $tenantId)

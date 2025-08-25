@@ -23,7 +23,6 @@ class AddAssetRequest extends FormRequest
     {
         return [
             'asset_type_id' => 'required|exists:asset_types,id',
-            'serial_code' => 'required|string',
             'brand' => 'nullable|string|max:255',
             'specification' => 'nullable|string',
             'purchase_date' => 'nullable|date',

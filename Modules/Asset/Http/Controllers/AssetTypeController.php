@@ -66,6 +66,7 @@ class AssetTypeController extends Controller
     {
         return Inertia::render("Asset/AssetTypesEdit", [
             "assetType" => $assetType,
+            "models" => $this->assetTypeService->getAllAssetTypeModels(),
         ]);
     }
 

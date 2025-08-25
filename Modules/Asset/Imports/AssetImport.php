@@ -4,6 +4,7 @@ namespace Modules\Asset\Imports;
 
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Modules\Asset\Http\Services\AssetLogService;
+use Modules\Asset\Http\Services\AssetTypeService;
 use Modules\Asset\Http\Services\LocationService;
 use Modules\Asset\Models\Asset;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -17,11 +18,13 @@ class AssetImport implements ToModel, WithHeadingRow
 {
     protected $assetLogService;
     protected $locationService;
+    protected $assetTypeService;
 
     public function __construct()
     {
         $this->assetLogService = new AssetLogService();
         $this->locationService = new LocationService();
+        $this->assetTypeService = new AssetTypeService($this->assetLogService);
     }
 
     public function model(array $row)
@@ -30,16 +33,19 @@ class AssetImport implements ToModel, WithHeadingRow
 
         $name = trim($row['asset_type']);
 
+        $code = $this->assetTypeService->extractBeforeVowel($name);
+
         $assetType = AssetType::firstOrCreate(
             ['name' => $name],
             [
                 'model' => "nothing",
+                'code' => $code,
                 'created_by' => auth()->user()->id,
                 'updated_by' => auth()->user()->id,
             ]
         );
 
-        $serial_code = $this->generateSerialCode($assetType->name);
+        $serial_code = $this->assetTypeService->generateSerialFromType($code);
 
         $purchaseDate = $row['purchase_date'];
 
@@ -56,7 +62,7 @@ class AssetImport implements ToModel, WithHeadingRow
         $asset = new Asset([
             'asset_type_id' => $assetType->id,
             'tenant_id' => $tenant,
-            'serial_code' => $serial_code,
+            'serial_code' => $this->assetTypeService->generateSerialFromType($code),
             'brand' => $row['brand'],
             'specification' => $row['specification'],
             'purchase_date' => $purchaseDate,
@@ -73,14 +79,4 @@ class AssetImport implements ToModel, WithHeadingRow
 
         return $asset;
     }
-
-    private function generateSerialCode(string $assetTypeName): string
-    {
-        $slug = strtolower($assetTypeName);
-        $slug = preg_replace('/\s+/', '-', $slug);
-        $slug = preg_replace('/[^\w\-]/', '', $slug);
-        $timestamp = round(microtime(true) * 1000);
-        return "{$slug}-{$timestamp}";
-    }
-
 }

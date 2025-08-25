@@ -154,6 +154,11 @@ class AssetService
             ->get(['id', 'serial_code', 'condition', 'specification', 'brand']);
     }
 
+    public function getAllAssetsByAssetType($assetType)
+    {
+        return Asset::where('asset_type_id', $assetType)->get();
+    }
+
     public function findAsset($asset)
     {
         return Asset::findOrFail($asset);
@@ -191,7 +196,7 @@ class AssetService
     {
         $asset = $this->findAsset($asset);
 
-        if($asset->availability == "repair") {
+        if ($asset->availability == "repair") {
             return false;
         }
 
@@ -212,9 +217,26 @@ class AssetService
 
         $assetType = $this->assetTypeService->findAssetType($validated['asset_type_id']);
 
+        $validated['serial_code'] = $this->generateSerialFromType($assetType->code);
+
         $asset = $this->createAsset($validated, $assetType);
 
         $this->assetLogService->userAddAsset($asset);
+    }
+
+    public function generateSerialFromType($code)
+    {
+        if (!$code) {
+            $slug = 'unknown';
+        } else {
+            $slug = strtolower($code);
+            $slug = preg_replace('/\s+/', '-', $slug);
+            $slug = preg_replace('/[^\w\-]+/', '', $slug);
+        }
+
+        $now = (int) round(microtime(true) * 1000);
+
+        return "{$slug}-{$now}";
     }
 
     public function updateAsset($request, $asset)

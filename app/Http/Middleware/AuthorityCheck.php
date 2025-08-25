@@ -13,12 +13,15 @@ class AuthorityCheck
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, String $module, String $permission): Response
+    public function handle(Request $request, Closure $next, string $module, ...$permissions): Response
     {
-        if (!checkAuthority(config($module . '.permissions')['permissions'][$permission] ?? null)) {
-            return redirect()->route('dashboard.index');
+        foreach ($permissions as $permission) {
+            if (checkAuthority(config($module . '.permissions')['permissions'][$permission] ?? null)) {
+                return $next($request);
+            }
         }
 
-        return $next($request);
-    }   
+        return redirect()->route('dashboard.index');
+    }
+
 }

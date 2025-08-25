@@ -32,11 +32,10 @@ return Application::configure(basePath: dirname(__DIR__))
             ->group('tenant', [
                 NeedsTenant::class,
                 CustomEnsureValidTenantSession::class,
-
             ]);
 
         $middleware->alias([
-            'permission' => AuthorityCheck::class,
+            'AuthorityCheck' => AuthorityCheck::class,
         ]);
     })
 

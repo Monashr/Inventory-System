@@ -21,7 +21,6 @@ class EmployeeService
     }
     public function getAllEmployeePaginated($request)
     {
-
         $perPage = $request->input('per_page', 10);
 
         $tenantId = session('active_tenant_id');

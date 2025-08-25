@@ -27,7 +27,7 @@ class AssetImportController extends Controller
 
     public function template()
     {
-        $path = storage_path('app/public/templates/ImportTemplate.xlsx');
+        $path = storage_path('/templates/ImportTemplate.xlsx');
 
         if (!file_exists($path)) {
             abort(404, 'Template file not found.');

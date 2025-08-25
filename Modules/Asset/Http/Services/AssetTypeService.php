@@ -2,6 +2,7 @@
 
 namespace Modules\Asset\Http\Services;
 
+use Modules\Asset\Models\Asset;
 use Modules\Asset\Models\AssetType;
 
 class AssetTypeService
@@ -18,6 +19,12 @@ class AssetTypeService
     public function findAssetTypeWithAsset($assetType)
     {
         return AssetType::with('assets')->findOrFail($assetType);
+    }
+
+    public function getAllAssetTypeWithAsset()
+    {
+        return AssetType::with('assets')->get();
+        ;
     }
 
     public function getAllAssetTypes()
@@ -70,12 +77,30 @@ class AssetTypeService
         $this->createAssetType($validated);
     }
 
+    public function extractBeforeVowel(string $input): string
+    {
+        $words = explode(' ', strtolower($input));
+        $result = '';
+
+        foreach ($words as $word) {
+            $len = strlen($word);
+
+            for ($i = 1; $i < $len; $i++) {
+                if (preg_match('/[aeiou]/', $word[$i])) {
+                    $result .= $word[$i - 1];
+                }
+            }
+        }
+
+        return $result;
+    }
+
     public function createAssetType($validated)
     {
         return AssetType::create([
             'name' => $validated['name'],
             'model' => $validated['model'],
-            'code' => $validated['code'],
+            'code' => $this->extractBeforeVowel($validated['name']),
             'created_by' => auth()->user()->id,
             'updated_by' => auth()->user()->id,
         ]);
@@ -84,8 +109,46 @@ class AssetTypeService
     {
         $validated = $request->validated();
 
+        if (isset($validated['name'])) {
+            $validated['code'] = $this->extractBeforeVowel($validated['name']);
+        }
+
+        $validated['updated_by'] = auth()->id();
+
         $assetType->update($validated);
+
+        $assets = $this->getAllAssetsByAssetType($assetType->id);
+
+        foreach ($assets as $asset) {
+            $asset->update([
+                'serial_code' => $this->generateSerialFromType($assetType->code),
+                'updated_by' => auth()->id(),
+            ]);
+        }
+
+        return $assetType;
     }
+
+    public function generateSerialFromType($code)
+    {
+        if (!$code) {
+            $slug = 'unknown';
+        } else {
+            $slug = strtolower($code);
+            $slug = preg_replace('/\s+/', '-', $slug);
+            $slug = preg_replace('/[^\w\-]+/', '', $slug);
+        }
+
+        $now = (int) round(microtime(true) * 1000);
+
+        return "{$slug}-{$now}";
+    }
+
+    public function getAllAssetsByAssetType($assetType)
+    {
+        return Asset::where('asset_type_id', $assetType)->get();
+    }
+
 
     public function deleteAssetType($assetType)
     {

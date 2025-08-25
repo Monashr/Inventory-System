@@ -20,10 +20,9 @@ class MailController extends Controller
 
     public function inviteByEmail(CreateMailRequest $request)
     {
-        $this->mailService->storeMail($request);
-
-        return redirect()->route('employees.index')->with('success', 'Employee successfully added to tenant.');
+        return $this->mailService->storeMail($request);
     }
+
 
     public function showInbox(Request $request)
     {
@@ -38,13 +37,14 @@ class MailController extends Controller
         ]);
     }
 
-    public function mailDetails($id) {
+    public function mailDetails($id)
+    {
         return Inertia::render("Employee/MailDetail", [
             'mail' => $this->mailService->getMailById($id),
             'user' => auth()->user(),
         ]);
     }
-    
+
     public function acceptInvitation($id)
     {
         $inbox = Mail::findOrFail($id);

@@ -4,14 +4,29 @@ use Illuminate\Support\Facades\Route;
 use Modules\Loans\Http\Controllers\LoansController;
 
 Route::middleware(['auth', 'tenant'])->group(function () {
-    Route::get('/dashboard/loans', [LoansController::class, 'index'])->name('loans.index');
+    Route::get('/dashboard/loans', [LoansController::class, 'index'])
+        ->name('loans.index')
+        ->middleware('AuthorityCheck:loans,own loans,all loans');
 
-    Route::post('/dashboard/loans', [LoansController::class, 'store'])->name('loans.update');
-    Route::get('/dashboard/loans/add', [LoansController::class, 'showAddLoans'])->name('loans.add');
+    Route::post('/dashboard/loans', [LoansController::class, 'store'])
+        ->name('loans.update')
+        ->middleware('AuthorityCheck:loans,own loans,all loans');
 
-    Route::get('/dashboard/loans/{loan}', [LoansController::class, 'showLoanDetails'])->name('loans.details');
-    Route::get('/dashboard/loans/{id}/edit', [LoansController::class, 'edit'])->name('loans.edit');
-    Route::put('/dashboard/loans/{id}', [LoansController::class, 'update'])->name('loans.update');
+    Route::get('/dashboard/loans/add', [LoansController::class, 'showAddLoans'])
+        ->name('loans.add')
+        ->middleware('AuthorityCheck:loans,own loans,all loans');
+
+    Route::get('/dashboard/loans/{loan}', [LoansController::class, 'showLoanDetails'])
+        ->name('loans.details')
+        ->middleware('AuthorityCheck:loans,own loans,all loans');
+
+    Route::get('/dashboard/loans/{id}/edit', [LoansController::class, 'edit'])
+        ->name('loans.edit')
+        ->middleware('AuthorityCheck:loans,own loans,all loans');
+
+    Route::put('/dashboard/loans/{id}', [LoansController::class, 'update'])
+        ->name('loans.update')
+        ->middleware('AuthorityCheck:loans,own loans,all loans');
 
     Route::post('/dashboard/loans/{loan}/accept', [LoansController::class, 'acceptLoan'])->name('loans.accept');
     Route::post('/dashboard/loans/{loan}/reject', [LoansController::class, 'rejectLoan'])->name('loans.decline');
