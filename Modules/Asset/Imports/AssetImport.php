@@ -2,28 +2,29 @@
 
 namespace Modules\Asset\Imports;
 
+use Carbon\Carbon;
+use Exception;
+use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Modules\Asset\Http\Services\AssetLogService;
 use Modules\Asset\Http\Services\AssetTypeService;
 use Modules\Asset\Http\Services\LocationService;
 use Modules\Asset\Models\Asset;
-use Maatwebsite\Excel\Concerns\ToModel;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
-use Carbon\Carbon;
-use Exception;
-
 use Modules\Asset\Models\AssetType;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class AssetImport implements ToModel, WithHeadingRow
 {
     protected $assetLogService;
+
     protected $locationService;
+
     protected $assetTypeService;
 
     public function __construct()
     {
-        $this->assetLogService = new AssetLogService();
-        $this->locationService = new LocationService();
+        $this->assetLogService = new AssetLogService;
+        $this->locationService = new LocationService;
         $this->assetTypeService = new AssetTypeService($this->assetLogService);
     }
 
@@ -38,7 +39,7 @@ class AssetImport implements ToModel, WithHeadingRow
         $assetType = AssetType::firstOrCreate(
             ['name' => $name],
             [
-                'model' => "nothing",
+                'model' => 'nothing',
                 'code' => $code,
                 'created_by' => auth()->user()->id,
                 'updated_by' => auth()->user()->id,

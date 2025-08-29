@@ -2,14 +2,14 @@
 
 namespace Modules\Loans\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\Asset\Models\Asset;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
+
 // use Modules\Items\Database\Factories\LoanFactory;
 
 class Loan extends Model
@@ -39,7 +39,7 @@ class Loan extends Model
     {
         // insert tenant when creating
         static::creating(function ($item) {
-            if (!$item->tenant_id && tenant()) {
+            if (! $item->tenant_id && tenant()) {
                 $item->tenant_id = tenant()->id;
             }
         });

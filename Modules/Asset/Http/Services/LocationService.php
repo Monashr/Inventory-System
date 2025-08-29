@@ -4,10 +4,10 @@ namespace Modules\Asset\Http\Services;
 
 use Modules\Asset\Models\Location;
 
-
 class LocationService
 {
     private const DEFAULT_NAME = '__tenant_default__';
+
     private const DEFAULT_ADDRESS = 'none';
 
     public function getLocation($name)
@@ -36,7 +36,7 @@ class LocationService
     {
         $location = Location::where('name', $name)->first();
 
-        if (!$location) {
+        if (! $location) {
             return Location::create([
                 'name' => $name,
                 'address' => $address,
@@ -48,7 +48,7 @@ class LocationService
 
         return $location;
     }
-    
+
     public function getOrCreateDefaultLocation()
     {
         return Location::firstOrCreate(

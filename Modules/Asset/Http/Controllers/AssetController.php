@@ -2,20 +2,22 @@
 
 namespace Modules\Asset\Http\Controllers;
 
-use Modules\Asset\Http\Requests\Asset\UpdateAssetRequest;
-use Modules\Asset\Http\Requests\Asset\AddAssetRequest;
-use Modules\Asset\Http\Services\AssetTypeService;
-use Modules\Asset\Http\Services\AssetLogService;
-use Modules\Asset\Http\Services\AssetService;
 use App\Http\Controllers\Controller;
-use Modules\Asset\Models\Asset;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Modules\Asset\Http\Requests\Asset\AddAssetRequest;
+use Modules\Asset\Http\Requests\Asset\UpdateAssetRequest;
+use Modules\Asset\Http\Services\AssetLogService;
+use Modules\Asset\Http\Services\AssetService;
+use Modules\Asset\Http\Services\AssetTypeService;
+use Modules\Asset\Models\Asset;
 
 class AssetController extends Controller
 {
     protected $assetService;
+
     protected $assetTypeService;
+
     protected $assetLogService;
 
     public function __construct(AssetService $assetService, AssetLogService $assetLogService, AssetTypeService $assetTypeService)
@@ -46,7 +48,7 @@ class AssetController extends Controller
 
     public function showAssetDetails(Request $request, $asset)
     {
-        if (!$this->assetService->canAuditAsset()) {
+        if (! $this->assetService->canAuditAsset()) {
             return Inertia::render('Asset/AssetsDetails', [
                 'asset' => $this->assetService->findAssetWithDetails($asset),
                 'permissions' => auth()->user()->getTenantPermission(),

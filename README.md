@@ -1,61 +1,171 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CBN - Inventory System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A multi-tenant business management system built with Laravel 12 and Inertia React, designed to streamline asset management, employee administration, and loan processing for organizations.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 🏢 Asset Management
+- **Asset Types**: Categorize and organize different types of assets
+- **Asset Tracking**: Complete lifecycle management of company assets
+- **Repair Management**: Track maintenance and repair history
+- **Asset Logs**: Comprehensive audit trail for all asset activities
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 👥 Employee Management
+- **Employee Profiles**: Complete employee information management
+- **User-based Access**: Permission system for secure access control
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 💰 Loan Management
+- **Loan Processing**: Streamlined loan application and approval workflow
+- **Loan Tracking**: Monitor loan status and repayment schedules
 
-## Learning Laravel
+### 🔐 Multi-Tenant Architecture
+- **Tenant Isolation**: Secure data separation between organizations
+- **Scalable Design**: Support for multiple organizations on single instance
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🛠️ Technical Features
+- **Modern UI**: React-based frontend with Tailwind CSS and Shadcn UI components
+- **Excel Integration**: Import/export capabilities for bulk asset operations
+- **Image Processing**: Built-in image manipulation and storage
+- **Real-time Updates**: Live data synchronization across the application
+- **Responsive Design**: Mobile-friendly interface
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Tech Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Backend**: Laravel 12 (PHP 8.2+)
+- **Frontend**: React 18 with Inertia.js
+- **Database**: PostgreSQL
+- **Styling**: Tailwind CSS 4.x
+- **UI Components**: Shadcn UI
+- **Build Tool**: Vite
+- **Permissions**: Spatie Laravel Permission
+- **Multi-tenancy**: Spatie Laravel Multitenancy
+- **Modules**: Laravel Modules by nWidart
 
-## Laravel Sponsors
+## Prerequisites
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP 8.2 or higher
+- Composer
+- Node.js 18+ and npm
+- PostgreSQL 12+ or Docker
+- Git
 
-### Premium Partners
+## Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd CBN
+```
 
-## Contributing
+### 2. Install PHP Dependencies
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Install Node.js Dependencies
+```bash
+npm install
+```
 
-## Code of Conduct
+### 4. Environment Setup
+```bash
+# Copy environment file
+cp .env.example .env
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Generate application key
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+### 5. Database Setup
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### Option A: Using Docker (Recommended)
+```bash
+# Start PostgreSQL and pgAdmin
+docker-compose up -d
+
+# Update .env file with database credentials
+DB_CONNECTION=pgsql
+DB_HOST=localhost
+DB_PORT=5432
+DB_DATABASE=CBN
+DB_USERNAME=CBN
+DB_PASSWORD=passwordcbn
+```
+
+#### Option B: Local PostgreSQL Installation
+Create a PostgreSQL database and update the `.env` file with your database credentials.
+
+### 6. Database Migration and Seeding
+```bash
+# Run migrations for landlord (central database)
+php artisan migrate:fresh --path=database/migrations/landlord
+
+# Run tenant migrations and Seed the database
+composer migrate-and-seed-all
+```
+
+### 7. Build Frontend Assets
+```bash
+# For development
+npm run dev
+
+# For production
+npm run build
+```
+
+### 8. Start the Application
+```bash
+# Start all services (Laravel server, queue worker, logs, and Vite dev server)
+composer run dev
+```
+
+## Usage
+
+### Accessing the Application
+- **Main Application**: http://localhost:8000
+- **pgAdmin**: http://localhost:5050 (if using Docker)
+  - Email: CBN@admin.com
+  - Password: cbncbncbn
+
+### Default Credentials
+After seeding the database, you can log in with:
+- **Email**: admin@example.com
+- **Password**: password
+
+## Available Commands
+
+```bash
+# Development server with all services
+composer run dev
+
+# Database operations
+composer run migrate-and-seed-all
+
+# Code formatting
+./vendor/bin/pint                
+```
+
+## Project Structure
+
+```
+CBN/
+├── app/                    # Laravel application code
+├── Modules/               # Modular architecture
+│   ├── Asset/            # Asset management module
+│   ├── Employee/         # Employee management module
+│   ├── Loans/            # Loan management module
+│   └── Profile/          # User profile module
+├── database/             # Database migrations and seeders
+├── public/               # Public web assets
+├── resources/            # Views and frontend resources
+│   ├── js/              # React application
+│   └── css/             # Stylesheets
+├── routes/               # Route definitions
+├── storage/              # File storage
+├── tests/                # Test files
+└── docker-compose.yaml   # Docker configuration
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

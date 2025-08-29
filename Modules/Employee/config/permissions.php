@@ -9,4 +9,3 @@ return [
         'delete employees' => 'delete employees',
     ],
 ];
-

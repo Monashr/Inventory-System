@@ -2,12 +2,11 @@
 
 namespace Modules\Employee\Http\Services;
 
-use App\Models\User;
-use App\Http\Services\TenantService;
-use App\Http\Services\UserService;
 use App\Http\Services\PositionService;
 use App\Http\Services\RoleService;
-use Illuminate\Http\Request;
+use App\Http\Services\TenantService;
+use App\Http\Services\UserService;
+use App\Models\User;
 use Modules\Employee\Http\Requests\CreateEmployeeRequest;
 
 class EmployeeService
@@ -17,8 +16,8 @@ class EmployeeService
         protected UserService $userService,
         protected PositionService $positionService,
         protected RoleService $roleService,
-    ) {
-    }
+    ) {}
+
     public function getAllEmployeePaginated($request)
     {
         $perPage = $request->input('per_page', 10);
@@ -34,12 +33,12 @@ class EmployeeService
         $allowedSearch = ['name', 'email', 'phone', 'address'];
 
         $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
+        if (! in_array($sortBy, $allowedSorts)) {
             $sortBy = 'created_at';
         }
 
         $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'asc';
         }
 
@@ -82,10 +81,11 @@ class EmployeeService
         return $user;
     }
 
-    public function getEmployeeByEmail($email) {
+    public function getEmployeeByEmail($email)
+    {
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return back()->withErrors(['email' => 'No user found with this email.']);
         }
 

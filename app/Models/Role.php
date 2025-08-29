@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Role as Base;
 
 class Role extends Base
@@ -33,7 +32,7 @@ class Role extends Base
                 ->where('tenant_id', $tenantId)
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 \DB::table('role_has_permissions')->insert([
                     'role_id' => $this->id,
                     'permission_id' => $permission->id,
@@ -46,5 +45,4 @@ class Role extends Base
 
         return $this;
     }
-
 }

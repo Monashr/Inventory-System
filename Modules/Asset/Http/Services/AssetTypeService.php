@@ -9,8 +9,8 @@ class AssetTypeService
 {
     public function __construct(
         protected AssetLogService $assetLogService,
-    ) {
-    }
+    ) {}
+
     public function findAssetType($assetType)
     {
         return AssetType::findOrFail($assetType);
@@ -24,7 +24,7 @@ class AssetTypeService
     public function getAllAssetTypeWithAsset()
     {
         return AssetType::with('assets')->get();
-        ;
+
     }
 
     public function getAllAssetTypes()
@@ -39,7 +39,7 @@ class AssetTypeService
         $query = AssetType::query();
 
         if ($request->filled('name')) {
-            $query->where('name', 'LIKE', '%' . $request->name . '%');
+            $query->where('name', 'LIKE', '%'.$request->name.'%');
         }
 
         if ($request->filled('model')) {
@@ -49,12 +49,12 @@ class AssetTypeService
         $allowedSorts = ['name', 'model', 'created_at', 'code'];
 
         $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
+        if (! in_array($sortBy, $allowedSorts)) {
             $sortBy = 'name';
         }
 
         $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'asc';
         }
 
@@ -105,6 +105,7 @@ class AssetTypeService
             'updated_by' => auth()->user()->id,
         ]);
     }
+
     public function updateAssetType($request, $assetType)
     {
         $validated = $request->validated();
@@ -131,7 +132,7 @@ class AssetTypeService
 
     public function generateSerialFromType($code)
     {
-        if (!$code) {
+        if (! $code) {
             $slug = 'unknown';
         } else {
             $slug = strtolower($code);
@@ -148,7 +149,6 @@ class AssetTypeService
     {
         return Asset::where('asset_type_id', $assetType)->get();
     }
-
 
     public function deleteAssetType($assetType)
     {

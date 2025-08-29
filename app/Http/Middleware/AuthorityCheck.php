@@ -16,12 +16,11 @@ class AuthorityCheck
     public function handle(Request $request, Closure $next, string $module, ...$permissions): Response
     {
         foreach ($permissions as $permission) {
-            if (checkAuthority(config($module . '.permissions')['permissions'][$permission] ?? null)) {
+            if (checkAuthority(config($module.'.permissions')['permissions'][$permission] ?? null)) {
                 return $next($request);
             }
         }
 
         return redirect()->route('dashboard.index');
     }
-
 }

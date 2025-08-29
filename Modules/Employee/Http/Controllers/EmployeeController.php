@@ -2,16 +2,15 @@
 
 namespace Modules\Employee\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Models\Position;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 use Modules\Employee\Http\Requests\CreateEmployeeRequest;
 use Modules\Employee\Http\Services\EmployeeService;
 use Spatie\Permission\Models\Permission;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use App\Models\Position;
-use Inertia\Inertia;
-use App\Models\User;
-
 
 class EmployeeController extends Controller
 {
@@ -21,6 +20,7 @@ class EmployeeController extends Controller
     {
         $this->employeeService = $employeeService;
     }
+
     public function index(Request $request)
     {
         return Inertia::render('Employee/EmployeesIndex', [
@@ -39,14 +39,14 @@ class EmployeeController extends Controller
     {
         $permission = config('employee.permissions')['permissions']['permission employees'];
 
-        if (!checkAuthority($permission)) {
+        if (! checkAuthority($permission)) {
             return redirect()->route('employees.index');
 
         }
 
         $allowedUsers = auth()->user()->usersFromSameTenant()->pluck('id')->toArray();
 
-        if (!in_array($id, $allowedUsers) || auth()->user()->id == $id) {
+        if (! in_array($id, $allowedUsers) || auth()->user()->id == $id) {
             return redirect()->route('employees.index');
         }
 
@@ -65,7 +65,7 @@ class EmployeeController extends Controller
             ->orderBy('permissions.name')
             ->paginate(10);
 
-        return Inertia::render("Employee/EmployeesPermission", [
+        return Inertia::render('Employee/EmployeesPermission', [
             'employee' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -80,7 +80,7 @@ class EmployeeController extends Controller
     {
         $permission = config('employee.permissions')['permissions']['permission employees'];
 
-        if (!checkAuthority($permission)) {
+        if (! checkAuthority($permission)) {
             return redirect()->route('employees.index');
         }
 
@@ -92,7 +92,7 @@ class EmployeeController extends Controller
 
         $user = User::with('positions')->findOrFail($id);
 
-        $permissions = Permission::where('guard_name', "web")->get();
+        $permissions = Permission::where('guard_name', 'web')->get();
 
         $assignedPermissions = DB::table('users as u')
             ->join('model_has_roles as mhr', function ($join) use ($user) {
@@ -121,7 +121,7 @@ class EmployeeController extends Controller
     {
         $permission = config('employee.permissions')['permissions']['permission employees'];
 
-        if (!checkAuthority($permission)) {
+        if (! checkAuthority($permission)) {
             return redirect()->route('employees.index');
         }
 
@@ -136,7 +136,7 @@ class EmployeeController extends Controller
         ]);
 
         if ($validated['position'] == null) {
-            $validated['position'] = "employee";
+            $validated['position'] = 'employee';
         }
 
         $position = Position::firstOrCreate(
@@ -172,7 +172,7 @@ class EmployeeController extends Controller
 
     public function deleteUserFromTenant($id)
     {
-        if (!checkAuthority(config('employee.permissions')['permissions']['delete employees'])) {
+        if (! checkAuthority(config('employee.permissions')['permissions']['delete employees'])) {
             return redirect()->route('employees.index');
         }
 
@@ -194,7 +194,7 @@ class EmployeeController extends Controller
 
     public function revokeAllPermissions($id)
     {
-        if (!checkAuthority(config('employee.permissions')['permissions']['permission employees'])) {
+        if (! checkAuthority(config('employee.permissions')['permissions']['permission employees'])) {
             return redirect()->route('employees.index');
         }
 
@@ -221,7 +221,6 @@ class EmployeeController extends Controller
         $user->positions()->detach();
     }
 
-
     public function showCreateEmployeeForm()
     {
         return Inertia::render('Employee/EmployeesCreate');
@@ -230,8 +229,7 @@ class EmployeeController extends Controller
     public function storeEmployee(CreateEmployeeRequest $request)
     {
         $this->employeeService->createNewEmployee($request);
+
         return redirect()->route('employees.index')->with('success', 'Employee added successfully.');
     }
-
-
 }

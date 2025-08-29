@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Position;
+use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use App\Models\Role;
 use Modules\Asset\Database\Seeders\AssetDatabaseSeeder;
 use Modules\Employee\Database\Seeders\EmployeeDatabaseSeeder;
 use Modules\Loans\Database\Seeders\LoansDatabaseSeeder;
@@ -21,14 +21,14 @@ class DatabaseSeeder extends Seeder
     {
 
         $tenant = Tenant::create([
-            'name' => "Admin",
-            'domain' => "Admin",
-            'database' => "Admin",
+            'name' => 'Admin',
+            'domain' => 'Admin',
+            'database' => 'Admin',
         ]);
 
         $position = Position::create([
-            'name' => "Admin",
-            'tenant_id' => $tenant->id
+            'name' => 'Admin',
+            'tenant_id' => $tenant->id,
         ]);
 
         $permissions = [

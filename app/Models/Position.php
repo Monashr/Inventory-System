@@ -19,10 +19,8 @@ class Position extends Model
         return $this->belongsToMany(User::class)->withTimestamps();
     }
 
-
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
     }
-
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Services;
 
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class PictureService
 {
@@ -16,16 +16,15 @@ class PictureService
             $disk->delete($existingPath);
         }
 
-        $manager = new ImageManager(new Driver());
+        $manager = new ImageManager(new Driver);
         $image = $manager->read($file->getRealPath());
         $image->cover(500, 500);
 
-        $filename = uniqid('profile_') . '.jpg';
-        $path = $savePath . $filename;
+        $filename = uniqid('profile_').'.jpg';
+        $path = $savePath.$filename;
 
         $disk->put($path, (string) $image->toJpeg());
 
         return $path;
     }
-
 }

@@ -2,9 +2,8 @@
 
 namespace Modules\Asset\Http\Services;
 
-use Modules\Asset\Models\Location;
-use Modules\Asset\Models\Repair;
 use Carbon\Carbon;
+use Modules\Asset\Models\Repair;
 
 class RepairService
 {
@@ -12,8 +11,7 @@ class RepairService
         protected LocationService $locationService,
         protected AssetLogService $assetLogService,
         protected AssetService $assetService,
-    ) {
-    }
+    ) {}
 
     public function getAllRepairsPaginated($request)
     {
@@ -25,7 +23,7 @@ class RepairService
             ->where('repairs.tenant_id', tenant()->id);
 
         if ($request->filled('vendor')) {
-            $query->where('vendor', 'LIKE', '%' . $request->vendor . '%');
+            $query->where('vendor', 'LIKE', '%'.$request->vendor.'%');
         }
 
         if ($request->filled('status')) {
@@ -35,12 +33,12 @@ class RepairService
         $allowedSorts = ['asset_name', 'repair_start_date', 'repair_completion_date', 'repair_cost', 'vendor', 'status'];
 
         $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
+        if (! in_array($sortBy, $allowedSorts)) {
             $sortBy = 'asset_name';
         }
 
         $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'asc';
         }
 
@@ -86,7 +84,7 @@ class RepairService
             'corrective_action' => $validated['corrective_action'],
             'repair_cost' => $validated['repair_cost'],
             'vendor' => $validated['vendor'],
-            'status' => "progress",
+            'status' => 'progress',
             'location_id' => $location->id,
 
             'created_by' => $user_id,
@@ -125,7 +123,7 @@ class RepairService
         $repair->update(['status' => 'cancelled', 'updated_by' => auth()->user()->id]);
 
         if ($repair->asset) {
-            $repair->asset->update(['availability' => 'available', 'updated_by' => auth()->user()->id, 'location_id' => $this->locationService->getOrCreateDefaultLocation()->id,]);
+            $repair->asset->update(['availability' => 'available', 'updated_by' => auth()->user()->id, 'location_id' => $this->locationService->getOrCreateDefaultLocation()->id]);
         }
 
         $repair->save();

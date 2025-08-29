@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
-use App\Http\Services\TenantService;
 use App\Http\Services\AuthService;
+use App\Http\Services\TenantService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+
 class AuthController extends Controller
 {
-
     protected $authService;
+
     protected $tenantService;
 
     public function __construct(AuthService $authService, TenantService $tenantService)
@@ -77,6 +78,6 @@ class AuthController extends Controller
             return redirect()->back()->with('success', 'Tenant switched.');
         }
 
-        abort(403, "Unauthorized tenant, from auth");
+        abort(403, 'Unauthorized tenant, from auth');
     }
 }

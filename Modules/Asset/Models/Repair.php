@@ -2,12 +2,12 @@
 
 namespace Modules\Asset\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 
 class Repair extends Model
 {
@@ -16,7 +16,7 @@ class Repair extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['asset_id', 'tenant_id', 'repair_start_date', 'repair_completion_date', 'defect_description', 'corrective_action', 'repair_cost', 'vendor', 'location_id','status', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['asset_id', 'tenant_id', 'repair_start_date', 'repair_completion_date', 'defect_description', 'corrective_action', 'repair_cost', 'vendor', 'location_id', 'status', 'created_by', 'updated_by', 'deleted_by'];
 
     public function asset(): BelongsTo
     {
@@ -32,7 +32,7 @@ class Repair extends Model
     {
         // insert tenant when creating
         static::creating(function ($assetType) {
-            if (!$assetType->tenant_id && tenant()) {
+            if (! $assetType->tenant_id && tenant()) {
                 $assetType->tenant_id = tenant()->id;
             }
         });

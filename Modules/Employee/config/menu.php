@@ -6,5 +6,5 @@ return [
         'icon' => 'UserRoundIcon',
         'route' => '/dashboard/employees',
         'permission' => 'view employees',
-    ]
+    ],
 ];

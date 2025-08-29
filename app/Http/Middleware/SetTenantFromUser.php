@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Tenant;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Tenant;
 
 class SetTenantFromUser
 {
@@ -13,21 +13,18 @@ class SetTenantFromUser
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-
     public function handle(Request $request, Closure $next)
     {
         if (auth()->check()) {
             $activeTenantId = session('active_tenant_id');
 
-
-            if (!$activeTenantId) {
+            if (! $activeTenantId) {
                 $tenant = auth()->user()->tenants()->first();
                 if ($tenant) {
                     session(['active_tenant_id' => $tenant->id]);
                     $activeTenantId = $tenant->id;
                 }
             }
-
 
             if ($activeTenantId) {
                 $user = auth()->user();
@@ -47,5 +44,4 @@ class SetTenantFromUser
 
         return $next($request);
     }
-
 }

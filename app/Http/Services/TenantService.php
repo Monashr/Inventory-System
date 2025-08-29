@@ -18,13 +18,13 @@ class TenantService
     public function createTenant(array $data)
     {
         $tenant = Tenant::create([
-            'name' => $data['name'] . " Personal Page",
-            'domain' => "-",
-            'database' => "-",
+            'name' => $data['name'].' Personal Page',
+            'domain' => '-',
+            'database' => '-',
         ]);
 
-        $tenant->domain = $tenant->id . '-default';
-        $tenant->database = $tenant->id . '-default';
+        $tenant->domain = $tenant->id.'-default';
+        $tenant->database = $tenant->id.'-default';
 
         $tenant->save();
 

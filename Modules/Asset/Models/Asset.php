@@ -2,19 +2,20 @@
 
 namespace Modules\Asset\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Loans\Models\Loan;
 
 class Asset extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['asset_type_id', 'brand', 'serial_code', 'specification', 'purchase_date', 'purchase_price', 'initial_condition', 'condition', 'availability', 'location_id','created_by', 'updated_by', 'deleted_by'];
+
+    protected $fillable = ['asset_type_id', 'brand', 'serial_code', 'specification', 'purchase_date', 'purchase_price', 'initial_condition', 'condition', 'availability', 'location_id', 'created_by', 'updated_by', 'deleted_by'];
 
     public function assetType(): BelongsTo
     {
@@ -47,7 +48,7 @@ class Asset extends Model
     {
         // insert tenant when creating
         static::creating(function ($asset) {
-            if (!$asset->tenant_id && tenant()) {
+            if (! $asset->tenant_id && tenant()) {
                 $asset->tenant_id = tenant()->id;
             }
         });

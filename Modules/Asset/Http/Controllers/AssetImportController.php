@@ -3,11 +3,11 @@
 namespace Modules\Asset\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Modules\Asset\Imports\AssetImport;
-use Modules\Asset\Exports\AssetExport;
-use Maatwebsite\Excel\Facades\Excel;
 use Exception;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Asset\Exports\AssetExport;
+use Modules\Asset\Imports\AssetImport;
 
 class AssetImportController extends Controller
 {
@@ -18,10 +18,11 @@ class AssetImportController extends Controller
         ]);
 
         try {
-            Excel::import(new AssetImport(), $request->file('file'));
+            Excel::import(new AssetImport, $request->file('file'));
+
             return redirect()->route('assets.index')->with('success', 'Assets imported successfully!');
         } catch (Exception $e) {
-            return redirect()->route('assets.index')->with('success', 'Import failed: ' . $e->getMessage());
+            return redirect()->route('assets.index')->with('success', 'Import failed: '.$e->getMessage());
         }
     }
 
@@ -29,7 +30,7 @@ class AssetImportController extends Controller
     {
         $path = storage_path('/templates/ImportTemplate.xlsx');
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             abort(404, 'Template file not found.');
         }
 
@@ -40,5 +41,4 @@ class AssetImportController extends Controller
     {
         return Excel::download(new AssetExport, 'assets.xlsx');
     }
-
 }

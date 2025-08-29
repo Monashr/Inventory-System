@@ -15,8 +15,7 @@ class AuthService
         protected PositionService $positionService,
         protected RoleService $roleService,
         protected ModuleService $moduleService
-    ) {
-    }
+    ) {}
 
     public function redirectToDashboardIfAlreadyAuthenticated()
     {
@@ -47,7 +46,7 @@ class AuthService
         $user = $this->userService->createUser($credentials);
 
         $role = $this->roleService->createRole('user', $tenant->id);
-        
+
         $user->positions()->attach($position);
 
         $user->assignRole($tenant->id, $role);
@@ -59,7 +58,8 @@ class AuthService
         return $user;
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         auth()->logout();
 
         $request->session()->invalidate();

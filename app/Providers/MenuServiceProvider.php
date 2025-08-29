@@ -23,11 +23,11 @@ class MenuServiceProvider extends ServiceProvider
     {
         Inertia::share([
             // Authenticated user's tenant info
-            'tenants' => fn() => auth()->check()
+            'tenants' => fn () => auth()->check()
                 ? auth()->user()->tenants()->select('tenants.id', 'tenants.name', 'tenants.pictures')->get()
                 : [],
-            'currentTenantId' => fn() => session('active_tenant_id'),
-            'user' => fn() => auth()->user(),
+            'currentTenantId' => fn () => session('active_tenant_id'),
+            'user' => fn () => auth()->user(),
             'flash' => function () {
                 return [
                     'success' => session('success'),
@@ -41,13 +41,13 @@ class MenuServiceProvider extends ServiceProvider
                 $menus = collect();
 
                 foreach (Module::allEnabled() as $module) {
-                    $path = $module->getPath() . '/config/menu.php';
+                    $path = $module->getPath().'/config/menu.php';
 
                     if (file_exists($path)) {
                         $configMenus = require $path;
 
                         foreach ($configMenus as $menu) {
-                            if (!isset($menu['permission']) || ($user && checkAuthority($menu['permission']))) {
+                            if (! isset($menu['permission']) || ($user && checkAuthority($menu['permission']))) {
                                 $menus->push($menu);
                             }
                         }

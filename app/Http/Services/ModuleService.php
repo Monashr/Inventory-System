@@ -17,7 +17,7 @@ class ModuleService
 
             $permissions = config("$moduleName.permissions", []);
 
-            if (!empty($permissions)) {
+            if (! empty($permissions)) {
                 $role->giveTenantPermissionTo($tenant->id, ...$permissions);
             }
         }

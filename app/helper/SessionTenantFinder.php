@@ -11,7 +11,7 @@ class SessionTenantFinder extends TenantFinder
     {
         $tenantId = session('active_tenant_id');
 
-        if (!$tenantId) {
+        if (! $tenantId) {
             return null;
         }
 

@@ -3,27 +3,28 @@
 namespace Modules\Loans\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Modules\Asset\Http\Services\AssetLogService;
 use Modules\Asset\Http\Services\AssetService;
-use Intervention\Image\Drivers\Gd\Driver;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
 use Modules\Asset\Http\Services\AssetTypeService;
-use Modules\Asset\Models\AssetType;
-use Illuminate\Support\Facades\DB;
 use Modules\Asset\Models\Asset;
 use Modules\Loans\Http\Services\LoanService;
 use Modules\Loans\Models\Loan;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Exception;
 
 class LoansController extends Controller
 {
-
     protected $assetService;
+
     protected $assetLogService;
+
     protected $loanService;
+
     protected $assetTypeService;
 
     public function __construct(AssetService $assetService, AssetLogService $assetLogService, LoanService $loanService, AssetTypeService $assetTypeService)
@@ -33,6 +34,7 @@ class LoansController extends Controller
         $this->loanService = $loanService;
         $this->assetTypeService = $assetTypeService;
     }
+
     public function index(Request $request)
     {
         return Inertia::render('Loans/LoansIndex', [
@@ -59,7 +61,7 @@ class LoansController extends Controller
 
     public function store(Request $request)
     {
-        if (!checkAuthority(config('loans.permissions')['permissions']['all loans']) && $request['loaner'] != auth()->user()->id) {
+        if (! checkAuthority(config('loans.permissions')['permissions']['all loans']) && $request['loaner'] != auth()->user()->id) {
             return back()->withErrors(['error' => 'Error occurred while creating loan.']);
         } // check that user can only make loans for themself, except for all loans admin
 
@@ -95,6 +97,7 @@ class LoansController extends Controller
             return redirect()->route('loans.index')->with('success', 'Loan created successfully.');
         } catch (Exception $e) {
             DB::rollBack();
+
             return back()->withErrors(['error' => 'Error occurred while creating loan.']);
         }
     }
@@ -142,7 +145,7 @@ class LoansController extends Controller
         $loan = Loan::with(['user'])->findOrFail($id);
         // make function in service
 
-        if (!(checkAuthority(config('loans.permissions')['permissions']['all loans']) || (checkAuthority(config('loans.permissions')['permissions']['own loans']) && $loan->user_id === auth()->id()))) {
+        if (! (checkAuthority(config('loans.permissions')['permissions']['all loans']) || (checkAuthority(config('loans.permissions')['permissions']['own loans']) && $loan->user_id === auth()->id()))) {
             return redirect()->route('dashboard')->withErrors('You are not authorized to view this loan.');
         } // function checkIfUserCanAccessLoan
 
@@ -178,7 +181,7 @@ class LoansController extends Controller
     public function acceptLoan(Loan $loan)
     {
         if (
-            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+            ! checkAuthority(config('loans.permissions')['permissions']['decision loans'])
         ) {
             return redirect()->route('dashboard');
         }
@@ -211,7 +214,7 @@ class LoansController extends Controller
     public function rejectLoan(Loan $loan)
     {
         if (
-            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+            ! checkAuthority(config('loans.permissions')['permissions']['decision loans'])
         ) {
             return redirect()->route('dashboard');
         }
@@ -230,7 +233,7 @@ class LoansController extends Controller
     public function cancelLoan(Loan $loan)
     {
         if (
-            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+            ! checkAuthority(config('loans.permissions')['permissions']['decision loans'])
         ) {
             return redirect()->route('dashboard');
         }
@@ -249,7 +252,7 @@ class LoansController extends Controller
     public function returnAsset(Request $request, Loan $loan)
     {
         if (
-            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+            ! checkAuthority(config('loans.permissions')['permissions']['decision loans'])
         ) {
             return redirect()->route('dashboard');
         }
@@ -264,7 +267,7 @@ class LoansController extends Controller
 
         $loanAsset = $loan->assets()->where('asset_id', $assetId)->first();
 
-        if (!$loanAsset) {
+        if (! $loanAsset) {
             return back()->withErrors(['message' => 'Asset not part of this loan.']);
         }
 
@@ -288,7 +291,7 @@ class LoansController extends Controller
     public function uploadEvident(Request $request, Loan $loan)
     {
         if (
-            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+            ! checkAuthority(config('loans.permissions')['permissions']['decision loans'])
         ) {
             return redirect()->route('dashboard');
         }
@@ -302,14 +305,14 @@ class LoansController extends Controller
                 Storage::disk('public')->delete($loan->evident);
             }
 
-            $manager = new ImageManager(new Driver());
+            $manager = new ImageManager(new Driver);
 
             $image = $manager->read($request->file('file')->getRealPath());
 
             $image->cover(500, 500);
 
-            $filename = uniqid('evident_') . '.jpg';
-            $path = 'evident/' . $filename;
+            $filename = uniqid('evident_').'.jpg';
+            $path = 'evident/'.$filename;
 
             Storage::disk('public')->put($path, (string) $image->toJpeg());
 
@@ -326,7 +329,7 @@ class LoansController extends Controller
     public function uploadDocument(Request $request, Loan $loan)
     {
         if (
-            !checkAuthority(config('loans.permissions')['permissions']['decision loans'])
+            ! checkAuthority(config('loans.permissions')['permissions']['decision loans'])
         ) {
             return redirect()->route('dashboard');
         }
@@ -335,7 +338,6 @@ class LoansController extends Controller
             'file' => 'required|file|mimes:pdf|max:2048',
         ]);
 
-
         if ($request->hasFile('file')) {
             if ($loan->document && Storage::disk('public')->exists($loan->document)) {
                 Storage::disk('public')->delete($loan->document);
@@ -343,8 +345,8 @@ class LoansController extends Controller
 
             $extension = $request->file('file')->getClientOriginalExtension();
 
-            $filename = uniqid('loan_document_') . '.' . $extension;
-            $path = 'loan_document/' . $filename;
+            $filename = uniqid('loan_document_').'.'.$extension;
+            $path = 'loan_document/'.$filename;
 
             $request->file('file')->storeAs('loan_document', $filename, 'public');
 

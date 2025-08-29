@@ -10,8 +10,7 @@ class AssetService
         protected LocationService $locationService,
         protected AssetLogService $assetLogService,
         protected AssetTypeService $assetTypeService,
-    ) {
-    }
+    ) {}
 
     // INFORMATION QUERY
     // --------------------------------------------------------------------------------------------------------
@@ -87,14 +86,14 @@ class AssetService
 
         if ($assetTypeId) {
             $query = Asset::query()->where('asset_type_id', $assetTypeId);
-        } else if ($available) {
+        } elseif ($available) {
             $query = Asset::query()->where('availability', 'available')->where('condition', '!=', 'defect');
         } else {
             $query = Asset::query();
         }
 
         if ($request->filled('brand') && $request->brand != 'All') {
-            $query->where('brand', 'LIKE', '%' . $request->brand . '%');
+            $query->where('brand', 'LIKE', '%'.$request->brand.'%');
         }
 
         if ($request->filled('condition') && $request->condition != 'All') {
@@ -107,19 +106,19 @@ class AssetService
             });
         }
 
-        if (!$this->canManageAsset()) {
+        if (! $this->canManageAsset()) {
             $query->where('availability', 'available');
         }
 
         $allowedSorts = ['serial_code', 'brand', 'condition', 'availability', 'created_at'];
 
         $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
+        if (! in_array($sortBy, $allowedSorts)) {
             $sortBy = 'serial_code';
         }
 
         $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'asc';
         }
 
@@ -196,7 +195,7 @@ class AssetService
     {
         $asset = $this->findAsset($asset);
 
-        if ($asset->availability == "repair") {
+        if ($asset->availability == 'repair') {
             return false;
         }
 
@@ -226,7 +225,7 @@ class AssetService
 
     public function generateSerialFromType($code)
     {
-        if (!$code) {
+        if (! $code) {
             $slug = 'unknown';
         } else {
             $slug = strtolower($code);

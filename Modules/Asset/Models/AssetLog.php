@@ -2,11 +2,11 @@
 
 namespace Modules\Asset\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AssetLog extends Model
 {
@@ -27,12 +27,11 @@ class AssetLog extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-
     protected static function booted()
     {
         // insert tenant when creating
         static::creating(function ($assetType) {
-            if (!$assetType->tenant_id && tenant()) {
+            if (! $assetType->tenant_id && tenant()) {
                 $assetType->tenant_id = tenant()->id;
             }
         });

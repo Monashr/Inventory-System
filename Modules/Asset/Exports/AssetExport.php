@@ -2,15 +2,16 @@
 
 namespace Modules\Asset\Exports;
 
-use Modules\Asset\Models\Asset;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Modules\Asset\Models\Asset;
 
 class AssetExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
         $asset = Asset::select('serial_code', 'brand', 'condition', 'availability', 'created_at')->get();
+
         return Asset::select('serial_code', 'brand', 'condition', 'availability', 'created_at')->get();
     }
 

@@ -8,13 +8,15 @@ use App\Http\Services\TenantService;
 use Inertia\Inertia;
 use Modules\Asset\Http\Services\AssetService;
 use Modules\Loans\Http\Services\LoanService;
-use Symfony\Component\ErrorHandler\Internal\TentativeTypes;
 
 class DashboardController extends Controller
 {
     protected $pictureService;
+
     protected $tenantService;
+
     protected $assetService;
+
     protected $loanService;
 
     public function __construct(PictureService $pictureService, TenantService $tenantService, AssetService $assetService, LoanService $loanService)
@@ -33,7 +35,7 @@ class DashboardController extends Controller
         $defectAssets = $this->assetService->getTotalDefectAssets();
 
         $recentLoanedAssets = $this->assetService->getRecentLoanedAssets();
-        $totalLoanedAssets  = $this->assetService->getTotalLoanedAssets();
+        $totalLoanedAssets = $this->assetService->getTotalLoanedAssets();
 
         $totalAssetsInRepair = $this->assetService->getTotalAssetsInRepair();
         $recentAssetsInRepair = $this->assetService->getRecentAssetsInRepair();
@@ -41,15 +43,15 @@ class DashboardController extends Controller
         $recentEmployees = $this->tenantService->getRecentUsersInTenant(tenant()->id);
 
         return Inertia::render('DashboardIndex', [
-            "totalAssets" => $totalAssets,
-            "totalAvailableAssets" => $availableAssets,
-            "totalDefectAssets" => $defectAssets,
-            "totalLoanedAssets" => $totalLoanedAssets,
-            "recentLoanedAssets" => $recentLoanedAssets,
-            "totalAssetsInRepair" => $totalAssetsInRepair,
-            "recentAssetsInRepair" => $recentAssetsInRepair,
-            "recentEmployees" => $recentEmployees,
-            "tenant" => tenant(),
+            'totalAssets' => $totalAssets,
+            'totalAvailableAssets' => $availableAssets,
+            'totalDefectAssets' => $defectAssets,
+            'totalLoanedAssets' => $totalLoanedAssets,
+            'recentLoanedAssets' => $recentLoanedAssets,
+            'totalAssetsInRepair' => $totalAssetsInRepair,
+            'recentAssetsInRepair' => $recentAssetsInRepair,
+            'recentEmployees' => $recentEmployees,
+            'tenant' => tenant(),
         ]);
     }
 

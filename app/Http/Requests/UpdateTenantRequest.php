@@ -31,7 +31,6 @@ class UpdateTenantRequest extends FormRequest
                 'industry' => ['nullable', 'string', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
                 'picture' => ['nullable', 'image', 'max:2048'],
-            ]
-        ;
+            ];
     }
 }

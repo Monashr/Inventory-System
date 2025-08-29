@@ -2,20 +2,22 @@
 
 namespace Modules\Asset\Http\Controllers;
 
-use Modules\Asset\Http\Requests\AssetType\UpdateAssetTypeRequest;
-use Modules\Asset\Http\Requests\AssetType\AddAssetTypeRequest;
-use Modules\Asset\Http\Services\AssetTypeService;
-use Modules\Asset\Http\Services\AssetLogService;
-use Modules\Asset\Http\Services\AssetService;
 use App\Http\Controllers\Controller;
-use Modules\Asset\Models\AssetType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Modules\Asset\Http\Requests\AssetType\AddAssetTypeRequest;
+use Modules\Asset\Http\Requests\AssetType\UpdateAssetTypeRequest;
+use Modules\Asset\Http\Services\AssetLogService;
+use Modules\Asset\Http\Services\AssetService;
+use Modules\Asset\Http\Services\AssetTypeService;
+use Modules\Asset\Models\AssetType;
 
 class AssetTypeController extends Controller
 {
     protected $assetService;
+
     protected $assetTypeService;
+
     protected $assetLogService;
 
     public function __construct(AssetService $assetService, AssetLogService $assetLogService, AssetTypeService $assetTypeService)
@@ -64,9 +66,9 @@ class AssetTypeController extends Controller
 
     public function showAssetTypeEditForm(AssetType $assetType)
     {
-        return Inertia::render("Asset/AssetTypesEdit", [
-            "assetType" => $assetType,
-            "models" => $this->assetTypeService->getAllAssetTypeModels(),
+        return Inertia::render('Asset/AssetTypesEdit', [
+            'assetType' => $assetType,
+            'models' => $this->assetTypeService->getAllAssetTypeModels(),
         ]);
     }
 
@@ -85,5 +87,4 @@ class AssetTypeController extends Controller
 
         return redirect()->route('assettypes.index')->with('error', 'Asset Type cannot be deleted there is assets in repair');
     }
-
 }

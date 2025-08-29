@@ -37,4 +37,3 @@ Route::middleware(['auth', 'tenant'])->group(function () {
     Route::post('/dashboard/loans/{loan}/evident', [LoansController::class, 'uploadEvident'])->name('loans.evident');
     Route::post('/dashboard/loans/{loan}/document', [LoansController::class, 'uploadDocument'])->name('loans.document');
 });
-

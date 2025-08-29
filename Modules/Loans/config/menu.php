@@ -6,5 +6,5 @@ return [
         'icon' => 'PackageOpenIcon',
         'route' => '/dashboard/loans',
         'permission' => 'make and manage own loan',
-    ]
+    ],
 ];

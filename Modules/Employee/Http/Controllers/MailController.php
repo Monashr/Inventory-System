@@ -2,11 +2,11 @@
 
 namespace Modules\Employee\Http\Controllers;
 
-use Modules\Employee\Http\Requests\Mail\CreateMailRequest;
-use Modules\Employee\Http\Services\MailService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Modules\Employee\Http\Requests\Mail\CreateMailRequest;
+use Modules\Employee\Http\Services\MailService;
 use Modules\Employee\Models\Mail;
 
 class MailController extends Controller
@@ -23,10 +23,9 @@ class MailController extends Controller
         return $this->mailService->storeMail($request);
     }
 
-
     public function showInbox(Request $request)
     {
-        return Inertia::render("Employee/EmployeesInbox", [
+        return Inertia::render('Employee/EmployeesInbox', [
             'inbox' => $this->mailService->getAllMailPagination($request),
             'user' => auth()->user(),
             'filters' => [
@@ -39,7 +38,7 @@ class MailController extends Controller
 
     public function mailDetails($id)
     {
-        return Inertia::render("Employee/MailDetail", [
+        return Inertia::render('Employee/MailDetail', [
             'mail' => $this->mailService->getMailById($id),
             'user' => auth()->user(),
         ]);
@@ -56,7 +55,7 @@ class MailController extends Controller
         $user = auth()->user();
         $tenantId = $inbox->tenant_id;
 
-        if (!$user->tenants()->where('tenant_id', $tenantId)->exists()) {
+        if (! $user->tenants()->where('tenant_id', $tenantId)->exists()) {
             $user->tenants()->attach($tenantId);
         }
 

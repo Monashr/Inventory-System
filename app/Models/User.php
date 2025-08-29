@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\PermissionRegistrar;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'name',
@@ -61,7 +61,6 @@ class User extends Authenticatable
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
 
-
     public function getTenantPermission()
     {
         $user = auth()->user();
@@ -96,6 +95,7 @@ class User extends Authenticatable
                     ->firstOrFail();
 
             }
+
             return $role;
         });
 
@@ -107,7 +107,7 @@ class User extends Authenticatable
                 ->where('tenant_id', $tenantId)
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 DB::table('model_has_roles')->insert([
                     'role_id' => $role->id,
                     'model_type' => get_class($this),

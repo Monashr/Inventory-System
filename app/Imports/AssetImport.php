@@ -3,15 +3,13 @@
 namespace App\Imports;
 
 use App\Models\Tenant;
+use Maatwebsite\Excel\Concerns\ToModel;
 use Modules\Asset\Models\Asset;
 use Modules\Asset\Models\AssetType;
-use Maatwebsite\Excel\Concerns\ToModel;
 
 class AssetImport implements ToModel
 {
     /**
-     * @param array $row
-     *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function model(array $row)
@@ -19,7 +17,7 @@ class AssetImport implements ToModel
         $assetType = AssetType::where('name', $row['asset_type'])->first();
         $tenant = Tenant::where('name', $row['tenant'])->first();
 
-        if (!$assetType || !$tenant) {
+        if (! $assetType || ! $tenant) {
             return null;
         }
 

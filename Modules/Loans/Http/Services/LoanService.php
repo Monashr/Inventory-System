@@ -19,19 +19,19 @@ class LoanService
 
         $perPage = $request->input('per_page', 10);
 
-        if ($request->filled('status') && $request->status != "All") {
-            $query->where('status', 'LIKE', '%' . $request->status . '%');
+        if ($request->filled('status') && $request->status != 'All') {
+            $query->where('status', 'LIKE', '%'.$request->status.'%');
         }
 
         $allowedSorts = ['name', 'status', 'description', 'created_at'];
 
         $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
+        if (! in_array($sortBy, $allowedSorts)) {
             $sortBy = 'created_at';
         }
 
         $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'asc';
         }
 
@@ -58,6 +58,7 @@ class LoanService
     {
         if ($this->checkManagePermissionForLoan()) {
             dd(auth()->user()->usersFromSameTenant());
+
             return auth()->user()->usersFromSameTenant();
         } else {
             return [auth()->user()];
@@ -88,12 +89,13 @@ class LoanService
     public function checkIfUserCanAccessLoan($loan)
     {
         if (
-            !(checkAuthority(config('loans.permissions')['permissions']['all loans']) ||
+            ! (checkAuthority(config('loans.permissions')['permissions']['all loans']) ||
                 (checkAuthority(config('loans.permissions')['permissions']['own loans']) &&
                     $loan->user_id === auth()->id()))
         ) {
             return true;
         }
+
         return false;
     }
 
@@ -107,7 +109,7 @@ class LoanService
             ->get()
             ->pluck('status');
 
-        return $status->prepend("All");
+        return $status->prepend('All');
     }
 
     public function getAllLoanFilters()
@@ -116,5 +118,4 @@ class LoanService
             'status' => $this->getAllLoanStatuses(),
         ];
     }
-
 }

@@ -9,8 +9,7 @@ class MailService
 {
     public function __construct(
         protected EmployeeService $employeeService,
-    ) {
-    }
+    ) {}
 
     public function getAllMailPagination($request)
     {
@@ -32,12 +31,12 @@ class MailService
         $allowedSorts = ['sender', 'receiver', 'tenant', 'sent_at', 'status'];
 
         $sortBy = $request->get('sort_by');
-        if (!in_array($sortBy, $allowedSorts)) {
+        if (! in_array($sortBy, $allowedSorts)) {
             $sortBy = 'created_at';
         }
 
         $sortDirection = strtolower($request->get('sort_direction', 'asc'));
-        if (!in_array($sortDirection, ['asc', 'desc'])) {
+        if (! in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'asc';
         }
 
@@ -111,5 +110,4 @@ class MailService
             'tenant_id' => $tenantId,
         ]);
     }
-
 }

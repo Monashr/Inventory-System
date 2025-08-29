@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // In AppServiceProvider or Middleware
-        Inertia::share('currentRouteName', fn() => \Route::currentRouteName());
+        Inertia::share('currentRouteName', fn () => \Route::currentRouteName());
 
     }
 }

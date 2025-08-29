@@ -3,8 +3,8 @@
 namespace Modules\Employee\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class EmployeeDatabaseSeeder extends Seeder
 {
@@ -20,7 +20,7 @@ class EmployeeDatabaseSeeder extends Seeder
             'invite employees',
             'make employees',
             'permission employees',
-            'delete employees'
+            'delete employees',
         ];
 
         foreach ($permissions as $permission) {
