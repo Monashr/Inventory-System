@@ -59,12 +59,15 @@ const iconMap = {
 };
 
 export default function Dashboard({ children }) {
-    const { moduleMenus, tenants, currentTenantId, user } = usePage().props;
+    const { moduleMenus, tenants, currentTenantId, user, permissions } =
+        usePage().props;
+
+    console.log(user);
 
     const { url } = usePage();
 
     const currentPath = url;
-    
+
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
@@ -155,42 +158,52 @@ export default function Dashboard({ children }) {
                                                     </SidebarMenuButton>
                                                 </CollapsibleTrigger>
                                                 <CollapsibleContent>
+                                                    {console.log(menu.children)}
                                                     <SidebarMenuSub className="ml-4 mt-1 border-l border-border/40 pl-4 cursor-pointer">
-                                                        {menu.children.map(
-                                                            (child, cidx) => {
-                                                                const isActive =
-                                                                    currentPath.startsWith(
-                                                                        child.route
-                                                                    );
-                                                                return (
-                                                                    <SidebarMenuSubItem
-                                                                        key={
-                                                                            cidx
-                                                                        }
-                                                                    >
-                                                                        <SidebarMenuSubButton
-                                                                            asChild
-                                                                            isActive={
-                                                                                isActive
+                                                        {menu.children
+                                                            .filter((child) =>
+                                                                permissions.includes(
+                                                                    child.permission
+                                                                )
+                                                            )
+                                                            .map(
+                                                                (
+                                                                    child,
+                                                                    cidx
+                                                                ) => {
+                                                                    const isActive =
+                                                                        currentPath.startsWith(
+                                                                            child.route
+                                                                        );
+                                                                    return (
+                                                                        <SidebarMenuSubItem
+                                                                            key={
+                                                                                cidx
                                                                             }
-                                                                            className="h-8 px-3 rounded-md transition-all duration-200"
                                                                         >
-                                                                            <Link
-                                                                                href={
-                                                                                    child.route
+                                                                            <SidebarMenuSubButton
+                                                                                asChild
+                                                                                isActive={
+                                                                                    isActive
                                                                                 }
+                                                                                className="h-8 px-3 rounded-md transition-all duration-200"
                                                                             >
-                                                                                <span className="text-sm">
-                                                                                    {
-                                                                                        child.title
+                                                                                <Link
+                                                                                    href={
+                                                                                        child.route
                                                                                     }
-                                                                                </span>
-                                                                            </Link>
-                                                                        </SidebarMenuSubButton>
-                                                                    </SidebarMenuSubItem>
-                                                                );
-                                                            }
-                                                        )}
+                                                                                >
+                                                                                    <span className="text-sm">
+                                                                                        {
+                                                                                            child.title
+                                                                                        }
+                                                                                    </span>
+                                                                                </Link>
+                                                                            </SidebarMenuSubButton>
+                                                                        </SidebarMenuSubItem>
+                                                                    );
+                                                                }
+                                                            )}
                                                     </SidebarMenuSub>
                                                 </CollapsibleContent>
                                             </SidebarMenuItem>

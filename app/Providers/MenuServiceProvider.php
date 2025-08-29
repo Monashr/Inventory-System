@@ -26,6 +26,7 @@ class MenuServiceProvider extends ServiceProvider
             'tenants' => fn () => auth()->check()
                 ? auth()->user()->tenants()->select('tenants.id', 'tenants.name', 'tenants.pictures')->get()
                 : [],
+            'permissions' => fn() => auth()->user()?->getTenantPermission() ?? [],
             'currentTenantId' => fn () => session('active_tenant_id'),
             'user' => fn () => auth()->user(),
             'flash' => function () {

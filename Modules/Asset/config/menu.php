@@ -10,7 +10,7 @@ return [
             [
                 'title' => 'Asset Types',
                 'route' => '/dashboard/assettypes',
-                'permission' => 'view assets',
+                'permission' => 'manage assets',
             ],
             [
                 'title' => 'Asset',
