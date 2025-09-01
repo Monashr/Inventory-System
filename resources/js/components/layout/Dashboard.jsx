@@ -62,8 +62,6 @@ export default function Dashboard({ children }) {
     const { moduleMenus, tenants, currentTenantId, user, permissions } =
         usePage().props;
 
-    console.log(user);
-
     const { url } = usePage();
 
     const currentPath = url;
@@ -158,7 +156,6 @@ export default function Dashboard({ children }) {
                                                     </SidebarMenuButton>
                                                 </CollapsibleTrigger>
                                                 <CollapsibleContent>
-                                                    {console.log(menu.children)}
                                                     <SidebarMenuSub className="ml-4 mt-1 border-l border-border/40 pl-4 cursor-pointer">
                                                         {menu.children
                                                             .filter((child) =>

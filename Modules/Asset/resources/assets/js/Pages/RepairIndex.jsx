@@ -18,8 +18,6 @@ import useRepairIndex from "../Hooks/Repairs/useRepairIndex";
 function AssetsIndex() {
     const repairIndexLogic = useRepairIndex();
 
-    console.log(repairIndexLogic.filterValues);
-
     return (
         <>
             <Head title="Assets" />

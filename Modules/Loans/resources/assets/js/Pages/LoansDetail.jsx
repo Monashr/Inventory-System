@@ -646,7 +646,7 @@ function LoansDetail() {
 
                             <div className="space-y-4">
                                 <Label className="text-sm font-medium">
-                                    Document {console.log(loan.document)}
+                                    Document
                                 </Label>
                                 {!loan.document &&
                                 permissions.includes("making loan decision") ? (

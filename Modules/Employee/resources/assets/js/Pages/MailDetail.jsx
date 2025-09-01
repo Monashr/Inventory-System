@@ -45,10 +45,6 @@ import CustomDataTable from "@components/custom/CustomDataTable";
 function MailDetail() {
     const { mail, user } = usePage().props;
 
-    // const inboxIndexLogic = useInboxIndex();
-
-    console.log(mail);
-
     return (
         <>
             <Head title="Inbox" />
